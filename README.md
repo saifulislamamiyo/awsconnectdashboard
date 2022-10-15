@@ -1,3 +1,3 @@
 ### awsconnectdashboard
 
-# Dashboard for AWS Connect
+# Campaign control Dashboard for AWS Connect

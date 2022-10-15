@@ -48,21 +48,4 @@ router.post('/', async function (req, res, next) {
 });
 
 
-router.get('/c', async function (req, res, next) {
-    const command = new CreateQueueCommand({
-        InstanceId: process.env.CONNECT_INSTANCE_ID,
-        "Description": "Px-2 is a queue",
-        "HoursOfOperationId": "b255a5e6-d7eb-4ebe-9a6d-f25394535874",
-        "MaxContacts": 1,
-        "Name": "Px-2",
-        "OutboundCallerConfig": {
-            "OutboundCallerIdNumberId": "bc9edeee-0073-4cee-bda5-47bdbac06e97",
-        },
-
-
-    });
-    const respo = await connectClient.send(command);
-    console.log(respo);
-    res.redirect("/")
-});
 module.exports = router;
