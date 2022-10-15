@@ -1,0 +1,60 @@
+<%- include('_head.html'); %>
+  <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">
+        <%= title %>
+      </h1>
+      <% if (true) { %>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="/" type="button" class="btn btn-sm btn-outline-secondary">Cancel</a>
+          </div>
+        </div>
+        <% } %>
+    </div>
+
+    <div class="col-md-8 col-lg-8">
+      <form method="post" action="/create-campaign">
+        
+        <div class="mb-3">
+          <label for="campaignName" class="form-label">Campaign Name</label>
+          <input type="text" class="form-control" name ="campaignName" id="campaignName" required>
+        </div>        
+        <div class="mb-3">
+          <label for="campaignDescription" class="form-label">Campaign Description</label>
+          <input type="text" class="form-control" name ="campaignDescription" id="campaignDescription">
+        </div>  
+
+        <div class="mb-3">
+          <label for="maxContacts" class="form-label">Max Contacts</label>
+          <input type="number" class="form-control" name ="maxContacts" id="maxContacts" min="1" max="9" required>
+        </div>  
+
+        <div class="mb-3">
+          <label for="phoneNumber" class="form-label">Phone Number</label>
+          <select id="phoneNumber" name="phoneNumber" class="form-select" aria-label="Phone Number" required>
+            <option selected></option>
+            <% phoneNumbers.forEach(function(phoneNumber){ %>
+              <option value="<%=phoneNumber.Id%>"><%=phoneNumber.PhoneNumber%></option>
+            <% }); %>
+          </select>
+        </div>
+        
+
+        <div class="mb-3">
+          <label for="hoursOfOperation" class="form-label">Hours Of Operation</label>
+          <select id="hoursOfOperation" name="hoursOfOperation" class="form-select" aria-label="Hours Of Operation" required>
+            <option selected></option>
+            <% hoursOfOperations.forEach(function(hoursOfOperation){ %>
+              <option value="<%=hoursOfOperation.Id%>"><%=hoursOfOperation.Name%></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+    </div>
+
+
+  </main>
+  <%- include('_foot.html'); %>

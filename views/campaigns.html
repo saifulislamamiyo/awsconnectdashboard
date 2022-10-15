@@ -1,0 +1,56 @@
+<%- include('_head.html'); %>
+  <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">
+        <%= title %>
+      </h1>
+      <% if (true) { %>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="/create-campaign" type="button" class="btn btn-sm btn-outline-secondary">Create Campaign</a>
+          </div>
+        </div>
+        <% } %>
+    </div>
+
+    <!-- <div class="col-12 m-auto">
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          You should check in on some of those fields below.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>       -->
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Status</th>
+            <th scope="col">QueueType</th>
+            <th scope="col">CampaignId</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <% campaigns.forEach(function(campaign){ %>
+            <tr>
+              <td>
+                <%=campaign.Name%>
+              </td>
+              <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                </div>
+              </td>
+              <td>
+                <%=campaign.QueueType%>
+              </td>
+              <td>
+                <%=campaign.Id%>
+              </td>
+            </tr>
+            <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+  <%- include('_foot.html'); %>
