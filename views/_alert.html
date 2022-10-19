@@ -1,0 +1,18 @@
+<% 
+if(messages) { 
+    for (const [key, value] of Object.entries(messages)) {
+        console.log(`${key}: ${value}`);
+%>
+<div class="alert alert-<%=key%> alert-dismissible fade show" role="alert">
+    <%=value%>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<%        
+    }
+}
+%>
+        
+
+
+
+
