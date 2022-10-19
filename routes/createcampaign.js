@@ -1,8 +1,8 @@
 const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
-const connectClient = require('./connectclient')
 
+const connectClient = require('../libs/connectclient')
 
 router.get('/', async  (req, res, next) =>{
     let command;
@@ -22,7 +22,6 @@ router.get('/', async  (req, res, next) =>{
         // campaigns: campaigns.QueueSummaryList,
     });
 });
-
 
 router.post('/', async (req, res, next) =>{
     console.log(req.body.campaignName,
@@ -46,6 +45,5 @@ router.post('/', async (req, res, next) =>{
     let respo = await connectClient.send(command);
     res.redirect("/")
 });
-
 
 module.exports = router;

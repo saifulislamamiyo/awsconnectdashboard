@@ -4,7 +4,9 @@ const {ExecuteStatementCommand} = require( "@aws-sdk/client-dynamodb");
 const  awsConfig  = require("./awsconfigloader")
 
 const ddbClient = new DynamoDBClient(awsConfig);
+const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
+module.export = { ddbClient, ddbDocClient };
 
 /*
 
@@ -31,10 +33,7 @@ const ddbDocClient = DynamoDBDocumentClient.from(ddbClient, translateConfig);
 
 */
 
-const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
-
-module.export = { ddbClient, ddbDocClient };
 
 
 /*
