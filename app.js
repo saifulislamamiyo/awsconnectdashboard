@@ -1,21 +1,21 @@
 /* Dependencies */
-var createError = require('http-errors');
-var dotenv = require('dotenv')
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const dotenv = require('dotenv')
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
 /* Import routes */
-var campaignsRouter = require('./routes/campaigns');
-var createCampaignRouter = require('./routes/createcampaign');
-var agentsRouter = require('./routes/agents');
-var dashboardRouter = require('./routes/dashboard');
-var customReportRouter = require('./routes/customreport');
+const campaignsRouter = require('./routes/campaigns');
+const createCampaignRouter = require('./routes/createcampaign');
+const agentsRouter = require('./routes/agents');
+const dashboardRouter = require('./routes/dashboard');
+const customReportRouter = require('./routes/customreport');
 
 /* Set app */
 dotenv.config()
-var app = express();
+const app = express();
 app.engine('.html', require('ejs').__express);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
