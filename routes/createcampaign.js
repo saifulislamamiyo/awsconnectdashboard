@@ -4,29 +4,69 @@ const router = express.Router();
 
 const connectClient = require('../libs/connectclient')
 
-router.get('/', async  (req, res, next) =>{
-    let command;
-    // command = new ListQueuesCommand({ InstanceId: process.env.CONNECT_INSTANCE_ID });
-    // let campaigns = await connectClient.send(command);
-    // console.log(campaigns.QueueSummaryList);
-    command = new ListPhoneNumbersCommand({ InstanceId: process.env.CONNECT_INSTANCE_ID });
-    let phoneNumbers = await connectClient.send(command);
-    // console.log(phoneNumbers.PhoneNumberSummaryList);
-    command = new ListHoursOfOperationsCommand({ InstanceId: process.env.CONNECT_INSTANCE_ID });
-    let hoursOfOperations = await connectClient.send(command);
-    // console.log(hoursOfOperations.HoursOfOperationSummaryList);
+const campaignForm = async (formData) => {
+    const InstanceId = { InstanceId: process.env.CONNECT_INSTANCE_ID }
+
+    let fromListPhoneNumbersCommand = (await connectClient.send(new ListPhoneNumbersCommand({...InstanceId})));
+    let phoneNumbers = [];
+    fromListPhoneNumbersCommand.PhoneNumberSummaryList.forEach((item)=>{
+        phoneNumbers.push({Id:item.Id, Name:item.PhoneNumber});
+    });
+
+    let hoursOfOperations = (await connectClient.send(new ListHoursOfOperationsCommand({...InstanceId}))).HoursOfOperationSummaryList;
+    
+    let form =  {
+        formName: "campaignForm",
+        formMethod: "post",
+        formAction: "/create-campaign",
+        formFields: {
+            campaignName: {
+                type: "text",
+                label: "Campaign Name",
+                attr: "",
+                data: formData.campaignName || "",
+                error: '',
+            },
+            campaignDescription: {
+                type: "text",
+                label: "Campaign Description",
+                attr: "",
+                data: formData.campaignDescription||"",
+                error: '',
+            },
+            phoneNumber: {
+                type: "select",
+                label: "Phone Number",
+                attr: "",
+                data: phoneNumbers,
+                selected: "",
+                error: '',
+            },
+            hoursOfOperation: {
+                type: "select",
+                label: "Hours of Operation",
+                attr: "",
+                data: hoursOfOperations,
+                selected: formData.hoursOfOperation||"",
+                error: '',
+            },
+        }
+    };
+    return form;
+}
+
+
+router.get('/', async (req, res, next) => {
     res.render('createcampaign', {
         title: 'Create Campaign',
-        phoneNumbers: phoneNumbers.PhoneNumberSummaryList,
-        hoursOfOperations: hoursOfOperations.HoursOfOperationSummaryList,
-        // campaigns: campaigns.QueueSummaryList,
+        form: await campaignForm(req.body),
     });
 });
 
-router.post('/', async (req, res, next) =>{
-    console.log(req.body.campaignName,
+router.post('/', async (req, res, next) => {
+    console.log(
+        req.body.campaignName,
         req.body.campaignDescription,
-        req.body.maxContacts,
         req.body.phoneNumber,
         req.body.hoursOfOperation
     );
@@ -36,7 +76,7 @@ router.post('/', async (req, res, next) =>{
         Name: req.body.campaignName,
         Description: req.body.campaignDescription,
         HoursOfOperationId: req.body.hoursOfOperation,
-        MaxContacts: parseInt(req.body.maxContacts),
+        MaxContacts: 1,
         OutboundCallerConfig: {
             OutboundCallerIdNumberId: req.body.phoneNumber,
         }

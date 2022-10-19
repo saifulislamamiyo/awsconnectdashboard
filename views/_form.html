@@ -1,0 +1,32 @@
+<%
+    for (const [fieldName, fieldAttributes] of Object.entries( _form.formFields)){
+    switch (fieldAttributes.type) {
+    case 'text' :
+%>
+    <div class="mb-3">
+        <label for="<%=fieldName%>" class="form-label"><%=fieldAttributes.label%></label>
+        <input type="text" <%=fieldAttributes.attr%> class="form-control <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>" value="<%=fieldAttributes.data%>">
+        <div class="invalid-feedback"><%=fieldAttributes.error%></div>
+    </div>
+<%
+    break;
+    case 'select' :
+%>
+        <div class="mb-3">
+            <label for="<%=fieldName%>" class="form-label">
+                <%=fieldAttributes.label%>
+            </label>
+            <select <%=fieldAttributes.attr%> class="form-control <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>">
+                <% fieldAttributes.data.forEach((item)=>{ %>
+                    <option <%=(item.Id==fieldAttributes.selected) ? 'selected' : '' ;%> value="<%=item.Id%>">
+                        <%=item.Name%>
+                    </option>
+                <% }); %>
+            </select>
+            <div class="invalid-feedback"><%=fieldAttributes.error%></div>
+        </div>
+<%
+    break;
+    }
+};
+%>
