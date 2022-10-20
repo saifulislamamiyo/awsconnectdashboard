@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www"
+    "test": "nyc mocha --recursive",
+    "dev": "DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css"
   },
   "dependencies": {
     "@aws-sdk/client-connect": "^3.188.0",
@@ -19,8 +20,11 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
-    "bootstrap": "^5.2.2",
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
     "feather-icons": "^4.29.0",
-    "nodemon": "^2.0.20"
+    "mocha": "^10.1.0",
+    "nodemon": "^2.0.20",
+    "nyc": "^15.1.0"
   }
 }
