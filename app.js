@@ -2,7 +2,6 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const flash = require('express-flash');
@@ -19,18 +18,18 @@ const app = express();
 app.engine('.html', require('ejs').__express);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('Todo: Load from env config'));
+
 app.use(session({
   secret: 'Todo: Load from env config',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true },
+  cookie: { secure: false, maxAge: 1000 * 36000 },
 }));
 app.use(flash());
-app.use(express.static(path.join(__dirname, 'public')));
 
 /* Register routes */
 app.use('/', campaignsRouter);

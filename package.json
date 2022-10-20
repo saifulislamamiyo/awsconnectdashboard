@@ -9,7 +9,6 @@
     "@aws-sdk/client-connect": "^3.188.0",
     "@aws-sdk/client-dynamodb": "^3.190.0",
     "@aws-sdk/lib-dynamodb": "^3.190.0",
-    "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
