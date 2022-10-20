@@ -34,8 +34,8 @@ app.use(flash());
 /* Register routes */
 app.use('/', campaignsRouter);
 app.use('/create-campaign', createCampaignRouter);
-app.use('/agents', agentsRouter);
-app.use('/dashboard', dashboardRouter);
+app.use('/agent-dashboard', agentsRouter);
+app.use('/campaign-dashboard', dashboardRouter);
 app.use('/custom-report', customReportRouter);
 
 /* Catch 404 and forward to error handler */
