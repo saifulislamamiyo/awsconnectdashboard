@@ -1,12 +1,11 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
-const {ExecuteStatementCommand} = require( "@aws-sdk/client-dynamodb");
-const  awsConfig  = require("./awsconfigloader")
+const  {awsConfig}  = require("./awsconfigloader")
 
 const ddbClient = new DynamoDBClient(awsConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
-module.export = { ddbClient, ddbDocClient };
+module.exports = { ddbClient, ddbDocClient };
 
 /*
 
@@ -31,31 +30,4 @@ const translateConfig = { marshallOptions, unmarshallOptions };
 // Create the DynamoDB document client.
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient, translateConfig);
 
-*/
-
-
-
-
-/*
-
-// test db connection by running a PartiQL
-
-const test_db_connectuon = async () => {
-    try {
-        const params = {
-            Statement: "SELECT * FROM CloudCall_Campaign_Table",
-            // Parameters: [],
-        };
-        const data = await ddbDocClient.send(
-            new ExecuteStatementCommand(params)
-        );
-        for (let i = 0; i < data.Items.length; i++) {
-            console.log(data.Items[i]);
-        }
-    } catch (err) {
-        console.log(err);
-    }
-
-}
-test_db_connectuon()
 */
