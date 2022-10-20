@@ -1,11 +1,11 @@
 const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
-
+const {awsConfig, awsInstance} = require('../libs/awsconfigloader');
 const connectClient = require('../libs/connectclient')
 
 const campaignForm = async (formData) => {
-  const InstanceId = { InstanceId: process.env.CONNECT_INSTANCE_ID }
+  const InstanceId = { InstanceId: awsInstance }
 
   let fromListPhoneNumbersCommand = (await connectClient.send(new ListPhoneNumbersCommand({ ...InstanceId })));
   let phoneNumbers = [];
@@ -101,7 +101,7 @@ router.post('/', async (req, res, next) => {
     });
   } else {
     let param = {
-        InstanceId: process.env.CONNECT_INSTANCE_ID,
+        InstanceId: process.env.INSTANCE_ID,
         Name: form.cleanData.campaignName,
         Description: form.cleanData.campaignDescription,
         HoursOfOperationId: form.cleanData.hoursOfOperation,

@@ -9,4 +9,6 @@ const awsConfig = {
     },
 };
 
-module.exports = awsConfig;
+const awsInstance = process.env.INSTANCE_ID
+
+module.exports = { awsConfig, awsInstance};

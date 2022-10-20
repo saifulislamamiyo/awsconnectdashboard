@@ -1,5 +1,5 @@
-# aws connect credentials
+# aws credentials
 ACCESS_KEY_ID=
 SECRET_ACCESS_KEY=
 REGION=
-CONNECT_INSTANCE_ID=
+INSTANCE_ID=
