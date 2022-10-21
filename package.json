@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "nyc mocha --recursive",
+    "test": "nyc mocha --recursive --timeout 10000",
     "dev": "DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css"
   },
   "dependencies": {
