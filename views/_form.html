@@ -1,32 +1,135 @@
 <%
-    for (const [fieldName, fieldAttributes] of Object.entries( _form.formFields)){
+  for (const [fieldName, fieldAttributes] of Object.entries( _form.formFields)){
     switch (fieldAttributes.type) {
-    case 'text' :
+      case 'text' :
 %>
-    <div class="mb-3">
-        <label for="<%=fieldName%>" class="form-label"><%=fieldAttributes.label%></label>
-        <input type="text" <%=fieldAttributes.attr%> class="form-control <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>" value="<%=fieldAttributes.data%>">
-        <div class="invalid-feedback"><%=fieldAttributes.error%></div>
+<div class="mb-3">
+  <label for="<%=fieldName%>" class="form-label"><%=fieldAttributes.label%></label>
+  <input type="text" <%=fieldAttributes.attr%> class="form-control <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>" value="<%=fieldAttributes.data%>">
+  <div class="invalid-feedback"><%=fieldAttributes.error%></div>
+</div>
+<%
+        break;
+      case 'select' :
+%>
+<div class="mb-3">
+  <label for="<%=fieldName%>" class="form-label">
+    <%=fieldAttributes.label%>
+  </label>
+  <select <%=fieldAttributes.attr%> class="form-select <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>">
+    <% fieldAttributes.data.forEach((item)=>{ %>
+    <option <%=(item.Id==fieldAttributes.selected) ? 'selected' : '' ;%> value="<%=item.Id%>">
+      <%=item.Name%>
+    </option>
+    <% }); %>
+  </select>
+  <div class="invalid-feedback"><%=fieldAttributes.error%></div>
+</div>
+<%
+        break;
+      case 'multiselect':
+%>
+<div class="mb-3">
+  <label for="<%=fieldName%>" class="form-label"><%=fieldAttributes.label%></label>
+  <div class="row">
+    <div class="col-md-5">
+      <select multiple <%=fieldAttributes.attr%> style="min-height:100%;" class="multi___select multi___select___<%=fieldName%> form-control <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>">
+        <% fieldAttributes.data.forEach((item)=>{ %>
+        <option <%=(item.Id==fieldAttributes.selected) ? 'selected' : '' ;%> value="<%=item.Id%>">
+          <%=item.Name%>
+        </option>
+        <% }); %>
+      </select>
+      <div class="invalid-feedback"><%=fieldAttributes.error%></div>
     </div>
-<%
-    break;
-    case 'select' :
-%>
-        <div class="mb-3">
-            <label for="<%=fieldName%>" class="form-label">
-                <%=fieldAttributes.label%>
-            </label>
-            <select <%=fieldAttributes.attr%> class="form-control <%=(fieldAttributes.error?'is-invalid':'');%>" name="<%=fieldName%>" id="<%=fieldName%>">
-                <% fieldAttributes.data.forEach((item)=>{ %>
-                    <option <%=(item.Id==fieldAttributes.selected) ? 'selected' : '' ;%> value="<%=item.Id%>">
-                        <%=item.Name%>
-                    </option>
-                <% }); %>
-            </select>
-            <div class="invalid-feedback"><%=fieldAttributes.error%></div>
-        </div>
-<%
-    break;
+    <div class="col-md-2 text-center mt-2 mb-2">
+      <div class="btn-group-vertical btn-group-sm" role="group" aria-label="Vertical button group">
+        <button type="button" class="btn btn-outline-dark multi___select___add">&plus;&nbsp;Add</button>
+        <button type="button" class="btn btn-outline-dark multi___select___rem">&minus;&nbsp;Rem</button>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control mb-2 multi___select___<%=fieldName%>___search" placeholder="Search <%=fieldAttributes.label%>...">
+      <select multiple class="form-control multi___select___<%=fieldName%>___picker">
+        <% fieldAttributes.data2.forEach((item)=>{ %>
+        <option value="<%=item.Id%>">
+          <%=item.Name%>
+        </option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", (domContentLoadedEvent) => {
+    let agentList = <%-JSON.stringify(fieldAttributes.data2);%>;
+    let btnAdd = document.querySelector('.multi___select___add');
+    let btnRem = document.querySelector('.multi___select___rem');
+    let selPicker = document.querySelector('.multi___select___<%=fieldName%>___picker');
+    let selBucket = document.querySelector('.multi___select___<%=fieldName%>');
+    let txtSearch = document.querySelector('.multi___select___<%=fieldName%>___search');
+
+
+    const addOptions = (selectElement, items) => {
+      console.log(selectElement.options);
+      items.forEach((item) => {
+        selectElement.options[selectElement.options.length] = new Option(item.Name, item.Id);
+      });
     }
-};
+
+    const removeOptions = (selectElement) => {
+      for (let i = selectElement.options.length - 1; i >= 0; i--) {
+        selectElement.remove(i);
+      }
+    }
+
+    txtSearch.addEventListener('keyup', (keyupEvent) => {
+
+
+      if (keyupEvent.target.value.length < 2) {
+        removeOptions(selPicker);
+        addOptions(selPicker, agentList);
+        return;
+      }
+      var filtered = agentList.filter(function(entry) {
+        return entry.Name.toLowerCase().includes(keyupEvent.target.value.trim().toLowerCase());
+      });
+      removeOptions(selPicker);
+      addOptions(selPicker, filtered)
+    });
+
+    btnAdd.addEventListener('click', (clickEvent) => {
+      let mathched;
+      for (let p = 0; p < selPicker.selectedOptions.length; p++) {
+        mathched = false;
+        let selectedOption = selPicker.selectedOptions[p].value;
+        for (let b = 0; b < selBucket.options.length; b++) {
+          let bucketOption = selBucket.options[b].value;
+          if (bucketOption == selectedOption) {
+            mathched = true;
+            break;
+          }
+        } // next s
+        if (!mathched) {
+          selBucket.options[selBucket.options.length] = new Option(
+            selPicker.selectedOptions[p].text,
+            selPicker.selectedOptions[p].value
+          );
+        }
+      } // next i
+    }); // btnAdd click event listener
+
+    btnRem.addEventListener('click', (clickEvent) => {
+      for (let i = selBucket.options.length - 1; i >= 0; i--) {
+        if (selBucket.options[i].selected) {
+          selBucket.removeChild(selBucket.options[i]);
+        }
+      } //next i
+    }); // btnRem click event listener
+  }); // DOMContentLoaded event
+</script>
+<%      
+        break;
+    }; // end switch
+  }; //end for
 %>
