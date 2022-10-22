@@ -20,16 +20,20 @@
         <thead class="table-dark">
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Phone Number</th>
             <th scope="col">Status</th>
-            <th scope="col">QueueType</th>
-            <th scope="col">CampaignId</th>
+            <th scope="col">Agents</th>
+            <th scope="col">Created At</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <% campaigns.forEach(function(campaign){ %>
             <tr>
               <td>
-                <%=campaign.Name%>
+                <%=campaign.campaign_name%>
+              </td>
+              <td>
+                <%=campaign.phone_number_id%>
               </td>
               <td>
                 <div class="form-check form-switch">
@@ -37,10 +41,10 @@
                 </div>
               </td>
               <td>
-                <%=campaign.QueueType%>
+                <%=campaign.agents.length%>
               </td>
               <td>
-                <%=campaign.Id%>
+                <%= new Date( parseInt(campaign.created_at)).toLocaleString();%>
               </td>
             </tr>
             <% }); %>

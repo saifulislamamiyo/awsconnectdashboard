@@ -4,7 +4,7 @@ const router = express.Router();
 const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
 const connectClient = require('../libs/connectclient')
 
-const campaignForm = async (formData) => {
+const campaignForm = async (formData, form_for_update=false) => {
   const InstanceId = { InstanceId: awsInstance }
   let fromListPhoneNumbersCommand = (await connectClient.send(
     new ListPhoneNumbersCommand({ ...InstanceId })
@@ -29,7 +29,7 @@ const campaignForm = async (formData) => {
       campaignName: {
         type: "text",
         label: "Campaign Name",
-        attr: "",
+        attr: form_for_update?"disabled":"",
         data: formData.campaignName || "",
         error: '',
       },
@@ -87,7 +87,7 @@ const validatedCampaignForm = async (formData) => {
   let cleanData = cleanFormData(formData);
   let form = await campaignForm(formData);
   let validationPassed = true;
-  let campaignNameList = []
+  let campaignNameList = []; // Todo: list campaigns->map data
   if (cleanData.campaignName == "" || campaignNameList.includes(cleanData.campaignName)) {
     form.formFields.campaignName.error = "Unique Campaign Name is required.";
     validationPassed = false
@@ -100,6 +100,7 @@ const validatedCampaignForm = async (formData) => {
     form.formFields.hoursOfOperation.error = "Hours of Operation is required.";
     validationPassed = false
   }
+  
   return { form, cleanData, validationPassed };
 }
 

@@ -9,8 +9,12 @@ const campaignModel = {
       campaign_name: ('campaign_name' in item) ? item.campaign_name.S : "",
       id: ('id' in item) ? item.id.S : "",
       status: ('status' in item) ? item.status.BOOL : false,
-      hoursOfOperationId: ('hoursOfOperationId' in item) ? item.hoursOfOperationId.S : "",
-      outboundCallerIdNumberId: ('outboundCallerIdNumberId' in item) ? item.outboundCallerIdNumberId.S : "",
+      agents: ('agents' in item) ? item.agents.L : [],
+      phone_number_id: ('phone_number_id' in item) ? item.phone_number_id.S : "",
+      hours_of_operation_id: ('hours_of_operation_id' in item) ? item.hours_of_operation_id.S : "",
+      created_at: ('created_at' in item) ? item.created_at.S : "",
+      modified_at: ('modified_at' in item) ? item.modified_at.S : "",
+      author: ('author' in item) ? item.author.S : "",
     }));
     return mappedData;
   },
@@ -41,8 +45,8 @@ const campaignModel = {
     if (typeof items != 'object') return false;
     const data = await ddbDocClient.send(
       new ExecuteStatementCommand({
-        Statement: "INSERT INTO CloudCall_Campaign_Table value {'campaign_name':?, 'id':?, 'status':?, 'hoursOfOperationId':?, 'outboundCallerIdNumberId':?}",
-        Parameters: [{ S: items.campaign_name || '' }, { S: items.id || '' }, { BOOL: items.status || false }, { S: items.hoursOfOperationId || '' }, { S: items.outboundCallerIdNumberId || '' }],
+        Statement: "INSERT INTO CloudCall_Campaign_Table value {'campaign_name':?, 'id':?, 'status':?, 'agents':?, 'phone_number_id':?, 'hours_of_operation_id':?, 'created_at':?, 'modified_at':?, 'author':?}",
+        Parameters: [{ S: items.campaign_name || '' }, { S: items.id || '' }, { BOOL: items.status || false }, { L: items.agents || [] }, { S: items.phone_number_id || '' }, { S: items.hours_of_operation_id || '' }, { S: items.created_at || '' }, { S: items.modified_at || '' }, { S: items.author || '' } ],
       })
     );
     return true;

@@ -3,11 +3,10 @@ const express = require('express');
 const router = express.Router();
 const connectClient = require('../libs/connectclient');
 const {awsConfig, awsInstance} = require('../libs/awsconfigloader');
-
+const {campaignModel} = require('../libs/dbmodels');
 const listCampaigns = async (req, res, next) => {
-  const command = new ListQueuesCommand({ InstanceId: awsInstance });
-  const campaigns = await connectClient.send(command);
-  res.render('campaigns', { title: 'Campaigns', campaigns: campaigns.QueueSummaryList });
+  let campList = await campaignModel.list();
+  res.render('campaigns', { title: 'Campaigns', campaigns: campList });
 }
 
 router.get('/', listCampaigns);
