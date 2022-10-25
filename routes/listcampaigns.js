@@ -16,27 +16,6 @@ const {campaignModel} = require('../libs/dbmodels');
 
 
 
-const listCampaigns = async (req, res, next) => {
-  let campList = await campaignModel.list();
-  res.render('campaigns', { title: 'Campaigns', campaigns: campList });
-}
-
-router.get('/', listCampaigns);
-router.get('/campaigns', listCampaigns);
-
-router.get('/set-campaign-status', async (req, res, next)=>{
-    let response = (await connectClient.send(
-    new UpdateQueueStatusCommand({ 
-      InstanceId: awsInstance,
-      QueueId: req.query.id,
-      Status : (req.query.status)? 'ENABLED': 'DISABLED',
-   })));
-   console.log("[:", req.query.qname)
-// TODO: UPDATE DATABASE
-   await campaignModel.update({status:req.query.status}, req.query.qname )
-
-  res.sendStatus(200);
-});
 
 
 
@@ -64,11 +43,9 @@ const call_api = async () => {
     new ListQueuesCommand({ 
       InstanceId: awsInstance
    })));
-
-
   console.log(response)
 }
 
-// call_api()
+call_api()
 
 module.exports = router;

@@ -1,10 +1,15 @@
 const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
-const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
+const { awsConfig, awsInstance, awsConnectMaxContacts } = require('../libs/awsconfigloader');
 const connectClient = require('../libs/connectclient')
+const { campaignModel } = require('../libs/dbmodels');
+const { asyncConLog } = require("../libs/utils");
 
-const campaignForm = async (formData, form_for_update=false) => {
+
+
+
+const campaignForm = async (formData, form_for_update = false) => {
   const InstanceId = { InstanceId: awsInstance }
   let fromListPhoneNumbersCommand = (await connectClient.send(
     new ListPhoneNumbersCommand({ ...InstanceId })
@@ -29,7 +34,7 @@ const campaignForm = async (formData, form_for_update=false) => {
       campaignName: {
         type: "text",
         label: "Campaign Name",
-        attr: form_for_update?"disabled":"",
+        attr: form_for_update ? "disabled" : "",
         data: formData.campaignName || "",
         error: '',
       },
@@ -56,14 +61,14 @@ const campaignForm = async (formData, form_for_update=false) => {
         selected: formData.hoursOfOperation || "",
         error: '',
       },
-      agents: {
-        type: "multiselect",
-        label: "Agents",
-        attr: "",
-        data: formData.agents || [],
-        data2: allAgents,
-        error: '',
-      },
+      // agents: {
+      //   type: "multiselect",
+      //   label: "Agents",
+      //   attr: "",
+      //   data: formData.agents || [],
+      //   data2: allAgents,
+      //   error: '',
+      // },
     }
   };
   return form;
@@ -78,8 +83,7 @@ const cleanFormData = (formData) => {
     campaignName: String(formData.campaignName).trim() || "",
     campaignDescription: String(formData.campaignDescription).trim() || "",
     phoneNumber: String(formData.phoneNumber).trim() || "",
-    hoursOfOperation: String(formData.hoursOfOperation).trim() || "",
-    agents: cleanAgents,
+    hoursOfOperation: String(formData.hoursOfOperation).trim() || ""
   }
 }
 
@@ -87,8 +91,16 @@ const validatedCampaignForm = async (formData) => {
   let cleanData = cleanFormData(formData);
   let form = await campaignForm(formData);
   let validationPassed = true;
-  let campaignNameList = []; // Todo: list campaigns->map data
-  if (cleanData.campaignName == "" || campaignNameList.includes(cleanData.campaignName)) {
+  let campaignNameList = (await connectClient.send(
+    new ListQueuesCommand({ InstanceId: awsInstance })
+  ));
+  let name_exist = false;
+  if (campaignNameList.QueueSummaryList.some(e => e.Name === cleanData.campaignName)) {
+    name_exist = true
+  }
+
+  // let campaignNameList = []; // Todo: list campaigns->map data
+  if (cleanData.campaignName == "" || name_exist == true) {
     form.formFields.campaignName.error = "Unique Campaign Name is required.";
     validationPassed = false
   }
@@ -100,9 +112,33 @@ const validatedCampaignForm = async (formData) => {
     form.formFields.hoursOfOperation.error = "Hours of Operation is required.";
     validationPassed = false
   }
-  
+
   return { form, cleanData, validationPassed };
 }
+
+
+let createQueue = async (cleanformData) => {
+  // asyncConLog(cleanFormData);
+  
+  let param = {
+    InstanceId: "570b424d-3a85-45b2-bf45-83a8703026c8",
+    Name: cleanformData.campaignName,
+    Description: cleanformData.campaignDescription,
+    HoursOfOperationId: cleanformData.hoursOfOperation,
+    MaxContacts: 1,
+    OutboundCallerConfig: {
+      OutboundCallerIdNumberId: cleanformData.phoneNumber,
+    }
+  }
+  
+  let command = new CreateQueueCommand(param);
+  
+  // asyncConLog(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+  let respo = await connectClient.send(command);
+  
+  return respo;
+}
+
 
 router.get('/', async (req, res, next) => {
   return res.render('createcampaign', {
@@ -113,27 +149,21 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   let form = await validatedCampaignForm(req.body);
+
   if (!form.validationPassed) {
-    return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
+     return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
   } else {
-    req.flash('success', 'Campaign created successfully');
-    res.redirect("/campaigns");
+    let ret = await createQueue(form.cleanData);
+    form.cleanData["id"] = ret.QueueId;
+    ret = campaignModel.create(form.cleanData);
+    if (ret) {
+      req.flash('success', 'Campaign created successfully');
+      res.redirect("/campaigns");
+    } else {
+      req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, anmd try again.');
+      res.redirect("/create-campaign");
+    }
   }
 });
 
 module.exports = router;
-
-
-
-//   let param = {
-//       InstanceId: process.env.INSTANCE_ID,
-//       Name: form.cleanData.campaignName,
-//       Description: form.cleanData.campaignDescription,
-//       HoursOfOperationId: form.cleanData.hoursOfOperation,
-//       MaxContacts: 1,
-//       OutboundCallerConfig: {
-//           OutboundCallerIdNumberId: form.cleanData.phoneNumber,
-//       }
-//   }
-// let command = new CreateQueueCommand(param);
-// let respo = await connectClient.send(command);

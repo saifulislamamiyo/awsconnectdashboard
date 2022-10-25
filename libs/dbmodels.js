@@ -1,10 +1,10 @@
-const { ExecuteStatementCommand } = require("@aws-sdk/client-dynamodb");
+const { ExecuteStatementCommand, ListPhoneNumbersCommand } = require("@aws-sdk/client-dynamodb");
 const { awsConfig, awsInstance } = require("./awsconfigloader")
 const { ddbClient, ddbDocClient } = require('./ddbclient')
 const { asyncConLog } = require('./utils');
 
 const campaignModel = {
-  _mapData: async (items) => {
+  _mapData: async (items) => {    
     let mappedData = items.map(item => ({
       campaign_name: ('campaign_name' in item) ? item.campaign_name.S : "",
       id: ('id' in item) ? item.id.S : "",
@@ -18,7 +18,7 @@ const campaignModel = {
     }));
     return mappedData;
   },
-  list: async () => {
+  list: async (param = null) => {
     const data = await ddbDocClient.send(
       new ExecuteStatementCommand({
         Statement: "SELECT * FROM CloudCall_Campaign_Table",
@@ -27,6 +27,7 @@ const campaignModel = {
     );
     if (!data.Items.length) return [];
     mappedData = campaignModel._mapData(data.Items);
+
     return mappedData;
   },
   search: async (needle) => {
@@ -41,12 +42,32 @@ const campaignModel = {
     mappedData = campaignModel._mapData(data.Items);
     return mappedData;
   },
-  create: async (items) => {
+  create: async (items) => {    
     if (typeof items != 'object') return false;
     const data = await ddbDocClient.send(
       new ExecuteStatementCommand({
-        Statement: "INSERT INTO CloudCall_Campaign_Table value {'campaign_name':?, 'id':?, 'status':?, 'agents':?, 'phone_number_id':?, 'hours_of_operation_id':?, 'created_at':?, 'modified_at':?, 'author':?}",
-        Parameters: [{ S: items.campaign_name || '' }, { S: items.id || '' }, { BOOL: items.status || false }, { L: items.agents || [] }, { S: items.phone_number_id || '' }, { S: items.hours_of_operation_id || '' }, { S: items.created_at || '' }, { S: items.modified_at || '' }, { S: items.author || '' } ],
+        Statement: `INSERT INTO CloudCall_Campaign_Table value {
+          'campaign_name':?, 
+          'id':?, 
+          'status':?, 
+          'agents':?, 
+          'phone_number_id':?, 
+          'hours_of_operation_id':?, 
+          'created_at':?, 
+          'modified_at':?, 
+          'author':?
+        }`,
+        Parameters: [
+          { S: String(items.campaignName) || '' }, 
+          { S: String(items.id) || '' },
+          { BOOL: items.status || false }, 
+          { L: items.agents || [] },
+          { S: String(items.phoneNumber) || '' }, 
+          { S: String(items.hoursOfOperation) || '' },
+          { S: String(Date.now()) }, 
+          { S: String(items.modifiedAt) || '' },
+          { S: String(items.author) || '' }
+        ],
       })
     );
     return true;
