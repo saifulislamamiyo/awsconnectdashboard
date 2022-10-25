@@ -4,6 +4,15 @@ const { ddbClient, ddbDocClient } = require('./ddbclient')
 const { asyncConLog } = require('./utils');
 
 const campaignModel = {
+  _compare: ( a, b ) =>{
+    if ( a.created_at < b.created_at ){
+      return 1;
+    }
+    if ( a.created_at > b.created_at ){
+      return -1;
+    }
+    return 0;
+  },
   _mapData: async (items) => {    
     let mappedData = items.map(item => ({
       campaign_name: ('campaign_name' in item) ? item.campaign_name.S : "",
@@ -16,6 +25,7 @@ const campaignModel = {
       modified_at: ('modified_at' in item) ? item.modified_at.S : "",
       author: ('author' in item) ? item.author.S : "",
     }));
+    mappedData.sort(campaignModel._compare)
     return mappedData;
   },
   list: async (param = null) => {

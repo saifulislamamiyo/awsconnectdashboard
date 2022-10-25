@@ -10,6 +10,5 @@ const awsConfig = {
 };
 
 const awsInstance = process.env.INSTANCE_ID
-const awsConnectMaxContacts = process.env.MAX_CONTACTS
 
-module.exports = { awsConfig, awsInstance, awsConnectMaxContacts};
+module.exports = { awsConfig, awsInstance};

@@ -71,7 +71,6 @@
 
 
     const addOptions = (selectElement, items) => {
-      // console.log(selectElement.options);
       items.forEach((item) => {
         selectElement.options[selectElement.options.length] = new Option(item.Name, item.Id);
       });

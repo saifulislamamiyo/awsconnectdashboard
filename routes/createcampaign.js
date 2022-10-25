@@ -1,7 +1,7 @@
 const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
-const { awsConfig, awsInstance, awsConnectMaxContacts } = require('../libs/awsconfigloader');
+const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
 const connectClient = require('../libs/connectclient')
 const { campaignModel } = require('../libs/dbmodels');
 const { asyncConLog } = require("../libs/utils");
@@ -92,7 +92,6 @@ const validatedCampaignForm = async (formData) => {
     name_exist = true
   }
 
-  // let campaignNameList = []; // Todo: list campaigns->map data
   if (cleanData.campaignName == "" || name_exist == true) {
     form.formFields.campaignName.error = "Unique Campaign Name is required.";
     validationPassed = false
@@ -151,7 +150,7 @@ router.post('/', async (req, res, next) => {
         req.flash('success', 'Campaign created successfully');
         res.redirect("/campaigns");
       } else {
-        req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, anmd try again.');
+        req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
         res.redirect("/create-campaign");
       }
     } catch (err) {
