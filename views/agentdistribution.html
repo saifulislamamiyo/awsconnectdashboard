@@ -1,0 +1,55 @@
+<%- include('_head.html'); %>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+      <%= title %>
+    </h1>
+    <% if (true) { %>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <a href="/" class="btn btn-sm btn-outline-secondary">Cancel</a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+
+
+  <%- include('_alert.html'); %>
+  <div class="col-md-8 col-lg-8">
+    <div class="row">
+      <div class="col-3">
+        <label for="selCampaign" class="mb-1">Campaigns</label>
+        <input type="text" class="form-control mb-2" placeholder="Search Campaign...">
+        <select multiple name="selCampaign" id="selCampaign" class="form-select" style="min-height: 130%;">
+          <% campaigns.forEach(function(campaign){ %>
+            <option value="<%=campaign.id%>"><%=campaign.campaign_name%></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="col-4">
+        <label for="selMappedAgents" class="mb-1">Mapped Agents</label>
+        <input type="text" class="form-control mb-2" placeholder="Search Agent...">
+        <select multiple name="selMappedAgents" id="selMappedAgents" class="form-select" style="min-height: 130%;"></select>
+      </div>
+      <div class="col-2 mt-4 pt-4 text-center">
+        <div class="btn-group-vertical btn-group-sm mt-4 pt-4" role="group" aria-label="Vertical button group">
+          <button type="button" class="btn btn-primary">&plus; Add</button>
+          <button type="button" class="btn btn-danger">&minus; Rem</button>
+          <button type="button" class="btn btn-success">&check; Save</button>
+        </div>
+      </div>
+      <div class="col-3">
+        <label for="selAllAgents" class="mb-1">All Agents</label>
+        <input type="text" class="form-control mb-2" placeholder="Search Agent...">
+        <select multiple name="selAllAgents" id="selAllAgents" class="form-select" style="min-height: 130%;">
+        
+          <% agents.forEach(function(agent){ %>
+            <option value="<%=agent.Id%>"><%=agent.Username%></option>
+          <% }); %>        
+        
+        </select>
+      </div>
+    </div>
+  </div>
+</main>
+<%- include('_foot.html'); %>

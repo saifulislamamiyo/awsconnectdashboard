@@ -1,14 +1,19 @@
-const { 
+const {
   ListRoutingProfilesCommand,
   ListContactFlowsCommand,
   ListRoutingProfileQueuesCommand,
   UpdateQueueStatusCommand,
-  ListQueuesCommand, ListPhoneNumbersCommand, ListAgentStatusesCommand, ListUsersCommand } = require("@aws-sdk/client-connect");
+  ListQueuesCommand,
+  ListPhoneNumbersCommand,
+  ListAgentStatusesCommand,
+  DescribeUserCommand,
+  ListUsersCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
 const connectClient = require('../libs/connectclient');
-const {awsConfig, awsInstance} = require('../libs/awsconfigloader');
-const {campaignModel} = require('../libs/dbmodels');
+const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
+const { campaignModel } = require('../libs/dbmodels');
+const { asyncConLog } = require("../libs/utils");
 // const { response } = require("express");
 
 
@@ -20,30 +25,30 @@ const {campaignModel} = require('../libs/dbmodels');
 
 
 const call_api = async () => {
-  
-  let response;
 
-  // response = (await connectClient.send(
-  //   new ListRoutingProfilesCommand({ 
-  //     InstanceId: awsInstance
-  //  })));
+  let userSummaryList = (await connectClient.send(new ListUsersCommand({
+    InstanceId: awsInstance
+  }))).UserSummaryList;
 
-  //  response = (await connectClient.send(
-  //   new ListRoutingProfileQueuesCommand({ 
-  //     InstanceId: awsInstance,
-  //     RoutingProfileId:'8fbeb2d8-a280-419f-a681-e04d0af7ffc1'
-  //  })));
+  userSummaryList.forEach(async (user) => {
+    
+    let userRoutingProfileId = (await connectClient.send(new DescribeUserCommand({
+      InstanceId: awsInstance,
+      UserId: user.Id
+    }))).User.RoutingProfileId;
 
-  // response = (await connectClient.send(
-  //   new ListContactFlowsCommand({ 
-  //     InstanceId: awsInstance
-  //  })));
+    let routingProfileQueueConfigSummary = (await connectClient.send(new ListRoutingProfileQueuesCommand({
+      InstanceId: awsInstance,
+      RoutingProfileId: userRoutingProfileId,
+    }))).RoutingProfileQueueConfigSummaryList;
 
-  response = (await connectClient.send(
-    new ListQueuesCommand({ 
-      InstanceId: awsInstance
-   })));
-  console.log(response)
+    routingProfileQueueConfigSummary.forEach(async (routingProfile) => {
+      // asyncConLog("----------------")
+      // asyncConLog(routingProfile)
+      console.log({Username: user.Username, UsernameId: user.Id, RoutingProfileId: userRoutingProfileId, RoutingProfileQueueId: routingProfile.QueueId, RoutingProfileQueueName:routingProfile.QueueName});
+    });
+  }); // next user
+
 }
 
 call_api()

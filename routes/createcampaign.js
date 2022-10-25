@@ -61,14 +61,6 @@ const campaignForm = async (formData, form_for_update = false) => {
         selected: formData.hoursOfOperation || "",
         error: '',
       },
-      // agents: {
-      //   type: "multiselect",
-      //   label: "Agents",
-      //   attr: "",
-      //   data: formData.agents || [],
-      //   data2: allAgents,
-      //   error: '',
-      // },
     }
   };
   return form;
@@ -83,7 +75,8 @@ const cleanFormData = (formData) => {
     campaignName: String(formData.campaignName).trim() || "",
     campaignDescription: String(formData.campaignDescription).trim() || "",
     phoneNumber: String(formData.phoneNumber).trim() || "",
-    hoursOfOperation: String(formData.hoursOfOperation).trim() || ""
+    hoursOfOperation: String(formData.hoursOfOperation).trim() || "",
+    status: true
   }
 }
 
@@ -118,24 +111,19 @@ const validatedCampaignForm = async (formData) => {
 
 
 let createQueue = async (cleanformData) => {
-  // asyncConLog(cleanFormData);
-  
   let param = {
-    InstanceId: "570b424d-3a85-45b2-bf45-83a8703026c8",
+    InstanceId: awsInstance,
     Name: cleanformData.campaignName,
     Description: cleanformData.campaignDescription,
     HoursOfOperationId: cleanformData.hoursOfOperation,
-    MaxContacts: 1,
     OutboundCallerConfig: {
       OutboundCallerIdNumberId: cleanformData.phoneNumber,
     }
   }
-  
+
   let command = new CreateQueueCommand(param);
-  
-  // asyncConLog(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
   let respo = await connectClient.send(command);
-  
+
   return respo;
 }
 
@@ -151,16 +139,23 @@ router.post('/', async (req, res, next) => {
   let form = await validatedCampaignForm(req.body);
 
   if (!form.validationPassed) {
-     return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
+    return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
   } else {
-    let ret = await createQueue(form.cleanData);
-    form.cleanData["id"] = ret.QueueId;
-    ret = campaignModel.create(form.cleanData);
-    if (ret) {
-      req.flash('success', 'Campaign created successfully');
-      res.redirect("/campaigns");
-    } else {
-      req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, anmd try again.');
+    try {
+      // create queue in connect
+      let ret = await createQueue(form.cleanData);
+      // create queue in dynamo
+      form.cleanData["id"] = ret.QueueId;
+      ret = await campaignModel.create(form.cleanData);
+      if (ret) {
+        req.flash('success', 'Campaign created successfully');
+        res.redirect("/campaigns");
+      } else {
+        req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, anmd try again.');
+        res.redirect("/create-campaign");
+      }
+    } catch (err) {
+      req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
       res.redirect("/create-campaign");
     }
   }

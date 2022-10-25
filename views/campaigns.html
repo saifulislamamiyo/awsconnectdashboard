@@ -14,14 +14,16 @@
   </div>
 
   <%- include('_alert.html'); %>
-
+  <div class="mt-4 mb-4 w-50 text-end">
+    <input type="text" class="form-control" placeholder="Search..." onkeyup="filterCampaignTable()" id="txtFilterCampaignTable">
+  </div>
   <div class="table-responsive">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" id="campaignTable">
       <thead class="table-dark">
         <tr>
           <th scope="col">Name</th>
           <th scope="col">Status</th>
-          <th scope="col">Agents</th>
+          <!-- <th scope="col">Agents</th> -->
           <th scope="col">Created At</th>
         </tr>
       </thead>
@@ -29,24 +31,17 @@
         <% campaigns.forEach(function(campaign){ %>
         <tr>
           <td>
-            <a href="#" onclick="javascript:alert('Under Development')" ><span data-feather="edit"></span></a>
-            &nbsp;&nbsp;
+            <!-- <a href="#" onclick="javascript:alert('Under Development')" ><span data-feather="edit"></span></a>
+            &nbsp;&nbsp; -->
             <%=campaign.campaign_name%>
           </td>
 
           <td>
             <div class="form-check form-switch">
-              <input class="form-check-input campaign-status-switch" 
-              type="checkbox" 
-              <%-(campaign.status)?'checked':'' %> 
-              data-qid="<%=campaign.id%>" 
-              data-qname="<%=campaign.campaign_name%>"
-              role="switch">
+              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.status)?'checked':'' %> data-qid="<%=campaign.id%>" data-qname="<%=campaign.campaign_name%>" role="switch">
             </div>
           </td>
-          <td>
-            <%=campaign.agents.length%>
-          </td>
+
           <td>
             <%= new Date( parseInt(campaign.created_at)).toLocaleString();%>
           </td>
@@ -57,16 +52,36 @@
   </div>
 </main>
 <script>
-  let statusSwitch = document.querySelectorAll('.campaign-status-switch');
-  statusSwitch.forEach((item) => {
-    item.addEventListener('click', async (switchEvent) => {
-      
-      
-      await fetch(`/set-campaign-status?id=${switchEvent.target.dataset.qid}&qname=${switchEvent.target.dataset.qname}&status=${switchEvent.target.checked}`);
-      
-
+  document.addEventListener("DOMContentLoaded", (domContentLoadedEvent) => {
+    let statusSwitch = document.querySelectorAll('.campaign-status-switch');
+    statusSwitch.forEach((item) => {
+      item.addEventListener('click', async (switchEvent) => {
+        await fetch(`/set-campaign-status?id=${switchEvent.target.dataset.qid}&qname=${switchEvent.target.dataset.qname}&status=${switchEvent.target.checked}`);
+      });
     });
   });
+
+  function filterCampaignTable() {
+    // Declare variables
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("txtFilterCampaignTable");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("campaignTable");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
 </script>
 
 <%- include('_foot.html'); %>

@@ -12,6 +12,7 @@ const createCampaignRouter = require('./routes/createcampaign');
 const agentsRouter = require('./routes/agents');
 const dashboardRouter = require('./routes/dashboard');
 const customReportRouter = require('./routes/customreport');
+const agentDistribution = require('./routes/agentdistribution');
 
 
 
@@ -29,7 +30,7 @@ app.use(session({
   secret: 'Todo: Load from env config',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false, maxAge: 1000 * 36000 },
+  cookie: { secure: false, httpOnly:true,  maxAge: 1000 * 36000 },
 }));
 app.use(flash());
 
@@ -38,6 +39,7 @@ app.use('/', campaignsRouter);
 app.use('/create-campaign', createCampaignRouter);
 app.use('/agent-dashboard', customReportRouter);
 app.use('/campaign-dashboard', dashboardRouter);
+app.use('/agent-distribution', agentDistribution);
 
 
 /* Catch 404 and forward to error handler */

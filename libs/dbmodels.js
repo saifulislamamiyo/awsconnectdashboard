@@ -8,7 +8,7 @@ const campaignModel = {
     let mappedData = items.map(item => ({
       campaign_name: ('campaign_name' in item) ? item.campaign_name.S : "",
       id: ('id' in item) ? item.id.S : "",
-      status: ('status' in item) ? item.status.BOOL : false,
+      status: ('status' in item) ? item.status.BOOL : true,
       agents: ('agents' in item) ? item.agents.L : [],
       phone_number_id: ('phone_number_id' in item) ? item.phone_number_id.S : "",
       hours_of_operation_id: ('hours_of_operation_id' in item) ? item.hours_of_operation_id.S : "",
