@@ -1,8 +1,9 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
-const  {awsConfig}  = require("./awsconfigloader")
+const { awsConfig } = require("./awsconfigloader");
 
-const ddbClient = new DynamoDBClient(awsConfig);
+// const ddbClient = new DynamoDBClient(awsConfig);
+const ddbClient = new DynamoDBClient({ region: "ap-southeast-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
 module.exports = { ddbClient, ddbDocClient };
