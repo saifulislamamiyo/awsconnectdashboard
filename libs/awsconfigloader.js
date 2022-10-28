@@ -1,14 +1,20 @@
-const {config} = require('dotenv');
+const { config } = require('dotenv');
+const os = require('os');
 config();
 
-const awsConfig = {
+
+let awsInstance = process.env.INSTANCE_ID
+let awsConfig;
+if (os.hostname().indexOf("local") > -1) {
+  awsConfig = {
     region: process.env.REGION,
     credentials: {
-        accessKeyId: process.env.ACCESS_KEY_ID,
-        secretAccessKey: process.env.SECRET_ACCESS_KEY
+      accessKeyId: process.env.ACCESS_KEY_ID,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY
     },
-};
+  };
+} else {
+  awsConfig = { region: process.env.REGION}; 
+}
 
-const awsInstance = process.env.INSTANCE_ID
-
-module.exports = { awsConfig, awsInstance};
+module.exports = { awsConfig, awsInstance };
