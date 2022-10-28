@@ -116,14 +116,14 @@ router.post('/', async (req, res, next) => {
     // Distribute agents 
     // -------------------------------------------------------------------------
     // for each agent to add:
-    //    check if he has a routing profile named profile_<userId>
-    //    if profile_<userId> not available, create it
-    //    update profile_<userId> by appending queue to it
+    //    check if he has a routing profile named <text>_<userId>
+    //    if <text>_<userId> not available, create it
+    //    update <text>_<userId> by appending queue to it
     // 
     // for each agent to release:
-    //    update profile_<userId> by removing queue from it
+    //    update <text>_<userId> by removing queue from it
     // ** checking if profile exist and creating if not exist is not necessary for removing.
-    // ** agent must have profile_<userId>, when adding to queue(i.e. campaign)
+    // ** agent must have <text>_<userId>, when adding to queue(i.e. campaign)
     // -------------------------------------------------------------------------
     // API:
     // DescribeUser -> to get routing profile Id of the user
