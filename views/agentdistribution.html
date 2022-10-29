@@ -16,7 +16,7 @@
   <form class="row g-3" id="frmAgentDistribution" method="post">
     <div class="col-md-4">
       <label for="selCampaign" class="mb-1">Campaigns</label>
-      <input type="text" class="form-control mb-2" placeholder="Search Campaign...">
+      <input type="text" class="form-control mb-2" placeholder="Search Campaign..." id="txtSearchCampaign">
       <select size="10" name="selCampaign" id="selCampaign" class="form-select">
         <% campaigns.forEach(function(campaign){ %>
         <option value="<%=campaign.Id%>"><%=campaign.Name%></option>
@@ -25,7 +25,7 @@
     </div>
     <div class="col-md-3">
       <label for="selMappedAgents" class="mb-1">Mapped Agents</label>
-      <input type="text" class="form-control mb-2" placeholder="Search Agent...">
+      <input type="text" class="form-control mb-2" placeholder="Search Agent..." id="txtSearchAgent">
       <select size="10" multiple name="selMappedAgents" id="selMappedAgents" class="form-select"></select>
     </div>
     <div class="col-md-2 text-center">
@@ -40,8 +40,8 @@
     </div>
     <div class="col-md-3">
       <label for="selAllAgents" class="mb-1">All Agents</label>
-      <input type="text" class="form-control mb-2" placeholder="Search Agent...">
-      <select size="10" multiple name="selAllAgents" id="selAllAgents" class="form-select">
+      <input type="text" class="form-control mb-2" placeholder="Search Agent..." id="txtSearchAllAgent">
+      <select size=" 10" multiple name="selAllAgents" id="selAllAgents" class="form-select">
         <% agents.forEach(function(agent){ %>
         <option value="<%=agent.Id%>"><%=agent.Username%></option>
         <% }); %>
@@ -59,7 +59,22 @@
     let selMappedAgents = document.getElementById('selMappedAgents');
     let selAllAgents = document.getElementById('selAllAgents');
     let txtMappedAgentsPrev = document.getElementById('txtMappedAgentsPrev');
+    let txtSearchCampaign = document.getElementById('txtSearchCampaign');
+    let txtSearchAgent = document.getElementById('txtSearchAgent');
+    let txtSearchAllAgent = document.getElementById('txtSearchAllAgent');
     let frmAgentDistribution = document.getElementById('frmAgentDistribution');
+
+    const filterOptions = (needle, optionItems) => {
+      let pat = new RegExp(needle, 'i');
+      for (let i = 0; i < optionItems.length; i++) {
+        var item = optionItems[i];
+        if (pat.test(item.innerText)) {
+          item.classList.remove("d-none");
+        } else {
+          item.classList.add("d-none");
+        }
+      }
+    } // end function filterOptions
 
     const swapSelect = (fromSel, toSel) => {
       let mathched = false;
@@ -107,11 +122,10 @@
       for (let i = selMappedAgents.options.length - 1; i >= 0; i--) {
         selMappedAgents.remove(i);
       }
-
       txtMappedAgentsPrev.value = "";
       for (agent of agentsOfCampaign) {
         selMappedAgents.options[selMappedAgents.options.length] = new Option(agent.AgentName, agent.AgentId);
-        txtMappedAgentsPrev.value += (txtMappedAgentsPrev.value=="" ? agent.AgentId  : ";" + agent.AgentId)
+        txtMappedAgentsPrev.value += (txtMappedAgentsPrev.value == "" ? agent.AgentId : ";" + agent.AgentId)
       }
       for (let i = selAllAgents.options.length - 1; i >= 0; i--) {
         selAllAgents.remove(i);
@@ -125,7 +139,7 @@
           selAllAgents.options[selAllAgents.options.length] = new Option(agent.Username, agent.Id);
         }
       } // next agent
-    }); // selCampaign click event listener
+    }); // selCampaign click event listener  
     // Make all options of selMappedAgents selected on form submission
     frmAgentDistribution.addEventListener('submit', (e) => {
       show_loader();
@@ -133,7 +147,18 @@
         selMappedAgents.options[i].selected = true;
       }
     }); // frmAgentDistribution submit event listener
-
+    // search campaigns
+    txtSearchCampaign.addEventListener('keyup', (ev) => {
+      filterOptions(ev.target.value, selCampaign.getElementsByTagName('option'));
+    });
+    // search mapped agents
+    txtSearchAgent.addEventListener('keyup', (ev) => {
+      filterOptions(ev.target.value, selMappedAgents.getElementsByTagName('option'));
+    });
+    // search all agents
+    txtSearchAllAgent.addEventListener('keyup', (ev) => {
+      filterOptions(ev.target.value, selAllAgents.getElementsByTagName('option'));
+    });
   }); // DOMContentLoaded event listener
 </script>
 <%- include('_foot.html'); %>
