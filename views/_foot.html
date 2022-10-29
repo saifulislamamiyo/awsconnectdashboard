@@ -8,6 +8,12 @@
     loading_modal = new bootstrap.Modal('#loading_modal');
     loading_modal.show();
   }
+  document.addEventListener("DOMContentLoaded", (ev) => {
+    let spinnerTargets = document.querySelectorAll('.spinner-trigger');
+    for (let spinnerTarget of spinnerTargets) {
+      spinnerTarget.addEventListener('click', (e) => show_loader())
+    }
+  });
 </script>
 </body>
 
