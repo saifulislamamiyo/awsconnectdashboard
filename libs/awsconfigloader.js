@@ -5,7 +5,7 @@ config();
 
 let awsInstance = process.env.INSTANCE_ID
 let awsConfig;
-if (os.hostname().indexOf("local") > -1) {
+if (os.hostname().indexOf("asifsmbp.local") > -1) {
   awsConfig = {
     region: process.env.REGION,
     credentials: {
