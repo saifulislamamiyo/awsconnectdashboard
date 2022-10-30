@@ -4,7 +4,6 @@ const {
   SearchQueuesCommand,
 } = require("@aws-sdk/client-connect");
 
-
 const asyncConLog = async (val) => {
   console.log(val)
 }
@@ -26,16 +25,5 @@ const getStandardQueues = async () => {
   } while (nextToken != "")
   return queues;
 }
-
-
-
-
-// async function test_getStandardQueues() {
-//   x = await getStandardQueues()
-//   console.log(x)
-// }
-
-// test_getStandardQueues()
-
 
 module.exports = { asyncConLog, getStandardQueues }

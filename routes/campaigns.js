@@ -9,9 +9,10 @@ const router = express.Router();
 const connectClient = require('../libs/connectclient');
 const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
 const { campaignModel } = require('../libs/dbmodels');
+const { getStandardQueues } = require('../libs/utils');
 
 const listCampaigns = async (req, res, next) => {
-  let campList = await campaignModel.list();
+  let campList = await getStandardQueues();
   res.render('campaigns', { title: 'Campaigns', campaigns: campList });
 }
 
@@ -25,9 +26,7 @@ router.get('/set-campaign-status', async (req, res, next) => {
       QueueId: req.query.id,
       Status: (req.query.status=='true') ? 'ENABLED' : 'DISABLED',
     })));
-  await campaignModel.update({ status: req.query.status }, req.query.qname)
   res.sendStatus(200);
 });
-
 
 module.exports = router;
