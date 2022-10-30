@@ -3,7 +3,7 @@ const router = express.Router();
 const connectClient = require("../libs/connectclient");
 const { awsInstance } = require("../libs/awsconfigloader");
 
-const { getStandardQueues } = require("../libs/utils");
+const { getStandardQueues, getCampaigns, sleep } = require("../libs/utils");
 const {
   ListRoutingProfileQueuesCommand,
   DescribeUserCommand,
@@ -16,6 +16,8 @@ const {
   AssociateRoutingProfileQueuesCommand,
   DisassociateRoutingProfileQueuesCommand,
 } = require("@aws-sdk/client-connect");
+
+const sleep_ms = 1000;
 
 const getAgentDistributions = async () => {
   // retrieve all user
@@ -85,28 +87,41 @@ const getRoutingProfileOfAgent = async (userId) => {
   return { RoutingProfileId, RoutingProfileName };
 };
 
+const createUserDynamicRouteProfile = async(dynamicRouteProfileName, userId, defaultOutboundQueueId)=>{
+  let cmd = new CreateRoutingProfileCommand({
+    InstanceId: awsInstance,
+    Name: dynamicRouteProfileName,
+    DefaultOutboundQueueId: defaultOutboundQueueId,
+    Description: dynamicRouteProfileName,
+    MediaConcurrencies: [
+      {
+        Channel: "VOICE",
+        Concurrency: 1,
+      },
+    ],
+  }); // cmd
+  let newRP = await connectClient.send(cmd);
+  sleep(sleep_ms)
+  // assign the routing profile to the user/agent
+  await connectClient.send(
+    new UpdateUserRoutingProfileCommand({
+      InstanceId: awsInstance,
+      UserId: userId,
+      RoutingProfileId: newRP.RoutingProfileId,
+    })
+  ); 
+};
+
 router.get("/", async (req, res, next) => {
-  let agentDists = await getAgentDistributions();
-  let campaigns = await getStandardQueues();
-  // let campaigns = (
-  //   await connectClient.send(new ListQueuesCommand({ InstanceId: awsInstance }))
-  // ).QueueSummaryList;
-
-  let agents = (
-    await connectClient.send(
-      new ListUsersCommand({
-        InstanceId: awsInstance,
-      })
-    )
-  ).UserSummaryList;
-
   res.render("agentdistribution", {
     title: "Agent Distribution",
-    campaigns: campaigns,
-    agents: agents,
-    agentDists: agentDists,
   });
 }); // end router.get('/')
+
+router.get("/agent-distribution-success", (req, res, next)=>{
+  req.flash("success", "Agents distributed succesfully.");
+  res.redirect("/agent-distribution");
+}); // router.get("/agent-distribution-success")
 
 router.post("/", async (req, res, next) => {
   let campaign = "";
@@ -136,7 +151,9 @@ router.post("/", async (req, res, next) => {
       }
     }
   }
-
+  console.log("==========================================")
+  console.log(validated)
+  console.log("==========================================")
   if (validated) {
     // Distribute agents
     // -------------------------------------------------------------------------
@@ -204,6 +221,7 @@ router.post("/", async (req, res, next) => {
       });
 
       await connectClient.send(assoCmd);
+
     } // next agent to add
 
     for (const agent of agentsToRelease) {
@@ -230,5 +248,84 @@ router.post("/", async (req, res, next) => {
 
   res.redirect("/agent-distribution");
 }); // end router.post('/')
+
+router.get('/get-agents', async (req, res, next) => {
+  let agents = (await connectClient.send(new ListUsersCommand({
+    InstanceId: awsInstance,
+  }))).UserSummaryList;
+
+  res.json(agents);
+});
+
+router.get('/get-campaigns', async (req, res, next) => {
+  let result = await getCampaigns(req.query.nextToken ?? "");
+  res.json(result);
+});
+
+router.get('/get-user-routing-profile', async (req, res, next) => {
+  let rp = (await connectClient.send(new DescribeUserCommand({
+    InstanceId: awsInstance,
+    UserId: req.query.uid,
+  }))).User.RoutingProfileId;
+  res.json(rp);
+});
+
+router.get('/get-routing-profile-queues', async (req, res, next) => {
+  let routingProfileQueues = (
+    await connectClient.send(
+      new ListRoutingProfileQueuesCommand({
+        InstanceId: awsInstance,
+        RoutingProfileId: req.query.rpid,
+      })
+    )
+  ).RoutingProfileQueueConfigSummaryList;
+  res.json(routingProfileQueues);
+});
+
+
+
+router.get('/set-agent-to-queue', async (req, res, next) => {
+  // req.query.agentid
+  // req.query.queueid
+  let userRoutingProfile = await getRoutingProfileOfAgent(req.query.agentid);
+  // userRoutingProfile.RoutingProfileId
+  // userRoutingProfile.RoutingProfileName
+  let dynamicRouteProfileName = "automated_rp_" + req.query.agentid
+  if(userRoutingProfile.RoutingProfileName!=dynamicRouteProfileName){
+    await createUserDynamicRouteProfile(dynamicRouteProfileName, req.query.agentid, req.query.queueid);
+    await sleep(sleep_ms);
+  }
+  if (req.query.remove == 0) {
+    let assoCmd = new AssociateRoutingProfileQueuesCommand({
+      InstanceId: awsInstance,
+      RoutingProfileId: userRoutingProfile.RoutingProfileId,
+      QueueConfigs: [
+        {
+          Delay: 0,
+          Priority: 1,
+          QueueReference: {
+            Channel: "VOICE",
+            QueueId: req.query.queueid,
+          },
+        },
+      ],
+    });
+    await connectClient.send(assoCmd);
+  } else {
+    let cmdDiss = new DisassociateRoutingProfileQueuesCommand({
+      InstanceId: awsInstance,
+      RoutingProfileId: userRoutingProfile.RoutingProfileId,
+      QueueReferences: [
+        {
+          Channel: "VOICE",
+          QueueId: req.query.queueid,
+        },
+      ],
+    });
+    await connectClient.send(cmdDiss);
+  }; // end if (req.query.remove == 0)
+  await sleep(sleep_ms);
+  res.json({"response": "OK"})
+});
 
 module.exports = router;
