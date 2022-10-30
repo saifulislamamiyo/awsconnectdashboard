@@ -1,0 +1,26 @@
+<%- include('_head.html'); %>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+      <%= title %>
+    </h1>
+    <% if (false) { %>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Add Agent</button>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <%- include('_alert.html'); %>
+  <div class="col-md-8 col-lg-8">
+    <p>
+      <br>
+      <b>Go to -</b> &nbsp;&nbsp;
+      <a href="/campaigns" class="spinner-trigger"><span data-feather="list" class="align-text-bottom"></span> Campaigns</a>
+      &nbsp;/&nbsp;
+      <a href="/agent-distribution" class="spinner-trigger"><span data-feather="users" class="align-text-bottom"></span> Agent Distribution</a>
+    </p>
+  </div>
+</main>
+<%- include('_foot.html'); %>

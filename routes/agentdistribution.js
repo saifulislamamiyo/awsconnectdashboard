@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const connectClient = require("../libs/connectclient");
 const { awsInstance } = require("../libs/awsconfigloader");
+
+const { getStandardQueues } = require("../libs/utils");
 const {
   ListRoutingProfileQueuesCommand,
   DescribeUserCommand,
@@ -85,9 +87,10 @@ const getRoutingProfileOfAgent = async (userId) => {
 
 router.get("/", async (req, res, next) => {
   let agentDists = await getAgentDistributions();
-  let campaigns = (
-    await connectClient.send(new ListQueuesCommand({ InstanceId: awsInstance }))
-  ).QueueSummaryList;
+  let campaigns = await getStandardQueues();
+  // let campaigns = (
+  //   await connectClient.send(new ListQueuesCommand({ InstanceId: awsInstance }))
+  // ).QueueSummaryList;
 
   let agents = (
     await connectClient.send(

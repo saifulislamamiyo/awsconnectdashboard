@@ -19,7 +19,9 @@
       <input type="text" class="form-control mb-2" placeholder="Search Campaign..." id="txtSearchCampaign">
       <select size="10" name="selCampaign" id="selCampaign" class="form-select">
         <% campaigns.forEach(function(campaign){ %>
-        <option value="<%=campaign.Id%>"><%=campaign.Name%></option>
+          <% if (campaign.Status!='DISABLED') { %>
+          <option value="<%=campaign.QueueId%>"><%=campaign.Name%></option>
+          <% } %>
         <% }); %>
       </select>
     </div>

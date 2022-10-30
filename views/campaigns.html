@@ -12,7 +12,6 @@
     </div>
     <% } %>
   </div>
-
   <%- include('_alert.html'); %>
   <div class="mt-4 mb-4 w-50 text-end">
     <input type="text" class="form-control" placeholder="Search..." onkeyup="filterCampaignTable()" id="txtFilterCampaignTable">
@@ -22,27 +21,49 @@
       <thead class="table-dark">
         <tr>
           <th scope="col">Name</th>
+          <th scope="col">Description</th>
           <th scope="col">Status</th>
-          <th scope="col">Created At</th>
         </tr>
       </thead>
       <tbody class="table-group-divider">
         <% campaigns.forEach(function(campaign){ %>
+        <% if (campaign.Status=='ENABLED') { %>
         <tr>
           <td>
-            <%=campaign.campaign_name%>
+            <%=campaign.Name%>
           </td>
-
+          <td>
+            <%=campaign.Description%>
+          </td>
           <td>
             <div class="form-check form-switch">
-              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.status)?'checked':'' %> data-qid="<%=campaign.id%>" data-qname="<%=campaign.campaign_name%>" role="switch">
+              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.Status=='ENABLED')?'checked':'' %> data-qid="<%=campaign.QueueId%>" data-qname="<%=campaign.Name%>" role="switch">
             </div>
           </td>
-
+        </tr>
+        <% } %>
+        <% }); %>
+        <% let disabledCount = 0; %>
+        <% campaigns.forEach(function(campaign){ %>
+        <% if (campaign.Status=='DISABLED') { %>
+        <%  
+            disabledCount += 1; 
+            if(disabledCount > 50) return;
+            %>
+        <tr>
           <td>
-            <%= new Date( parseInt(campaign.created_at)).toLocaleString();%>
+            <%=campaign.Name%>
+          </td>
+          <td>
+            <%=campaign.Description%>
+          </td>
+          <td>
+            <div class="form-check form-switch">
+              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.Status=='ENABLED')?'checked':'' %> data-qid="<%=campaign.QueueId%>" data-qname="<%=campaign.Name%>" role="switch">
+            </div>
           </td>
         </tr>
+        <% } %>
         <% }); %>
       </tbody>
     </table>
@@ -77,8 +98,7 @@
           tr[i].style.display = "none";
         }
       }
-    }
-  }
+    } // next i
+  } // end function filterCampaignTable
 </script>
-
 <%- include('_foot.html'); %>

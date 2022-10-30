@@ -1,13 +1,8 @@
 const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
-const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
+const { awsInstance } = require('../libs/awsconfigloader');
 const connectClient = require('../libs/connectclient')
-const { campaignModel } = require('../libs/dbmodels');
-const { asyncConLog } = require("../libs/utils");
-
-
-
 
 const campaignForm = async (formData, form_for_update = false) => {
   const InstanceId = { InstanceId: awsInstance }
@@ -108,7 +103,6 @@ const validatedCampaignForm = async (formData) => {
   return { form, cleanData, validationPassed };
 }
 
-
 let createQueue = async (cleanformData) => {
   let param = {
     InstanceId: awsInstance,
@@ -126,7 +120,6 @@ let createQueue = async (cleanformData) => {
   return respo;
 }
 
-
 router.get('/', async (req, res, next) => {
   return res.render('createcampaign', {
     title: 'Create Campaign',
@@ -136,23 +129,20 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   let form = await validatedCampaignForm(req.body);
-
   if (!form.validationPassed) {
     return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
   } else {
     try {
       // create queue in connect
-      let ret = await createQueue(form.cleanData);
-      // create queue in dynamo
-      form.cleanData["id"] = ret.QueueId;
-      ret = await campaignModel.create(form.cleanData);
-      if (ret) {
+      createQueue(form.cleanData).then((response) => {
         req.flash('success', 'Campaign created successfully');
-        res.redirect("/campaigns");
-      } else {
+        res.render('createcampaignsuccess', {
+          title: 'Create Campaign',
+        });
+      }).catch((err) => {
         req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
         res.redirect("/create-campaign");
-      }
+      });
     } catch (err) {
       req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
       res.redirect("/create-campaign");
