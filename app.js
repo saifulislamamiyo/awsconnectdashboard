@@ -9,12 +9,9 @@ const flash = require('express-flash');
 /* Import routes */
 const campaignsRouter = require('./routes/campaigns');
 const createCampaignRouter = require('./routes/createcampaign');
-const agentsRouter = require('./routes/agents');
+const agentDistribution = require('./routes/agentdistribution');
 const dashboardRouter = require('./routes/dashboard');
 const customReportRouter = require('./routes/customreport');
-const agentDistribution = require('./routes/agentdistribution');
-
-
 
 /* Set app */
 const app = express();
