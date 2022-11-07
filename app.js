@@ -8,10 +8,12 @@ const flash = require('express-flash');
 
 /* Import routes */
 const campaignsRouter = require('./routes/campaigns');
+const homeRouter = require('./routes/home');
 const createCampaignRouter = require('./routes/createcampaign');
 const agentDistribution = require('./routes/agentdistribution');
 const dashboardRouter = require('./routes/dashboard');
 const customReportRouter = require('./routes/customreport');
+const agentProvision = require('./routes/agentprovision');
 
 /* Set app */
 const app = express();
@@ -32,11 +34,13 @@ app.use(session({
 app.use(flash());
 
 /* Register routes */
-app.use('/', campaignsRouter);
+app.use('/', homeRouter);
+app.use('/campaigns', campaignsRouter);
 app.use('/create-campaign', createCampaignRouter);
 app.use('/agent-dashboard', customReportRouter);
 app.use('/campaign-dashboard', dashboardRouter);
 app.use('/agent-distribution', agentDistribution);
+app.use('/agent-provision', agentProvision);
 
 
 /* Catch 404 and forward to error handler */
