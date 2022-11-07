@@ -19,6 +19,8 @@ const {
   CreateRoutingProfileCommand,
   ListRoutingProfilesCommand,
   UpdateUserRoutingProfileCommand,
+  AssociateRoutingProfileQueuesCommand,
+  DisassociateRoutingProfileQueuesCommand,
 } = require("@aws-sdk/client-connect");
 
 
@@ -128,9 +130,36 @@ const createUserDynamicRouteProfile = async (userId, userName) => {
     routingProfileName: dynamicRouteProfileName,
     routingProfileId: newRP.RoutingProfileId
   }
-  // insert ddb
-  // await insertAgent(userName, userId, newRP.RoutingProfileName, newRP.RoutingProfileId);
 }; // end createUserDynamicRouteProfile()
+
+
+const setRoutingProfileQueue = async (routingProfileId, queueId, assoc = true) => {
+  let cmd;
+  if (assoc=="true") {
+    cmd = new AssociateRoutingProfileQueuesCommand({
+      InstanceId: awsInstance,
+      RoutingProfileId: routingProfileId,
+      QueueConfigs: [{
+        Delay: 0,
+        Priority: 1,
+        QueueReference: {
+          Channel: "VOICE",
+          QueueId: queueId,
+        },
+      }],
+    });
+  } else {
+    cmd = new DisassociateRoutingProfileQueuesCommand({
+      InstanceId: awsInstance,
+      RoutingProfileId: routingProfileId,
+      QueueReferences: [{
+        Channel: "VOICE",
+        QueueId: queueId,
+      }],
+    });
+  }
+  await connectClient.send(cmd);
+} // end setRoutingProfileQueue()
 
 module.exports = {
   connectClient,
@@ -142,4 +171,5 @@ module.exports = {
   setCampaignStatus,
   createUserDynamicRouteProfile,
   listRoutingProfiles,
+  setRoutingProfileQueue,
 };

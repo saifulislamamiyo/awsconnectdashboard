@@ -1,5 +1,6 @@
 const { pauseBetweenAPICallInServer } = require("../libs/configloader");
 const { modelAgent, modelCampaign } = require("../libs/ddbclient");
+const  {loggedInUser}  = require("../libs/auth");
 const { sleep } = require("../libs/utils");
 const { logger } = require("../libs/logger");
 const {
@@ -21,7 +22,7 @@ let initAgentDB = async () => {
           campaignName: campaign.Name,
           campaignId: campaign.QueueId,
           campaignStatus: (campaign.Status == "ENABLED" ? true : false),
-          author: "default",
+          author: loggedInUser.userId,
         });
         logger.info("Inserting Agents: " + [
           campaign.Name,
@@ -64,7 +65,7 @@ let initCampaignDB = async () => {
         routingProfileName: routingProfileName,
         routingProfileId: routingProfileId,
         campaigns: routingProfileCampaignsArr,
-        author: 'default',
+        author: loggedInUser.userId,
       }
       let agentModel = new modelAgent(agentItem);
       await agentModel.save();

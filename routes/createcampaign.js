@@ -1,7 +1,7 @@
 const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
 const express = require('express');
 const router = express.Router();
-const { awsInstance } = require('../libs/awsconfigloader');
+const { awsInstance } = require('../libs/configloader');
 const connectClient = require('../libs/connectclient')
 
 const campaignForm = async (formData, form_for_update = false) => {

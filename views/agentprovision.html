@@ -35,9 +35,12 @@
     const SLEEP_MS = 1500;
     let selUnprovisioned = document.getElementById('selUnprovisioned');
     let btnProvision = document.getElementById('btnProvision');
+
     txtSearchAgent.addEventListener("keyup", (ev) => {
+      selUnprovisioned.selectedIndex = -1;
       filterOptions(ev.target.value, selUnprovisioned.getElementsByTagName('option'));
     }); // txtSearchAgent.addEventListener("keyup")
+    
     btnProvision.addEventListener("click", async (evClickBtnSave) => {
       if (!selUnprovisioned.selectedOptions.length) {
         alert("No Agent Selected");

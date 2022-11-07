@@ -1,3 +1,4 @@
+const {pauseBetweenAPICallInClient} = require("../libs/configloader");
 const express = require('express');
 const router = express.Router();
 const connect = require('../libs/connectclient');
@@ -6,7 +7,11 @@ const ddb = require("../libs/ddbclient");
 
 router.get('/', async (req, res, next) => {
   let campaigns = await ddb.getCampaigns();
-  res.render('campaigns', { title: 'Campaigns', campaigns: campaigns });
+  res.render('campaigns', {
+    title: 'Campaigns',
+    campaigns: campaigns,
+    pauseBetweenAPICallInClient: pauseBetweenAPICallInClient,
+  });
 });
 
 router.get('/set-campaign-status', async (req, res, next) => {

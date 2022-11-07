@@ -1,0 +1,298 @@
+<%- include('_head.html'); %>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+      <%= title %>
+    </h1>
+    <% if (true) { %>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <a href="/" class="btn btn-sm btn-outline-secondary spinner-trigger">Cancel</a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <%- include('_alert.html'); %>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label for="selCampaign" class="mb-1">Campaigns</label>
+      <input type="text" class="form-control mb-2" placeholder="Search Campaign..." id="txtSearchCampaign">
+      <select size="10" name="selCampaign" id="selCampaign" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+      <label for="selMappedAgents" class="mb-1">Mapped Agents</label>
+      <input type="text" class="form-control mb-2" placeholder="Search Agent..." id="txtSearchAgent">
+      <select size="10" multiple name="selMappedAgents" id="selMappedAgents" class="form-select"></select>
+    </div>
+    <div class="col-md-2 text-center">
+      <label for="" class="mt-md-5"></label>
+      <div class="form-control py-4 mt-md-3 mb-sm-3" style="height: 76%;">
+        <div class="btn-group-vertical btn-group-sm">
+          <button type="button" class="btn btn-primary" id="btnAdd">&leftarrow; Add</button>
+          <button type="button" class="btn btn-danger" id="btnRem">&rightarrow; Rem</button>
+          <button type="button" class="btn btn-success" id="btnSave">&check; Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <label for="selAllAgents" class="mb-1">All Agents</label>
+      <input type="text" class="form-control mb-2" placeholder="Search Agent..." id="txtSearchAllAgent">
+      <select size=" 10" multiple name="selAllAgents" id="selAllAgents" class="form-select"></select>
+    </div>
+    <input type="hidden" name="txtMappedAgentsPrev" id="txtMappedAgentsPrev">
+    <input type="hidden" name="txtCampaignName" id="txtCampaignName">
+  </div>
+</main>
+<script>
+  const sleep = m => new Promise(r => setTimeout(r, m));
+
+  const getAgents = async () => {
+    let response = await fetch("/agent-distribution/get-agents");
+    const json = await response.json();
+    return json;
+  };
+
+  const getCampaigns = async (nextToken) => {
+    let response = await fetch(`/agent-distribution/get-campaigns?nextToken=${nextToken}`);
+    const json = await response.json();
+    return json;
+  };
+
+  const getUserRoutingProfileId = async (uid) => {
+    let response = await fetch(`/agent-distribution/get-user-routing-profile?uid=${uid}`);
+    const json = await response.json();
+    return json;
+  };
+
+  const getRoutingProfileQueues = async (rpid) => {
+    let response = await fetch(`/agent-distribution/get-routing-profile-queues?rpid=${rpid}`);
+    const json = await response.json();
+    return json;
+  };
+
+  const setAgentToQueue = async (AgentId, QueueId, remove = false) => {
+    let intRemove = remove == false ? 0 : 1
+    let response = await fetch(`/agent-distribution/set-agent-to-queue?agentid=${AgentId}&queueid=${QueueId}&remove=${intRemove}`);
+    const json = await response.json();
+    return json;
+  };
+
+  const filterOptions = (needle, optionItems) => {
+    let pat = new RegExp(needle, 'i');
+    for (let i = 0; i < optionItems.length; i++) {
+      var item = optionItems[i];
+      if (pat.test(item.innerText)) {
+        item.classList.remove("d-none");
+      } else {
+        item.classList.add("d-none");
+      };
+    };
+  }; // end function filterOptions
+
+  const swapSelect = (fromSel, toSel) => {
+    let mathched = false;
+    let toRemove = [];
+    for (let p = 0; p < fromSel.selectedOptions.length; p++) {
+      mathched = false;
+      let selectedOption = fromSel.selectedOptions[p].value;
+      for (let b = 0; b < toSel.options.length; b++) {
+        let bucketOption = toSel.options[b].value;
+        if (bucketOption == selectedOption) {
+          mathched = true;
+          break;
+        };
+      }; // next s
+      if (!mathched) {
+        toSel.options[toSel.options.length] = new Option(
+          fromSel.selectedOptions[p].text,
+          fromSel.selectedOptions[p].value
+        );
+        toRemove.push(fromSel.selectedOptions[p].value)
+      }; // end if !matched
+    }; // next p
+    // Now remove added item(s) from the source select
+    let l = fromSel.length;
+    for (let i = 0; i < l; i++) {
+      if (typeof fromSel.options[i] != 'undefined' && toRemove.includes(fromSel.options[i].value)) {
+        fromSel.remove(i);
+        i--; // after remove, the length will decrease by 1 
+      }; // end if includes
+    }; // next i
+  }; // end function swapSelect
+
+  document.addEventListener("DOMContentLoaded", async (eDOMContentLoaded) => {
+    const sleep_ms = 1000;
+
+    let selCampaign = document.getElementById('selCampaign');
+    let selMappedAgents = document.getElementById('selMappedAgents');
+    let selAllAgents = document.getElementById('selAllAgents');
+    let txtMappedAgentsPrev = document.getElementById('txtMappedAgentsPrev');
+    let txtCampaignName = document.getElementById('txtCampaignName');
+    let txtSearchCampaign = document.getElementById('txtSearchCampaign');
+    let txtSearchAgent = document.getElementById('txtSearchAgent');
+    let txtSearchAllAgent = document.getElementById('txtSearchAllAgent');
+    let btnAdd = document.getElementById('btnAdd');
+    let btnRem = document.getElementById('btnRem');
+    let btnSave = document.getElementById('btnSave');
+
+    // // ================================================================
+    show_loader();
+
+    let agents = await getAgents();
+    await sleep(sleep_ms);
+
+    for (let agent of agents) {
+      selAllAgents.options[selAllAgents.options.length] = new Option(
+        agent.Username,
+        agent.Id
+      );
+    }; // next agent 
+
+    let nextToken = "";
+    do {
+      let campaigns = await getCampaigns(nextToken);
+      await sleep(sleep_ms);
+      for (let campaign of campaigns.Queues) {
+        if (campaign.Status != 'DISABLED') {
+          selCampaign.options[selCampaign.options.length] = new Option(
+            campaign.Name,
+            campaign.QueueId
+          );
+        }; // end if campaign.Status != 'DISABLED'
+      }; //next campaigns.Queues
+      nextToken = campaigns.NextToken ?? "";
+    } while (nextToken != "");
+
+    // load RoutingProfileId of agents
+    for (let i = 0; i < agents.length; i++) {
+      let rpId = await getUserRoutingProfileId(agents[i].Id);
+      await sleep(sleep_ms);
+      agents[i].RoutingProfileId = rpId;
+    }; // next ith agent
+
+    let agentDists = [];
+    for (let i = 0; i < agents.length; i++) {
+      let rpQueues = await getRoutingProfileQueues(agents[i].RoutingProfileId);
+      await sleep(sleep_ms);
+      for (let rpQueue of rpQueues) {
+        let agentMapItem = {
+          AgentName: agents[i].Username,
+          AgentId: agents[i].Id,
+          RoutingProfileId: agents[i].RoutingProfileId,
+          QueueId: rpQueue.QueueId,
+          QueueName: rpQueue.QueueName,
+        };
+        agentDists[agentDists.length] = agentMapItem;
+      }; // next rpQueue
+    }; // next ith agent
+
+    hide_loader();
+
+    // // ================================================================
+
+    btnSave.addEventListener('click', async (evClickBtnSave) => {
+      let queueId = txtCampaignName.value;
+      let newMappedAgents = [];
+      let oldMappedAgents = txtMappedAgentsPrev.value != "" ? txtMappedAgentsPrev.value.split(";") : [];
+      let agentsToAdd = [];
+      let agentsToRemove = [];
+
+      if (queueId == "") {
+        alert("Please Select a Campaign.");
+        return;
+      };
+
+      for (selMapAgent of selMappedAgents.options) {
+        newMappedAgents[newMappedAgents.length] = selMapAgent.value;
+      };
+
+      for (newMappedAgent of newMappedAgents) {
+        if (!oldMappedAgents.includes(newMappedAgent)) {
+          agentsToAdd.push(newMappedAgent);
+        };
+      };
+
+      for (oldMappedAgent of oldMappedAgents) {
+        if (!newMappedAgents.includes(oldMappedAgent)) {
+          agentsToRemove.push(oldMappedAgent);
+        };
+      };
+      
+      if ((agentsToAdd.length + agentsToRemove.length) < 1) {
+        alert("No change detected.");
+        return;
+      };
+
+      show_loader();
+
+      for (let agentToAdd of agentsToAdd) {
+        console.log('Adding');
+        await setAgentToQueue(agentToAdd, queueId);
+        await sleep(sleep_ms);
+        console.log('Added');
+      };
+      for (let agentToRemove of agentsToRemove) {
+        console.log('Removing');
+        await setAgentToQueue(agentToRemove, queueId, 1);
+        await sleep(sleep_ms);
+        console.log('Removed');
+      };
+      console.log("DONE");
+      await sleep(sleep_ms);
+      window.location.replace('/agent-distribution/agent-distribution-success')
+      // ---------------------------------------------------------------
+    }); // btnSave click event
+
+    btnAdd.addEventListener('click', (evClickBtnAdd) => {
+      swapSelect(selAllAgents, selMappedAgents)
+    }); // btnAdd click event listener
+
+    btnRem.addEventListener('click', (evClickBtnAdd) => {
+      swapSelect(selMappedAgents, selAllAgents)
+    }); // btnRem click event listener
+
+    selCampaign.addEventListener('change', (evClickSelCampaign) => {
+      var agentsOfCampaign = agentDists.filter(function(entry) {
+        return entry.QueueId === evClickSelCampaign.target.value;
+      });
+      for (let i = selMappedAgents.options.length - 1; i >= 0; i--) {
+        selMappedAgents.remove(i);
+      };
+      txtMappedAgentsPrev.value = "";
+      txtCampaignName.value = evClickSelCampaign.target.value; // evClickSelCampaign.target.options[evClickSelCampaign.target.selectedIndex].text;
+
+      for (agent of agentsOfCampaign) {
+        selMappedAgents.options[selMappedAgents.options.length] = new Option(agent.AgentName, agent.AgentId);
+        txtMappedAgentsPrev.value += (txtMappedAgentsPrev.value == "" ? agent.AgentId : ";" + agent.AgentId);
+      };
+      for (let i = selAllAgents.options.length - 1; i >= 0; i--) {
+        selAllAgents.remove(i);
+      };
+      for (agent of agents) {
+        let agentExist = false;
+        if (agentsOfCampaign.some(e => e.AgentId == agent.Id)) {
+          agentExist = true;
+        };
+        if (!agentExist) {
+          selAllAgents.options[selAllAgents.options.length] = new Option(agent.Username, agent.Id);
+        };
+      }; // next agent
+    }); // selCampaign click event listener  
+
+    // search campaigns
+    txtSearchCampaign.addEventListener('keyup', (ev) => {
+      txtCampaignName.value = "";
+      filterOptions(ev.target.value, selCampaign.getElementsByTagName('option'));
+    });
+    // search mapped agents
+    txtSearchAgent.addEventListener('keyup', (ev) => {
+      filterOptions(ev.target.value, selMappedAgents.getElementsByTagName('option'));
+    });
+    // search all agents
+    txtSearchAllAgent.addEventListener('keyup', (ev) => {
+      filterOptions(ev.target.value, selAllAgents.getElementsByTagName('option'));
+    });
+    // // ================================================================
+  }); // DOMContentLoaded event listener
+</script>
+<%- include('_foot.html'); %>

@@ -1,6 +1,6 @@
 const { awsConfig, routingProfilePrefix } = require("./configloader")
 const dynamoose = require("dynamoose");
-// const  {getConnectAgents}  = require("./connectclient");
+const  {loggedInUser}  = require("./auth");
 
 
 const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
@@ -44,6 +44,13 @@ const schemaAgent = new dynamoose.Schema({
 
 const modelCampaign = dynamoose.model("Cloudcall_Campaign_Table", schemaCampaign);
 const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
+
+
+const getAgents = async () => {
+  let agents = await modelAgent.scan().exec();
+  return agents;
+} // end getAgents()
+
 
 const getCampaigns = async () => {
   let campaigns = await modelCampaign.scan().exec();
@@ -90,7 +97,7 @@ const insertAgent = async (agentName, agentId, routingProfileName, routingProfil
     agentId: agentId,
     routingProfileName: routingProfileName,
     routingProfileId: routingProfileId,
-    author: "default"
+    author: loggedInUser.userId
   });
   await newAgent.save();
 } // end insertAgent()
@@ -98,65 +105,10 @@ const insertAgent = async (agentName, agentId, routingProfileName, routingProfil
 module.exports = {
   modelCampaign,
   modelAgent,
+  getAgents,
   getCampaigns,
   setCampaignStatus,
   getUnprovisionedAgents,
   insertAgent,
 };
-
-
-
-
-
-/*
-let test_it_create = async () => {
-  try {
-    let newAgent = new modelAgent({
-      agentName: "agent.name.2",
-      agentId: "agent-id-2",
-      routingProfileName: "routing-profile-name-2",
-      routingProfileId: "routing-profile-id-2",
-
-      campaigns: [
-        {
-          campaignName: "camp-name-1",
-          campaignId: "camp-id-1",
-        },
-        {
-          campaignName: "camp-name-2",
-          campaignId: "camp-id-2",
-        },
-        {
-          campaignName: "camp-name-3",
-          campaignId: "camp-id-3",
-        },
-      ],
-
-      author: "default"
-    });
-    await newAgent.save();
-  } catch (e) {
-    console.log(e.name, e.message)
-  }
-};
-
-let test_it_scan = async ()=>{
-  try{
-    let results = await modelAgent.scan().exec();
-    console.log(results);
-    console.log("-".repeat(10));
-    console.log(results[0]);
-    console.log("-".repeat(10));
-    console.log(results[0].campaigns);
-  }catch(e){
-    console.log("-".repeat(10));
-    console.log(e.name, e.message)
-  }
-}
-*/
-// test_it_create();
-// test_it_scan();
-
-
-
 

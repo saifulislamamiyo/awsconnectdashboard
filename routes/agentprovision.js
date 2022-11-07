@@ -1,4 +1,4 @@
-const { routingProfilePrefix } = require("../libs/configloader");
+const {pauseBetweenAPICallInClient} = require("../libs/configloader");
 const express = require('express');
 const router = express.Router();
 const { getUnprovisionedAgents, insertAgent } = require("../libs/ddbclient");
@@ -10,6 +10,7 @@ router.get("/", async (req, res, next) => {
   res.render("agentprovision", {
     title: "Agent Provision",
     unprovisionedAgents: unprovisionedAgents,
+    pauseBetweenAPICallInClient: pauseBetweenAPICallInClient,
   });
 }); // end router.get('/')
 
