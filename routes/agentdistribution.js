@@ -87,7 +87,7 @@ const getRoutingProfileOfAgent = async (userId) => {
   return { RoutingProfileId, RoutingProfileName };
 };
 
-const createUserDynamicRouteProfile = async(dynamicRouteProfileName, userId, defaultOutboundQueueId)=>{
+const createUserDynamicRouteProfile = async (dynamicRouteProfileName, userId, defaultOutboundQueueId) => {
   let cmd = new CreateRoutingProfileCommand({
     InstanceId: awsInstance,
     Name: dynamicRouteProfileName,
@@ -109,7 +109,7 @@ const createUserDynamicRouteProfile = async(dynamicRouteProfileName, userId, def
       UserId: userId,
       RoutingProfileId: newRP.RoutingProfileId,
     })
-  ); 
+  );
 };
 
 router.get("/", async (req, res, next) => {
@@ -118,7 +118,7 @@ router.get("/", async (req, res, next) => {
   });
 }); // end router.get('/')
 
-router.get("/agent-distribution-success", (req, res, next)=>{
+router.get("/agent-distribution-success", (req, res, next) => {
   req.flash("success", "Agents distributed succesfully.");
   res.redirect("/agent-distribution");
 }); // router.get("/agent-distribution-success")
@@ -285,13 +285,9 @@ router.get('/get-routing-profile-queues', async (req, res, next) => {
 
 
 router.get('/set-agent-to-queue', async (req, res, next) => {
-  // req.query.agentid
-  // req.query.queueid
   let userRoutingProfile = await getRoutingProfileOfAgent(req.query.agentid);
-  // userRoutingProfile.RoutingProfileId
-  // userRoutingProfile.RoutingProfileName
   let dynamicRouteProfileName = "automated_rp_" + req.query.agentid
-  if(userRoutingProfile.RoutingProfileName!=dynamicRouteProfileName){
+  if (userRoutingProfile.RoutingProfileName != dynamicRouteProfileName) {
     await createUserDynamicRouteProfile(dynamicRouteProfileName, req.query.agentid, req.query.queueid);
     await sleep(sleep_ms);
   }
@@ -325,7 +321,7 @@ router.get('/set-agent-to-queue', async (req, res, next) => {
     await connectClient.send(cmdDiss);
   }; // end if (req.query.remove == 0)
   await sleep(sleep_ms);
-  res.json({"response": "OK"})
+  res.json({ "response": "OK" })
 });
 
 module.exports = router;

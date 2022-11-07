@@ -37,10 +37,11 @@ app.use(flash());
 app.use('/', homeRouter);
 app.use('/campaigns', campaignsRouter);
 app.use('/create-campaign', createCampaignRouter);
+app.use('/agent-provision', agentProvision);
+app.use('/agent-distribution', agentDistribution);
+// TODO: 
 app.use('/agent-dashboard', customReportRouter);
 app.use('/campaign-dashboard', dashboardRouter);
-app.use('/agent-distribution', agentDistribution);
-app.use('/agent-provision', agentProvision);
 
 
 /* Catch 404 and forward to error handler */

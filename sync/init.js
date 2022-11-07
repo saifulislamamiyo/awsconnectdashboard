@@ -23,7 +23,7 @@ let initAgentDB = async () => {
           campaignStatus: (campaign.Status == "ENABLED" ? true : false),
           author: "default",
         });
-        logger.info("Inserting: " + [
+        logger.info("Inserting Agents: " + [
           campaign.Name,
           campaign.QueueId,
           (campaign.Status == "ENABLED" ? true : false)
@@ -68,7 +68,7 @@ let initCampaignDB = async () => {
       }
       let agentModel = new modelAgent(agentItem);
       await agentModel.save();
-      logger.info("Inserting: " + Object.values (agentItem));
+      logger.info("Inserting Campaigns: " + Object.values (agentItem));
     } // next agent
     logger.info("End: initCampaignDB");
   } catch (e) {

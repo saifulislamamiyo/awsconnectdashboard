@@ -1,30 +1,3 @@
-const {
-  awsConfig,
-  awsInstance,
-  routingProfilePrefix,
-  defaultOutboundQueueId,
-  pauseBetweenAPICallInServer,
-} = require("./configloader");
-
-const { sleep } = require("./utils");
-
-const {
-  ConnectClient,
-  SearchQueuesCommand,
-  ListUsersCommand,
-  DescribeUserCommand,
-  DescribeRoutingProfileCommand,
-  ListRoutingProfileQueuesCommand,
-  UpdateQueueStatusCommand,
-  CreateRoutingProfileCommand,
-  ListRoutingProfilesCommand,
-  UpdateUserRoutingProfileCommand,
-} = require("@aws-sdk/client-connect");
-
-
-
-const connectClient = new ConnectClient(awsConfig);
-
 const getCampaigns = async (nextToken = "") => {
   let queues = [];
   let param = {
@@ -38,15 +11,12 @@ const getCampaigns = async (nextToken = "") => {
   return result;
 } // end getCampaigns()
 
-
 const getAgents = async () => {
   let agents = (await connectClient.send(new ListUsersCommand({
     InstanceId: awsInstance,
   }))).UserSummaryList;
   return agents;
-} // end getAgents()
-
-
+}; // end getAgents()
 
 const getRoutingProfileId = async (userId) => {
   let routingProfileId = (await connectClient.send(
@@ -121,16 +91,9 @@ const createUserDynamicRouteProfile = async (userId, userName) => {
       RoutingProfileId: newRP.RoutingProfileId,
     })
   );
-
-  return {
-    userName: userName,
-    userId: userId,
-    routingProfileName: dynamicRouteProfileName,
-    routingProfileId: newRP.RoutingProfileId
-  }
   // insert ddb
-  // await insertAgent(userName, userId, newRP.RoutingProfileName, newRP.RoutingProfileId);
-}; // end createUserDynamicRouteProfile()
+  await insertAgent(userName, userId, newRP.RoutingProfileName, newRP.RoutingProfileId);
+};
 
 module.exports = {
   connectClient,
