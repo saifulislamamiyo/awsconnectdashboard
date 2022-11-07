@@ -14,6 +14,7 @@ const agentDistribution = require('./routes/agentdistribution');
 const dashboardRouter = require('./routes/dashboard');
 const customReportRouter = require('./routes/customreport');
 const agentProvision = require('./routes/agentprovision');
+const fault = require('./routes/fault');
 
 /* Set app */
 const app = express();
@@ -39,6 +40,7 @@ app.use('/campaigns', campaignsRouter);
 app.use('/create-campaign', createCampaignRouter);
 app.use('/agent-provision', agentProvision);
 app.use('/agent-distribution', agentDistribution);
+app.use('/fault', fault);
 // TODO: 
 app.use('/agent-dashboard', customReportRouter);
 app.use('/campaign-dashboard', dashboardRouter);
