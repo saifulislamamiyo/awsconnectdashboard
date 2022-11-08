@@ -2,7 +2,7 @@ const { pauseBetweenAPICallInClient } = require("../libs/configloader");
 const express = require("express");
 const router = express.Router();
 const { sleep } = require("../libs/utils");
-const { getCampaigns, getAgents } = require("../libs/ddbclient");
+const { getCampaigns, getAgents, addCampaignToAgent, removeCampaignFromAgent } = require("../libs/ddbclient");
 const { setRoutingProfileQueue } = require("../libs/connectclient");
 
 
@@ -25,9 +25,17 @@ router.get("/agent-distribution-success", (req, res, next) => {
 
 router.get('/distribute-agent', async (req, res, next) => {
   let routingProfileId = req.query.rpid;
-  let queueId = req.query.queueid;
+  let campaignId = req.query.campaignid;
   let assoc = req.query.assoc;
-  await setRoutingProfileQueue(routingProfileId, queueId, assoc);
+  let agentName = req.query.agentname;
+  let campaignName = req.query.campaignname;
+  await setRoutingProfileQueue(routingProfileId, campaignId, assoc);
+  if (assoc == "true") {
+    await addCampaignToAgent(agentName, campaignName, campaignId);
+  }
+  else {
+    await removeCampaignFromAgent(agentName, campaignName, campaignId);
+  }
   res.json({ "message": "OK" });
 });
 

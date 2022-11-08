@@ -2,15 +2,19 @@
 </div>
 <script src="/javascripts/bootstrap.bundle.min.js"></script>
 <script src="/javascripts/feather.min.js"></script>
+<script src="/javascripts/simple-datatables.js"></script>
 <script src="/javascripts/client.js"></script>
 <script>
   loading_modal = new bootstrap.Modal('#loading_modal');
+
   function show_loader() {
     loading_modal.show();
   }
+
   function hide_loader() {
     loading_modal.hide();
   }
+  
   document.addEventListener("DOMContentLoaded", (ev) => {
     let spinnerTargets = document.querySelectorAll('.spinner-trigger');
     for (let spinnerTarget of spinnerTargets) {

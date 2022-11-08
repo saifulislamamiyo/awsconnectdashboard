@@ -13,9 +13,9 @@
     <% } %>
   </div>
   <%- include('_alert.html'); %>
-  <div class="mt-4 mb-4 w-50 text-end">
+  <!-- <div class="mt-4 mb-4 w-50 text-end">
     <input type="text" class="form-control" placeholder="Search..." onkeyup="filterCampaignTable()" id="txtFilterCampaignTable">
-  </div>
+  </div> -->
   <div class="table-responsive">
     <table class="table table-bordered table-striped" id="campaignTable">
       <thead class="table-dark">
@@ -71,6 +71,10 @@
 </main>
 <script>
   document.addEventListener("DOMContentLoaded", (domContentLoadedEvent) => {
+    const table = new simpleDatatables.DataTable("#campaignTable",{
+      perPageSelect: false,
+      perPage: 20
+    });
     let statusSwitch = document.querySelectorAll('.campaign-status-switch');
     statusSwitch.forEach((item) => {
       item.addEventListener('click', async (switchEvent) => {

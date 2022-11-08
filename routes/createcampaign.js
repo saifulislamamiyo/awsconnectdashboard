@@ -1,8 +1,90 @@
-const { CreateQueueCommand, ListQueuesCommand, ListPhoneNumbersCommand, ListHoursOfOperationsCommand } = require("@aws-sdk/client-connect");
+const { pauseBetweenAPICallInServer, pauseBetweenAPICallInClient } = require("../libs/configloader")
+const { getPhoneNumbers, getHourOfOperations, createQueue } = require("../libs/connectclient");
+const { insertCampaign, campaignExists } = require("../libs/ddbclient");
+const { logger } = require("../libs/logger");
+
+
+
+const { sleep } = require("../libs/utils");
 const express = require('express');
+
 const router = express.Router();
-const { awsInstance } = require('../libs/configloader');
-const connectClient = require('../libs/connectclient')
+
+router.get('/', async (req, res, next) => {
+  let phoneNumbers = await getPhoneNumbers();
+  await sleep(pauseBetweenAPICallInServer);
+  let hoursOfOperations = await getHourOfOperations();
+  return res.render('createcampaign', {
+    title: 'Create Campaign',
+    phoneNumbers: phoneNumbers,
+    hoursOfOperations: hoursOfOperations,
+    pauseBetweenAPICallInClient: pauseBetweenAPICallInClient,
+  });
+}); // router.get('/')
+
+router.get('/campaign-name-check', async (req, res, next) => {
+  let isAvailable = await campaignExists(req.query.campaignname);
+  res.json({ "available": isAvailable });
+}); // router.get('/campaign-name-check')
+
+router.get('/save-campaign', async (req, res, next) => {
+  let name = req.query.name;
+  let description = req.query.description;
+  let hoursOfOperationId = req.query.hoursOfOperationId;
+  let outboundCallerIdNumberId = req.query.outboundCallerIdNumberId;
+
+
+  let connectResp;
+  try {
+    // create queue in connect
+    connectResp = await createQueue(name, description, hoursOfOperationId, outboundCallerIdNumberId);
+    await sleep(pauseBetweenAPICallInServer);
+    // save campaign in campaignsDB
+    await insertCampaign(name, connectResp.QueueId, true);
+    res.json({ "message": "OK" });
+  } catch (e) {
+    if (e.name =="LimitExceededException") res.json({ "message": "LimitExceededException" });
+    else res.json({ "message": "InternalServerError" });
+  } // catch
+}); // router.get('/save-campaign')
+
+router.get('/create-campaign-success', async (req, res, next) => {
+  req.flash("success", "Campaign created succesfully.");
+  res.redirect("/campaigns");
+}); // router.get('/create-campaign-success')
+
+router.get('/create-campaign-fail', async (req, res, next) => {
+  req.flash("danger", req.query.errtext);
+  res.redirect("/campaigns");
+}); // router.get('/create-campaign-fail')
+
+module.exports = router;
+
+
+
+/*
+router.post('/', async (req, res, next) => {
+  let form = await validatedCampaignForm(req.body);
+  if (!form.validationPassed) {
+    return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
+  } else {
+    try {
+      // create queue in connect
+      createQueue(form.cleanData).then((response) => {
+        req.flash('success', 'Campaign created successfully');
+        res.render('createcampaignsuccess', {
+          title: 'Create Campaign',
+        });
+      }).catch((err) => {
+        req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
+        res.redirect("/create-campaign");
+      });
+    } catch (err) {
+      req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
+      res.redirect("/create-campaign");
+    }
+  }
+});
 
 const campaignForm = async (formData, form_for_update = false) => {
   const InstanceId = { InstanceId: awsInstance }
@@ -118,36 +200,5 @@ let createQueue = async (cleanformData) => {
   let respo = await connectClient.send(command);
 
   return respo;
-}
+}*/
 
-router.get('/', async (req, res, next) => {
-  return res.render('createcampaign', {
-    title: 'Create Campaign',
-    form: await campaignForm(req.body),
-  });
-});
-
-router.post('/', async (req, res, next) => {
-  let form = await validatedCampaignForm(req.body);
-  if (!form.validationPassed) {
-    return res.render('createcampaign', { title: 'Create Campaign', form: form.form, });
-  } else {
-    try {
-      // create queue in connect
-      createQueue(form.cleanData).then((response) => {
-        req.flash('success', 'Campaign created successfully');
-        res.render('createcampaignsuccess', {
-          title: 'Create Campaign',
-        });
-      }).catch((err) => {
-        req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
-        res.redirect("/create-campaign");
-      });
-    } catch (err) {
-      req.flash('danger', 'Something went wrong. Please check inputs and internet connnection, and try again.');
-      res.redirect("/create-campaign");
-    }
-  }
-});
-
-module.exports = router;

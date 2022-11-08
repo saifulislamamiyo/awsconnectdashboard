@@ -103,9 +103,16 @@
     }; // next i
   }; // end function swapSelectedOptions
 
+
+  const routingProfileOfAgent = (agentsArray, agentNameOrId) => {
+    for (let agent of agentsArray) {
+      if (agent.agentName == agentNameOrId || agent.agentId == agentNameOrId) return agent.routingProfileId;
+    }
+  }
+
+
   document.addEventListener("DOMContentLoaded", async (eDOMContentLoaded) => {
     const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient%>;
-    const agentMapFromDB = <%-JSON.stringify(agents)%>;
     const agentsFromDB = <%-JSON.stringify(agents)%>;
 
     let selCampaign = document.getElementById('selCampaign');
@@ -156,11 +163,11 @@
     }); // btnRem click event listener
 
     selCampaign.addEventListener('change', (evClickSelCampaign) => {
-      let lookForCampaign = {
+      let campaignToModify = {
         campaignId: evClickSelCampaign.target.value,
         campaignName: evClickSelCampaign.target.options[evClickSelCampaign.target.selectedIndex].text,
       };
-      let mappedAgentArray = getMappedAgentOfCampaign(agentMapFromDB, lookForCampaign);
+      let mappedAgentArray = getMappedAgentOfCampaign(agentsFromDB, campaignToModify);
       clearSelectOptions(selMappedAgents);
       populateSelectOptions(selMappedAgents, mappedAgentArray);
       clearSelectOptions(selAllAgents);
@@ -172,11 +179,11 @@
         alert("No Campaign Selected");
         return;
       }
-      let lookForCampaign = {
+      let campaignToModify = {
         campaignId: selCampaign.selectedOptions[0].value,
         campaignName: selCampaign.selectedOptions[0].text,
       };
-      let mappedAgentArray = getMappedAgentOfCampaign(agentMapFromDB, lookForCampaign);
+      let mappedAgentArray = getMappedAgentOfCampaign(agentsFromDB, campaignToModify);
       let seletedAgentArray = [];
       for (n = 0; n < selMappedAgents.options.length; n++) {
         seletedAgentArray[seletedAgentArray.length] = {
@@ -184,16 +191,41 @@
           agentName: selMappedAgents.options[n].text,
         };
       } // next selMappedAgents.options[n]
-      console.log(
-        "Already Mapped:", mappedAgentArray,
-        "Agent to Assoc:", seletedAgentArray
-      );
-      // TODO:
-      // let url = `/agent-distribution/distribute-agent?rpid=${rpId}&queueid=${queueId}&assoc=${isAssoc}`;
-      // let response = await fetch(url);
-      // TODO:
-      // update db
+
+
+      let agentsToAdd = seletedAgentArray.filter(a => !mappedAgentArray.map(b => b.agentId).includes(a.agentId));
+      let agentsToRem = mappedAgentArray.filter(a => !seletedAgentArray.map(b => b.agentId).includes(a.agentId));
+
+      show_loader();
+      for (let agent of agentsToAdd) {
+        let rid = routingProfileOfAgent(agentsFromDB, agent.agentId)
+        let campaignid = campaignToModify.campaignId;
+        let agentname = agent.agentName;
+        let campaignname = campaignToModify.campaignName;
+        let assoc = "true";
+        console.log("Add:", campaignname, agentname, );
+        let url = `/agent-distribution/distribute-agent?rpid=${rid}&campaignid=${campaignid}&assoc=${assoc}&agentname=${agentname}&campaignname=${campaignname}`;
+        let response = await fetch(url);
+        await sleep(pauseBetweenAPICallInClient);
+      }
+
+      for (let agent of agentsToRem) {
+        let rid = routingProfileOfAgent(agentsFromDB, agent.agentId)
+        let campaignid = campaignToModify.campaignId;
+        let agentname = agent.agentName;
+        let campaignname = campaignToModify.campaignName;
+        let assoc = "false";
+        console.log("Rem:", campaignname, agentname, );
+        let url = `/agent-distribution/distribute-agent?rpid=${rid}&campaignid=${campaignid}&assoc=${assoc}&agentname=${agentname}&campaignname=${campaignname}`;
+        let response = await fetch(url);
+        await sleep(pauseBetweenAPICallInClient);
+      }
+      console.log("Done.");
+      await sleep(pauseBetweenAPICallInClient);
+      hide_loader();
+      window.location.replace('/agent-distribution/agent-distribution-success');
     }); // btnSave.addEventListener("click")
+
   }); //document.addEventListener("DOMContentLoaded")
 </script>
 <%- include('_foot.html'); %>

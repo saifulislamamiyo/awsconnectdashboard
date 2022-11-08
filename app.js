@@ -11,10 +11,10 @@ const campaignsRouter = require('./routes/campaigns');
 const homeRouter = require('./routes/home');
 const createCampaignRouter = require('./routes/createcampaign');
 const agentDistribution = require('./routes/agentdistribution');
-const dashboardRouter = require('./routes/dashboard');
-const customReportRouter = require('./routes/customreport');
 const agentProvision = require('./routes/agentprovision');
 const fault = require('./routes/fault');
+const campaignDashboardRouter = require('./routes/campaigndashboard');
+const agentDashboardRouter = require('./routes/agentdashboard');
 
 /* Set app */
 const app = express();
@@ -42,8 +42,8 @@ app.use('/agent-provision', agentProvision);
 app.use('/agent-distribution', agentDistribution);
 app.use('/fault', fault);
 // TODO: 
-app.use('/agent-dashboard', customReportRouter);
-app.use('/campaign-dashboard', dashboardRouter);
+app.use('/agent-dashboard', agentDashboardRouter);
+app.use('/campaign-dashboard', campaignDashboardRouter);
 
 
 /* Catch 404 and forward to error handler */

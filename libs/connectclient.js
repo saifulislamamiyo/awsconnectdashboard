@@ -21,11 +21,32 @@ const {
   UpdateUserRoutingProfileCommand,
   AssociateRoutingProfileQueuesCommand,
   DisassociateRoutingProfileQueuesCommand,
+  CreateQueueCommand,
+  ListPhoneNumbersCommand,
+  ListHoursOfOperationsCommand,
 } = require("@aws-sdk/client-connect");
 
 
 
 const connectClient = new ConnectClient(awsConfig);
+
+const getHourOfOperations = async () => {
+  let hoOps = (await connectClient.send(
+    new ListHoursOfOperationsCommand({
+      InstanceId: awsInstance
+    })
+  )).HoursOfOperationSummaryList;
+  return hoOps;
+}
+
+const getPhoneNumbers = async () => {
+  let phNums = (await connectClient.send(
+    new ListPhoneNumbersCommand({
+      InstanceId: awsInstance
+    })
+  )).PhoneNumberSummaryList;
+  return phNums;
+};
 
 const getCampaigns = async (nextToken = "") => {
   let queues = [];
@@ -103,7 +124,7 @@ const createUserDynamicRouteProfile = async (userId, userName) => {
     InstanceId: awsInstance,
     Name: dynamicRouteProfileName,
     DefaultOutboundQueueId: defaultOutboundQueueId,
-    Description: dynamicRouteProfileName,
+    Description: dynamicRouteProfileName + "_" + userName,
     MediaConcurrencies: [
       {
         Channel: "VOICE",
@@ -133,9 +154,9 @@ const createUserDynamicRouteProfile = async (userId, userName) => {
 }; // end createUserDynamicRouteProfile()
 
 
-const setRoutingProfileQueue = async (routingProfileId, queueId, assoc = true) => {
+const setRoutingProfileQueue = async (routingProfileId, queueId, assoc) => {
   let cmd;
-  if (assoc=="true") {
+  if (assoc == "true") {
     cmd = new AssociateRoutingProfileQueuesCommand({
       InstanceId: awsInstance,
       RoutingProfileId: routingProfileId,
@@ -161,6 +182,20 @@ const setRoutingProfileQueue = async (routingProfileId, queueId, assoc = true) =
   await connectClient.send(cmd);
 } // end setRoutingProfileQueue()
 
+
+const createQueue = async (name, description, hoursOfOperationId, outboundCallerIdNumberId) => {
+  let cmd = new CreateQueueCommand({
+    InstanceId: awsInstance,
+    "Name": name,
+    "Description": description,
+    "HoursOfOperationId": hoursOfOperationId,
+    "OutboundCallerConfig": {
+      "OutboundCallerIdNumberId": outboundCallerIdNumberId,
+    }
+  });
+  await connectClient.send(cmd);
+} // end createQueue()
+
 module.exports = {
   connectClient,
   getCampaigns,
@@ -172,4 +207,7 @@ module.exports = {
   createUserDynamicRouteProfile,
   listRoutingProfiles,
   setRoutingProfileQueue,
+  getPhoneNumbers,
+  getHourOfOperations,
+  createQueue,
 };

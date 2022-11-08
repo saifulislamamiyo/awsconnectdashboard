@@ -1,6 +1,6 @@
 const { awsConfig, routingProfilePrefix } = require("./configloader")
 const dynamoose = require("dynamoose");
-const  {loggedInUser}  = require("./auth");
+const { loggedInUser } = require("./auth");
 
 
 const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
@@ -45,12 +45,10 @@ const schemaAgent = new dynamoose.Schema({
 const modelCampaign = dynamoose.model("Cloudcall_Campaign_Table", schemaCampaign);
 const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
 
-
 const getAgents = async () => {
   let agents = await modelAgent.scan().exec();
   return agents;
 } // end getAgents()
-
 
 const getCampaigns = async () => {
   let campaigns = await modelCampaign.scan().exec();
@@ -77,7 +75,6 @@ const getUnprovisionedAgents = async (allAgentsFromConnect) => {
     }
   } // next allAgentsFromDB[i]
 
-  // let allAgentsFromConnect = await getConnectAgents();
   for (let i = 0; i < allAgentsFromConnect.length; i++) {
     if (!allAgentsIdFromDB.includes(allAgentsFromConnect[i].Id)) {
       unprovisionedAgents[unprovisionedAgents.length] = {
@@ -90,7 +87,6 @@ const getUnprovisionedAgents = async (allAgentsFromConnect) => {
   return unprovisionedAgents;
 } // end getUnprovisionedAgents()
 
-
 const insertAgent = async (agentName, agentId, routingProfileName, routingProfileId) => {
   let newAgent = new modelAgent({
     agentName: agentName,
@@ -102,6 +98,43 @@ const insertAgent = async (agentName, agentId, routingProfileName, routingProfil
   await newAgent.save();
 } // end insertAgent()
 
+let addCampaignToAgent = async (agentName, campaignName, campaignId) => {
+  let result = await modelAgent.get(agentName);
+  let campaigns = result.campaigns ?? [];
+
+  let newCampaign = { "campaignName": campaignName, "campaignId": campaignId }
+  campaigns.push(newCampaign)
+
+  await modelAgent.update({ "agentName": agentName, "campaigns": campaigns });
+} // end addCampaignToAgent()
+
+let removeCampaignFromAgent = async (agentName, campaignName, campaignId) => {
+  let result = await modelAgent.get(agentName);
+  let campaigns = result.campaigns ?? [];
+  let updatedCampaigns = [];
+  for (let campaign of campaigns) {
+    if (campaign.campaignName != campaignName) {
+      updatedCampaigns[updatedCampaigns.length] = campaign
+    }
+  } // next campaign
+  await modelAgent.update({ "agentName": agentName, "campaigns": updatedCampaigns });
+} // end removeCampaignToAgent()
+
+const campaignExists = async (campaignName) => {
+  let result = await modelCampaign.get(campaignName);
+  return result === undefined;
+} // end campaignExists()
+
+const insertCampaign = async(campaignName, campaignId, campaignStatus)=>{
+  let campaignItem = new modelCampaign({
+    campaignName:campaignName,
+    campaignId:campaignId,
+    campaignStatus, campaignStatus,
+    author: loggedInUser.userId
+  });
+  campaignItem.save();
+} // end insertCampaign()
+
 module.exports = {
   modelCampaign,
   modelAgent,
@@ -110,5 +143,9 @@ module.exports = {
   setCampaignStatus,
   getUnprovisionedAgents,
   insertAgent,
+  addCampaignToAgent,
+  removeCampaignFromAgent,
+  campaignExists,
+  insertCampaign
 };
 
