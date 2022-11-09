@@ -32,8 +32,6 @@ router.get('/save-campaign', async (req, res, next) => {
   let description = req.query.description;
   let hoursOfOperationId = req.query.hoursOfOperationId;
   let outboundCallerIdNumberId = req.query.outboundCallerIdNumberId;
-
-
   let connectResp;
   try {
     // create queue in connect
@@ -43,6 +41,7 @@ router.get('/save-campaign', async (req, res, next) => {
     await insertCampaign(name, connectResp.QueueId, true);
     res.json({ "message": "OK" });
   } catch (e) {
+    console.log(e);
     if (e.name =="LimitExceededException") res.json({ "message": "LimitExceededException" });
     else res.json({ "message": "InternalServerError" });
   } // catch

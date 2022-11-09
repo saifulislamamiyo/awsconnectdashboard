@@ -193,7 +193,8 @@ const createQueue = async (name, description, hoursOfOperationId, outboundCaller
       "OutboundCallerIdNumberId": outboundCallerIdNumberId,
     }
   });
-  await connectClient.send(cmd);
+  let ret = await connectClient.send(cmd);
+  return ret;
 } // end createQueue()
 
 module.exports = {

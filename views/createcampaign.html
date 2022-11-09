@@ -79,7 +79,6 @@
       result = await result.json();
       await sleep(pauseBetweenAPICallInClient);
       hide_loader();
-      window.location.replace('/create-campaign/create-campaign-success');
       if (result.message == "LimitExceededException") {
         let errText = "Campaign/Queue creation limit Exceeded."
         window.location.replace(`/create-campaign/create-campaign-fail?errtext=${errText}`);
