@@ -11,9 +11,9 @@ const {
   getRoutingProfileCampaigns,
 } = require("../libs/connectclient");
 
-let initAgentDB = async () => {
+let initCampaignDB = async () => {
   try {
-    logger.info("Start: initAgentDB");
+    logger.info("Start: initCampaignDB");
     let nextToken = "";
     do {
       let campaigns = await getCampaigns(nextToken);
@@ -34,15 +34,22 @@ let initAgentDB = async () => {
       nextToken = campaigns.NextToken ?? "";
       if (nextToken != "") await sleep(pauseBetweenAPICallInServer);
     } while (nextToken != "");
-    logger.info("End: initAgentDB");
+    logger.info("End: initCampaignDB");
   } catch (e) {
     logger.error(e.name + " - " + e.message);
   }
-} // end initAgentDB()
+} // end initCampaignDB()
 
-let initCampaignDB = async () => {
+
+
+
+
+
+
+
+let initAgentDB = async () => {
   try {
-    logger.info("Start: initCampaignDB");
+    logger.info("Start: initAgentDB");
     let agents = await getAgents();
     await sleep(pauseBetweenAPICallInServer);
     for (let [agentIndex, agent] of agents.entries()) {
@@ -69,15 +76,15 @@ let initCampaignDB = async () => {
       }
       let agentModel = new modelAgent(agentItem);
       await agentModel.save();
-      logger.info("Inserting Campaigns: " + Object.values (agentItem));
+      logger.info("Insert Agent: " + Object.values (agentItem));
     } // next agent
-    logger.info("End: initCampaignDB");
+    logger.info("End: initAgentDB");
   } catch (e) {
     logger.error(e.name + " - " + e.message);
   }
-} // end initCampaignDB()
+} // end initAgentDB()
 
 
 // // Run
-initAgentDB();
+// initAgentDB();
 initCampaignDB();
