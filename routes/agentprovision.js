@@ -9,7 +9,7 @@ router.get("/", async (req, res, next) => {
   let allAgentsFromDB = await getAgentsFromDB();
   let allAgentsFromConnect = await getAgentsFromConnect();
   let unprovisionedAgents = await getUnprovisionedAgents(allAgentsFromConnect);
-  let provisionedAgents = allAgentsFromDB.filter(a => allAgentsFromConnect.map(b=>b.Id).includes(a.agentId));
+  let provisionedAgents = allAgentsFromDB.filter(a => allAgentsFromConnect.map(b => b.Id).includes(a.agentId));
 
   res.render("agentprovision", {
     title: "Agent Provision",
@@ -32,7 +32,9 @@ router.get("/provision-agent", async (req, res, next) => {
     );
     res.json({ "message": "OK" });
   } catch (e) {
+    console.log(e);
     if (e.name == "DuplicateResourceException") {
+      console.log("Handling DuplicateResourceException");
       let allRoutingProfiles = await listRoutingProfiles();
       for (let r = 0; r < allRoutingProfiles.length; r++) {
         if (allRoutingProfiles[r].Name = expectedRPName) {
