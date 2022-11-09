@@ -31,7 +31,7 @@
         <label for="phoneNumber" class="form-label">Outbound Phone Number</label>
         <select class="form-select " name="phoneNumber" id="phoneNumber">
           <% phoneNumbers.forEach((phoneNumber)=>{ %>
-          <option value="<%- phoneNumber.Id %>"><%- phoneNumber.PhoneNumber %></option>
+          <option <%=(selectedphoneNumber==phoneNumber.Id?'selected':'')%> value="<%- phoneNumber.Id %>"><%- phoneNumber.PhoneNumber %></option>
           <% }) %>
         </select>
         <div class="invalid-feedback"></div>
@@ -40,7 +40,7 @@
         <label for="hoursOfOperation" class="form-label">Hours of Operation</label>
         <select class="form-select " name="hoursOfOperation" id="hoursOfOperation">
           <% hoursOfOperations.forEach((hoursOfOperation)=>{ %>
-          <option value="<%- hoursOfOperation.Id %>"><%- hoursOfOperation.Name %></option>
+          <option <%=(selectedHoursOfOperation==hoursOfOperation.Id?'selected':'')%>  value="<%- hoursOfOperation.Id %>"><%- hoursOfOperation.Name %></option>
           <% }) %>
         </select>
         <div class="invalid-feedback"></div>
