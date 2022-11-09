@@ -6,8 +6,8 @@
     "test": "nyc mocha --recursive --timeout 10000",
     "dev": "DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
     "start": "node ./bin/www",
-    "pm-start": "./node_modules/pm2/bin/pm2 start bin/www --name awsconnectdashboard --time --log logs/logs.txt",
-    "pm-stop": "./node_modules/pm2/bin/pm2 stop awsconnectdashboard"
+    "pm-start": "./node_modules/pm2/bin/pm2 start bin/www --name ccconfigpanel --time --log logs/logs.txt",
+    "pm-stop": "./node_modules/pm2/bin/pm2 stop ccconfigpanel"
   },
   "dependencies": {
     "@aws-sdk/client-connect": "^3.188.0",
