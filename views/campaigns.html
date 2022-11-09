@@ -30,7 +30,10 @@
         <% if (campaign.campaignStatus==true) { %>
         <tr>
           <td>
-            <%=campaign.campaignName%>
+            <a class="nav-link spinner-trigger" href="/edit-campaign?campaignname=<%-campaign.campaignName%>&campaignid=<%-campaign.campaignId%>">
+              <span data-feather="edit" class="align-text-bottom"></span>
+              <%=campaign.campaignName%>
+            </a>
           </td>
           <td>
             <%=campaign.campaignDescription%>
@@ -52,7 +55,10 @@
             %>
         <tr>
           <td>
-            <%=campaign.campaignName%>
+            <a class="nav-link spinner-trigger" href="/edit-campaign?campaignname=<%-campaign.campaignName%>&campaignid=<%-campaign.campaignId%>">
+              <span data-feather="edit" class="align-text-bottom"></span>
+              <%=campaign.campaignName%>
+            </a>
           </td>
           <td>
             <%=campaign.campaignDescription%>

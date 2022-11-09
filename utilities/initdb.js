@@ -21,6 +21,7 @@ let initCampaignDB = async () => {
         let campaignItem = new modelCampaign({
           campaignName: campaign.Name,
           campaignId: campaign.QueueId,
+          campaignDescription:  campaign.Description,
           campaignStatus: (campaign.Status == "ENABLED" ? true : false),
           author: loggedInUser.userId,
         });
