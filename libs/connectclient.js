@@ -24,11 +24,26 @@ const {
   CreateQueueCommand,
   ListPhoneNumbersCommand,
   ListHoursOfOperationsCommand,
+  DescribeQueueCommand,
+  UpdateQueueHoursOfOperationCommand,
+  UpdateQueueOutboundCallerConfigCommand
 } = require("@aws-sdk/client-connect");
 
 
 
 const connectClient = new ConnectClient(awsConfig);
+
+const getCampaignDetails = async (campaignId) => {
+  let cmd = new DescribeQueueCommand({
+    InstanceId: awsInstance,
+    QueueId: campaignId
+  });
+  try {
+    return (await connectClient.send(cmd)).Queue;
+  } catch (e) {
+    return [];
+  }
+};
 
 const getHourOfOperations = async () => {
   let hoOps = (await connectClient.send(
@@ -102,7 +117,6 @@ const getRoutingProfileCampaigns = async (routingProfileId) => {
 } // end getRoutingProfileCampaigns()
 
 const setCampaignStatus = async (campaignId, campaignStatus) => {
-  console.log(campaignId, campaignStatus);
   await connectClient.send(new UpdateQueueStatusCommand({
     InstanceId: awsInstance,
     QueueId: campaignId,
@@ -197,6 +211,24 @@ const createQueue = async (name, description, hoursOfOperationId, outboundCaller
   return ret;
 } // end createQueue()
 
+const updateHourOfOperations = async (campaignId, hourOfOperation) => {
+  await connectClient.send(new UpdateQueueHoursOfOperationCommand({
+    InstanceId: awsInstance,
+    QueueId: campaignId,
+    HoursOfOperationId: hourOfOperation
+  }));
+} // end updateHourOfOperations()
+
+const updateOutboundCallerIdNumberId = async (campaignId, phoneNumber) => {
+  await connectClient.send(new UpdateQueueOutboundCallerConfigCommand({
+    InstanceId: awsInstance,
+    QueueId: campaignId,
+    OutboundCallerConfig: {
+      OutboundCallerIdNumberId: phoneNumber,
+    }
+  }));
+} // end updateOutboundCallerIdNumberId()
+
 module.exports = {
   connectClient,
   getCampaigns,
@@ -211,4 +243,7 @@ module.exports = {
   getPhoneNumbers,
   getHourOfOperations,
   createQueue,
+  getCampaignDetails,
+  updateHourOfOperations,
+  updateOutboundCallerIdNumberId,
 };

@@ -16,15 +16,15 @@
   <%- include('_alert.html'); %>
 
   <div class="col-md-8 col-lg-8">
-    <form name="campaignForm" id="campaignForm" method="post" action="/create-campaign">
+    <form name="campaignEditForm" id="campaignEditForm" method="post" action="/edit-campaign">
       <div class="mb-3">
         <label for="campaignName" class="form-label">Campaign Name</label>
-        <input type="text" class="form-control " name="campaignName" id="campaignName" value="">
+        <input type="text" class="form-control " name="campaignName" id="campaignName" value="<%=campaignName%>" readonly>
         <div class="text-danger mt-1" id="campaignNameFeedback"></div>
       </div>
       <div class="mb-3">
         <label for="campaignDescription" class="form-label">Campaign Description</label>
-        <input type="text" class="form-control " name="campaignDescription" id="campaignDescription" value="" maxlength="128">
+        <input type="text" class="form-control " name="campaignDescription" id="campaignDescription" value="<%=campaignDescription%>" maxlength="128">
         <div class="invalid-feedback"></div>
       </div>
       <div class="mb-3">
@@ -45,48 +45,33 @@
         </select>
         <div class="invalid-feedback"></div>
       </div>
-      <button type="submit" class="btn btn-success">Create</button>
+      <button type="submit" class="btn btn-success">Save</button>
     </form>
   </div>
 </main>
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient%>;
-    let campaignForm = document.getElementById("campaignForm");
-    let campaignName = document.getElementById("campaignName");
-    let campaignDescription = document.getElementById("campaignDescription");
-    let hoursOfOperation = document.getElementById("hoursOfOperation");
-    let phoneNumber = document.getElementById("phoneNumber");
+    const queueId = "<%-campaignId%>";
 
-    let campaignNameFeedback = document.getElementById("campaignNameFeedback");
-    campaignName.addEventListener("change", (ev) => {
-      campaignNameFeedback.textContent = "";
-    });
-    campaignForm.addEventListener("submit", async (event) => {
+    campaignEditForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!campaignName.value) {
-        campaignNameFeedback.textContent = "Name of Campaign cannot be empty.";
-        return;
-      }
-      let available = await fetch(`/create-campaign/campaign-name-check?campaignname=${campaignName.value}`);
-      available = (await available.json()).available;
-      if (!available) {
-        campaignNameFeedback.textContent = "Campaign Name must be unique.";
-        return;
-      }
       show_loader();
-      let result = await fetch(`/create-campaign/save-campaign?name=${campaignName.value}&description=${campaignDescription.value}&hoursOfOperationId=${hoursOfOperation.value}&outboundCallerIdNumberId=${phoneNumber.value}`);
+      let campaignEditForm = document.getElementById("campaignEditForm");
+      let campaignName = document.getElementById("campaignName").value;
+      let campaignDescription = document.getElementById("campaignDescription").value;
+      let phoneNumber = document.getElementById("phoneNumber").value;
+      let hoursOfOperation = document.getElementById("hoursOfOperation").value;
+      let url = `/edit-campaign/save-edited?campaignname=${campaignName}&campaignid=${queueId}&campaigndescription=${campaignDescription}&phonenumber=${phoneNumber}&hoursofoperation=${hoursOfOperation}`;
+      let result = await fetch(url);
       result = await result.json();
+
       await sleep(pauseBetweenAPICallInClient);
       hide_loader();
-      if (result.message == "LimitExceededException") {
-        let errText = "Campaign/Queue creation limit Exceeded."
-        window.location.replace(`/create-campaign/create-campaign-fail?errtext=${errText}`);
-      } else if (result.message == "InternalServerError") {
-        let errText = "Internal Server Error. Please try after some time."
-        window.location.replace(`/create-campaign/create-campaign-fail?errtext=${errText}`);
+      if (result.message == "OK") {
+        window.location.replace('/edit-campaign/edit-campaign-success');
       } else if (result.message == "OK") {
-        window.location.replace('/create-campaign/create-campaign-success');
+        window.location.replace('/edit-campaign/edit-campaign-fail');
       }
     }); // form submit event
   }); // DOM load event

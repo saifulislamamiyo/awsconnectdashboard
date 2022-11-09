@@ -125,15 +125,31 @@ const campaignExists = async (campaignName) => {
   return result === undefined;
 } // end campaignExists()
 
-const insertCampaign = async(campaignName, campaignId, campaignStatus)=>{
+const insertCampaign = async (campaignName, campaignId, campaignDesc, campaignStatus) => {
   let campaignItem = new modelCampaign({
-    campaignName:campaignName,
-    campaignId:campaignId,
-    campaignStatus, campaignStatus,
+    campaignName: campaignName,
+    campaignId: campaignId,
+    campaignDescription: campaignDesc,
+    campaignStatus: campaignStatus,
     author: loggedInUser.userId
   });
   campaignItem.save();
 } // end insertCampaign()
+
+
+const updatedCampaign = async (campaignName, campaignDescription) => {
+  let camp = await modelCampaign.update({
+    "campaignName": campaignName,
+    "campaignDescription": campaignDescription
+  });
+  return camp;
+} // end updatedCampaign()
+
+
+const getCampaignDescription = async (campaignName) => {
+  let camp = await modelCampaign.get(campaignName);
+  return (camp === undefined ? "" : camp.campaignDescription ?? "");
+} // end updatedCampaign()
 
 module.exports = {
   modelCampaign,
@@ -146,6 +162,8 @@ module.exports = {
   addCampaignToAgent,
   removeCampaignFromAgent,
   campaignExists,
-  insertCampaign
+  insertCampaign,
+  updatedCampaign,
+  getCampaignDescription,
 };
 

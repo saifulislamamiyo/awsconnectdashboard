@@ -35,7 +35,7 @@ router.get('/save-campaign', async (req, res, next) => {
     connectResp = await createQueue(name, description, hoursOfOperationId, outboundCallerIdNumberId);
     await sleep(pauseBetweenAPICallInServer);
     // save campaign in campaignsDB
-    await insertCampaign(name, connectResp.QueueId, true);
+    await insertCampaign(name, connectResp.QueueId, description, true);
     res.json({ "message": "OK" });
   } catch (e) {
     console.log(e);
