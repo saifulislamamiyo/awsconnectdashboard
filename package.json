@@ -6,8 +6,8 @@
     "test": "nyc mocha --recursive --timeout 10000",
     "dev": "DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
     "start": "node ./bin/www",
-    "pm-start": "./node_modules/pm2/bin/pm2 start bin/www --name awsconnectdashboard --time --log logs/logs.txt",
-    "pm-stop":"./node_modules/pm2/bin/pm2 stop awsconnectdashboard"
+    "pm-start": "./node_modules/pm2/bin/pm2 start bin/www --name ccconfigpanel --time --log logs/logs.txt",
+    "pm-stop": "./node_modules/pm2/bin/pm2 stop ccconfigpanel"
   },
   "dependencies": {
     "@aws-sdk/client-connect": "^3.188.0",
@@ -15,13 +15,15 @@
     "@aws-sdk/lib-dynamodb": "^3.190.0",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
+    "dynamoose": "^3.1.0",
     "ejs": "^3.1.8",
     "express": "~4.16.1",
     "express-flash": "^0.0.2",
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "pm2": "^5.2.2"
+    "pm2": "^5.2.2",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "bootstrap": "^5.2.2",

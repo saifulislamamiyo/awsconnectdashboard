@@ -7,8 +7,7 @@
 const app = require('../app');
 const debug = require('debug')('awsconnectdashboard:server');
 const http = require('http');
-const { config } = require('dotenv');
-config()
+
 
 /**
  * Get port from environment and store in Express.

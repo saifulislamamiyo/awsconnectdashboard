@@ -1,0 +1,98 @@
+<%- include('_head.html'); %>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+      <%= title %>
+    </h1>
+    <% if (true) { %>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <a href="/" class="btn btn-sm btn-outline-secondary spinner-trigger">Cancel</a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <%- include('_alert.html'); %>
+  <div class="row">
+    <div class="col-md-5">
+      <label for="selUnprovisioned" class="mb-1 fw-bold">Unprovisioned Agents(<%=unprovisionedAgents.length%>)</label>
+
+      <input type="text" class="form-control mb-2" placeholder="Search..." id="txtSearchAgent" style="width: 200px;">
+
+      <select size="15" multiple name="selUnprovisioned" id="selUnprovisioned" class="form-select">
+        <% unprovisionedAgents.forEach(function(agents){%>
+        <option value="<%=agents.agentId%>"><%=agents.agentName%></option>
+        <%});%>
+      </select>
+      <button type="button" class="btn btn-success mt-3" id="btnProvision">&rightarrow; Provision Selected Agents</button>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-5 mt-sm-4 mt-md-0">
+      <label class="mb-1 fw-bold">Provisioned Agents</label>
+
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="provisionedAgentsTable">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">Name</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            <% provisionedAgents.forEach(function(provisionedAgent){ %>
+            <tr>
+              <td>
+                <%=provisionedAgent.agentName%>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+
+
+    </div>
+  </div>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", async (eDOMContentLoaded) => {
+    const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient%>;
+    let selUnprovisioned = document.getElementById('selUnprovisioned');
+    let btnProvision = document.getElementById('btnProvision');
+
+    const table = new simpleDatatables.DataTable("#provisionedAgentsTable", {
+      perPageSelect: false,
+      perPage: 20,
+      layout: {
+        top: "{search}{info}",
+        bottom: "{pager}"
+      },
+    });
+
+    document.querySelector(".dataTable-input").className = 'form-control';
+
+
+    txtSearchAgent.addEventListener("keyup", (ev) => {
+      selUnprovisioned.selectedIndex = -1;
+      filterOptions(ev.target.value, selUnprovisioned.getElementsByTagName('option'));
+    }); // txtSearchAgent.addEventListener("keyup")
+
+    btnProvision.addEventListener("click", async (evClickBtnSave) => {
+      if (!selUnprovisioned.selectedOptions.length) {
+        alert("No Agent Selected");
+        return;
+      }
+      show_loader()
+      for (let i = 0; i < selUnprovisioned.selectedOptions.length; i++) {
+        let agentId = selUnprovisioned.selectedOptions[i].value;
+        let agentName = selUnprovisioned.selectedOptions[i].text;
+        let response = await fetch(`/agent-provision/provision-agent?agentid=${agentId}&agentname=${agentName}`);
+        await sleep(pauseBetweenAPICallInClient);
+      } // next selUnprovisioned.selectedOptions[i]
+      hide_loader();
+      window.location.replace('/agent-provision/provision-agent-success')
+    }); // btnProvision.addEventListener("click")
+  }); //document.addEventListener("DOMContentLoaded")
+</script>
+<%- include('_foot.html'); %>

@@ -1,14 +1,12 @@
-const { awsInstance } = require("./awsconfigloader");
-const connectClient = require("./connectclient");
-const sleep = require('util').promisify(setTimeout)
-const {
-  SearchQueuesCommand,
-} = require("@aws-sdk/client-connect");
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+module.exports = { sleep }
 
+/*
+// TODO: DELETE
 const asyncConLog = async (val) => {
   console.log(val)
 }
-
+// TODO: DELETE
 const getStandardQueues = async () => {
   let nextToken = "";
   let queues = [];
@@ -28,7 +26,7 @@ const getStandardQueues = async () => {
   return queues;
 }
 
-
+// TODO: DELETE
 const getCampaigns = async (nextToken = "") => {
 
   let queues = [];
@@ -43,5 +41,6 @@ const getCampaigns = async (nextToken = "") => {
   let result = await connectClient.send(new SearchQueuesCommand(param));
   return result;
 }
-
+// TODO: DELETE
 module.exports = { asyncConLog, getStandardQueues, sleep, getCampaigns }
+*/

@@ -7,15 +7,15 @@
     <% if (true) { %>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group me-2">
-        <a href="/create-campaign" type="button" class="btn btn-sm btn-outline-secondary">Create Campaign</a>
+        <a href="/create-campaign" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Create Campaign</a>
       </div>
     </div>
     <% } %>
   </div>
   <%- include('_alert.html'); %>
-  <div class="mt-4 mb-4 w-50 text-end">
+  <!-- <div class="mt-4 mb-4 w-50 text-end">
     <input type="text" class="form-control" placeholder="Search..." onkeyup="filterCampaignTable()" id="txtFilterCampaignTable">
-  </div>
+  </div> -->
   <div class="table-responsive">
     <table class="table table-bordered table-striped" id="campaignTable">
       <thead class="table-dark">
@@ -27,17 +27,17 @@
       </thead>
       <tbody class="table-group-divider">
         <% campaigns.forEach(function(campaign){ %>
-        <% if (campaign.Status=='ENABLED') { %>
+        <% if (campaign.campaignStatus==true) { %>
         <tr>
           <td>
-            <%=campaign.Name%>
+            <%=campaign.campaignName%>
           </td>
           <td>
-            <%=campaign.Description%>
+            <%=campaign.campaignDescription%>
           </td>
           <td>
             <div class="form-check form-switch">
-              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.Status=='ENABLED')?'checked':'' %> data-qid="<%=campaign.QueueId%>" data-qname="<%=campaign.Name%>" role="switch">
+              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.campaignStatus==true)?'checked':'' %> data-qid="<%=campaign.campaignId%>" data-qname="<%=campaign.campaignName%>" role="switch">
             </div>
           </td>
         </tr>
@@ -45,21 +45,21 @@
         <% }); %>
         <% let disabledCount = 0; %>
         <% campaigns.forEach(function(campaign){ %>
-        <% if (campaign.Status=='DISABLED') { %>
+        <% if (campaign.campaignStatus==false) { %>
         <%  
             disabledCount += 1; 
             if(disabledCount > 50) return;
             %>
         <tr>
           <td>
-            <%=campaign.Name%>
+            <%=campaign.campaignName%>
           </td>
           <td>
-            <%=campaign.Description%>
+            <%=campaign.campaignDescription%>
           </td>
           <td>
             <div class="form-check form-switch">
-              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.Status=='ENABLED')?'checked':'' %> data-qid="<%=campaign.QueueId%>" data-qname="<%=campaign.Name%>" role="switch">
+              <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.campaignStatus==true)?'checked':'' %> data-qid="<%=campaign.campaignId%>" data-qname="<%=campaign.campaignName%>" role="switch">
             </div>
           </td>
         </tr>
@@ -71,10 +71,14 @@
 </main>
 <script>
   document.addEventListener("DOMContentLoaded", (domContentLoadedEvent) => {
+    const table = new simpleDatatables.DataTable("#campaignTable",{
+      perPageSelect: false,
+      perPage: 20
+    });
     let statusSwitch = document.querySelectorAll('.campaign-status-switch');
     statusSwitch.forEach((item) => {
       item.addEventListener('click', async (switchEvent) => {
-        await fetch(`/set-campaign-status?id=${switchEvent.target.dataset.qid}&qname=${switchEvent.target.dataset.qname}&status=${switchEvent.target.checked}`);
+        await fetch(`/campaigns/set-campaign-status?id=${switchEvent.target.dataset.qid}&qname=${switchEvent.target.dataset.qname}&status=${switchEvent.target.checked}`);
       });
     });
   });

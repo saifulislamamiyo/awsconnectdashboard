@@ -3,7 +3,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', async (req, res, next) =>{
-  res.render('customreport', { title: 'Agent Dashboard' });
+  res.render('agentdashboard', { title: 'Agent Dashboard' });
 });
 
 module.exports = router;

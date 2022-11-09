@@ -1,31 +1,22 @@
-const {
-  ListRoutingProfilesCommand,
-  ListContactFlowsCommand,
-  ListRoutingProfileQueuesCommand,
-  UpdateQueueStatusCommand,
-  ListQueuesCommand, ListPhoneNumbersCommand, ListAgentStatusesCommand, ListUsersCommand } = require("@aws-sdk/client-connect");
+const {pauseBetweenAPICallInClient} = require("../libs/configloader");
 const express = require('express');
 const router = express.Router();
-const connectClient = require('../libs/connectclient');
-const { awsConfig, awsInstance } = require('../libs/awsconfigloader');
-const { campaignModel } = require('../libs/dbmodels');
-const { getStandardQueues } = require('../libs/utils');
+const connect = require('../libs/connectclient');
+const ddb = require("../libs/ddbclient");
 
-const listCampaigns = async (req, res, next) => {
-  let campList = await getStandardQueues();
-  res.render('campaigns', { title: 'Campaigns', campaigns: campList });
-}
 
-router.get('/', listCampaigns);
-router.get('/campaigns', listCampaigns);
+router.get('/', async (req, res, next) => {
+  let campaigns = await ddb.getCampaigns();
+  res.render('campaigns', {
+    title: 'Campaigns',
+    campaigns: campaigns,
+    pauseBetweenAPICallInClient: pauseBetweenAPICallInClient,
+  });
+});
 
 router.get('/set-campaign-status', async (req, res, next) => {
-  let response = (await connectClient.send(
-    new UpdateQueueStatusCommand({
-      InstanceId: awsInstance,
-      QueueId: req.query.id,
-      Status: (req.query.status=='true') ? 'ENABLED' : 'DISABLED',
-    })));
+  await ddb.setCampaignStatus(req.query.qname, req.query.status);
+  await connect.setCampaignStatus(req.query.id, req.query.status);
   res.sendStatus(200);
 });
 

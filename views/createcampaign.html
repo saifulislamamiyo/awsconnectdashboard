@@ -7,7 +7,7 @@
     <% if (true) { %>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group me-2">
-        <a href="/" type="button" class="btn btn-sm btn-outline-secondary">Cancel</a>
+        <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Cancel</a>
       </div>
     </div>
     <% } %>
@@ -16,11 +16,79 @@
   <%- include('_alert.html'); %>
 
   <div class="col-md-8 col-lg-8">
-    <form name="<%=form.formName%>" id="<%=form.formName%>" method="<%=form.formMethod%>" action="<%=form.formAction%>">
-      <%- include('_form.html', {_form: form}); %>
-      <button type="submit" class="btn btn-success" onclick="show_loader()">Create</button>
+    <form name="campaignForm" id="campaignForm" method="post" action="/create-campaign">
+      <div class="mb-3">
+        <label for="campaignName" class="form-label">Campaign Name</label>
+        <input type="text" class="form-control " name="campaignName" id="campaignName" value="">
+        <div class="text-danger mt-1" id="campaignNameFeedback"></div>
+      </div>
+      <div class="mb-3">
+        <label for="campaignDescription" class="form-label">Campaign Description</label>
+        <input type="text" class="form-control " name="campaignDescription" id="campaignDescription" value="" maxlength="128">
+        <div class="invalid-feedback"></div>
+      </div>
+      <div class="mb-3">
+        <label for="phoneNumber" class="form-label">Phone Number</label>
+        <select class="form-select " name="phoneNumber" id="phoneNumber">
+          <% phoneNumbers.forEach((phoneNumber)=>{ %>
+          <option value="<%- phoneNumber.Id %>"><%- phoneNumber.PhoneNumber %></option>
+          <% }) %>
+        </select>
+        <div class="invalid-feedback"></div>
+      </div>
+      <div class="mb-3">
+        <label for="hoursOfOperation" class="form-label">Hours of Operation</label>
+        <select class="form-select " name="hoursOfOperation" id="hoursOfOperation">
+          <% hoursOfOperations.forEach((hoursOfOperation)=>{ %>
+          <option value="<%- hoursOfOperation.Id %>"><%- hoursOfOperation.Name %></option>
+          <% }) %>
+        </select>
+        <div class="invalid-feedback"></div>
+      </div>
+      <button type="submit" class="btn btn-success">Create</button>
     </form>
   </div>
 </main>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient%>;
+    let campaignForm = document.getElementById("campaignForm");
+    let campaignName = document.getElementById("campaignName");
+    let campaignDescription = document.getElementById("campaignDescription");
+    let hoursOfOperation = document.getElementById("hoursOfOperation");
+    let phoneNumber = document.getElementById("phoneNumber");
 
+    let campaignNameFeedback = document.getElementById("campaignNameFeedback");
+    campaignName.addEventListener("change", (ev) => {
+      campaignNameFeedback.textContent = "";
+    });
+    campaignForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!campaignName.value) {
+        campaignNameFeedback.textContent = "Name of Campaign cannot be empty.";
+        return;
+      }
+      let available = await fetch(`/create-campaign/campaign-name-check?campaignname=${campaignName.value}`);
+      available = (await available.json()).available;
+      if (!available) {
+        campaignNameFeedback.textContent = "Campaign Name must be unique.";
+        return;
+      }
+      show_loader();
+      let result = await fetch(`/create-campaign/save-campaign?name=${campaignName.value}&description=${campaignDescription.value}&hoursOfOperationId=${hoursOfOperation.value}&outboundCallerIdNumberId=${phoneNumber.value}`);
+      result = await result.json();
+      await sleep(pauseBetweenAPICallInClient);
+      hide_loader();
+      if (result.message == "LimitExceededException") {
+        let errText = "Campaign/Queue creation limit Exceeded."
+        window.location.replace(`/create-campaign/create-campaign-fail?errtext=${errText}`);
+      } else if (result.message == "InternalServerError") {
+        let errText = "Internal Server Error. Please try after some time."
+        window.location.replace(`/create-campaign/create-campaign-fail?errtext=${errText}`);
+      } else if (result.message == "OK") {
+        window.location.replace('/create-campaign/create-campaign-success');
+      }
+    }); // form submit event
+  }); // DOM load event
+</script>
 <%- include('_foot.html'); %>
