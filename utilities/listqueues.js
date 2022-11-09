@@ -19,13 +19,6 @@ const { listRoutingProfiles, getCampaigns, awsInstance } = require("../libs/conf
 const { connectClient } = require("../libs/connectclient");
 
 (async () => {
-  // let routingProfiles = await listRoutingProfiles();
-  // console.log("\n\n", "Routing Profiles:", "\n\n");
-  // for (r = 0; r < routingProfiles.length; r++) {
-  //   console.log("Id:", routingProfiles[r].Id, "Name:", routingProfiles[r].Name)
-  // }
-  // console.log("\n\n", "Record Count:", routingProfiles.length)
-
   let nextToken = "";
   let queues = [];
   do {
@@ -41,6 +34,8 @@ const { connectClient } = require("../libs/connectclient");
     queues = queues.concat(result.Queues)
     if (nextToken != "") sleep(1000);
   } while (nextToken != "")
-
-  console.log(queues)
+  
+  for(const q of queues) {
+    console.log(q.QueueId, q.Status, q.Name)
+  }
 })();
