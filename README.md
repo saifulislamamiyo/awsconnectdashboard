@@ -29,6 +29,11 @@ Table 2: Cloudcall_Agent_Table
 PK: agentName
 ```
 
+```
+# initiate Cloudcall_Campaign_Table
+node utilities/initdb.js
+```
+
 
 
 ## Run/Stop/Restart:
