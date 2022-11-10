@@ -42,8 +42,22 @@ const schemaAgent = new dynamoose.Schema({
   "timestamps": true,
 });
 
+const schemaPhoneNumber = new dynamoose.Schema({
+  "phoneNumber": {
+    "type": String,
+    "hashKey": true
+  },
+  "phoneNumberId": String,
+  "campaignName": String,
+  "campaignId": String,
+  "author": String,
+}, {
+  "timestamps": true,
+});
+
 const modelCampaign = dynamoose.model("Cloudcall_Campaign_Table", schemaCampaign);
 const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
+const modelPhoneNumber = dynamoose.model("Cloudcall_Phone_Number_Table", schemaPhoneNumber);
 
 const getAgents = async () => {
   let agents = await modelAgent.scan().exec();
@@ -133,7 +147,7 @@ const insertCampaign = async (campaignName, campaignId, campaignDesc, campaignSt
     campaignStatus: campaignStatus,
     author: loggedInUser.userId
   });
-  campaignItem.save();
+  await campaignItem.save();
 } // end insertCampaign()
 
 
@@ -151,9 +165,26 @@ const getCampaignDescription = async (campaignName) => {
   return (camp === undefined ? "" : camp.campaignDescription ?? "");
 } // end updatedCampaign()
 
+const getPhoneNumberCampaignMap = async () => {
+  let phoneCampMap = await modelPhoneNumber.scan().exec();
+  return phoneCampMap;
+}; // end getPhoneNumberCampaignMap()
+
+let insertPhoneNumberCampaignMap = async (campaignId, campaignName, phoneNumberId, phoneNumber) => {
+  let phoneNumberCampaignMapIItem = new modelPhoneNumber({
+    phoneNumber: "+"+String(phoneNumber).trim(),
+    phoneNumberId: phoneNumberId,
+    campaignName: campaignName,
+    campaignId: campaignId,
+    author: loggedInUser.userId
+  });
+  await phoneNumberCampaignMapIItem.save();
+}; // end insertPhoneNumberCampaignMap()
+
 module.exports = {
   modelCampaign,
   modelAgent,
+  modelPhoneNumber,
   getAgents,
   getCampaigns,
   setCampaignStatus,
@@ -165,5 +196,7 @@ module.exports = {
   insertCampaign,
   updatedCampaign,
   getCampaignDescription,
+  getPhoneNumberCampaignMap,
+  insertPhoneNumberCampaignMap,
 };
 
