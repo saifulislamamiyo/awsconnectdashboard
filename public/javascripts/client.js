@@ -4,7 +4,9 @@
 })()
 
 const filterOptions = (needle, optionItems) => {
-  let pat = new RegExp(needle, 'i');
+  let cleanNeedle = needle.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+  let pat = new RegExp(cleanNeedle, 'i');
   for (let i = 0; i < optionItems.length; i++) {
     var item = optionItems[i];
     if (pat.test(item.innerText)) {

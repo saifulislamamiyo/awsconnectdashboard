@@ -16,10 +16,15 @@
   }
   
   document.addEventListener("DOMContentLoaded", (ev) => {
+    
     let spinnerTargets = document.querySelectorAll('.spinner-trigger');
     for (let spinnerTarget of spinnerTargets) {
       spinnerTarget.addEventListener('click', (e) => show_loader())
-    }
+    };
+
+    let dataTableInput = document.querySelector(".dataTable-input");
+    if(dataTableInput) dataTableInput.className = 'form-control';
+
   });
 </script>
 </body>
