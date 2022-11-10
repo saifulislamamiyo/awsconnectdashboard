@@ -13,6 +13,7 @@ const createCampaignRouter = require('./routes/createcampaign');
 const editCampaignRouter = require('./routes/editcampaign');
 const agentDistribution = require('./routes/agentdistribution');
 const agentProvision = require('./routes/agentprovision');
+const inboundNumberProvision = require('./routes/inboundnumberprovision');
 const fault = require('./routes/fault');
 const campaignDashboardRouter = require('./routes/campaigndashboard');
 const agentDashboardRouter = require('./routes/agentdashboard');
@@ -42,6 +43,7 @@ app.use('/create-campaign', createCampaignRouter);
 app.use('/edit-campaign', editCampaignRouter);
 app.use('/agent-provision', agentProvision);
 app.use('/agent-distribution', agentDistribution);
+app.use('/inbound-number-provision', inboundNumberProvision);
 app.use('/fault', fault);
 // TODO: 
 app.use('/agent-dashboard', agentDashboardRouter);
