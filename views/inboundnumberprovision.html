@@ -186,8 +186,8 @@
 
       show_loader();
 
-      let campaignIdVal = selMappedCampaign.options[0].value;
-      let campaignNameVal = selMappedCampaign.options[0].text;
+      let campaignIdVal = selMappedCampaign.options.length>0 ?   selMappedCampaign.options[0].value ?? "" : "";
+      let campaignNameVal = selMappedCampaign.options.length>0 ? selMappedCampaign.options[0].text ?? "" : "";
       let phoneIdVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].value;
       let phoneNumberVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].text;
 
