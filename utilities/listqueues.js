@@ -34,7 +34,7 @@ const { connectClient } = require("../libs/connectclient");
     queues = queues.concat(result.Queues)
     if (nextToken != "") sleep(1000);
   } while (nextToken != "")
-  
+  console.log("Queues:");
   for(const q of queues) {
     console.log(q.QueueId, q.Status, q.Name)
   }
