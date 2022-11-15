@@ -65,7 +65,7 @@
         return phoneNumberCampaignMap[i]
       }
     } // next phoneNumberCampaignMap[i]
-    return "";
+    return [];
   } // end getMappedCampaignOfPhone
 
   const swapSelectedOptions = (fromSel, toSel) => {
@@ -165,7 +165,7 @@
       let mappedCampaignArray = getMappedCampaignOfPhone(phoneNumberToLook, phoneNumberCampaignMapFromDB);
 
       clearSelectOptions(selMappedCampaign);
-      if (mappedCampaignArray != "") {
+      if (mappedCampaignArray.length >0 ) {
         selMappedCampaign.options[0] = new Option(
           mappedCampaignArray.campaignName,
           mappedCampaignArray.campaignId
