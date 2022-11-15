@@ -1,4 +1,4 @@
-const { pauseBetweenAPICallInClient } = require("../libs/configloader");
+const { pauseBetweenAPICallInClient, contactFlowId } = require("../libs/configloader");
 const express = require("express");
 const router = express.Router();
 const { sleep } = require("../libs/utils");
@@ -10,7 +10,7 @@ const {
 
 const {
   getPhoneNumbers,
-  setRoutingProfileQueue
+  addPhoneNumberToContactFlow
 } = require("../libs/connectclient");
 
 
@@ -40,7 +40,8 @@ router.get('/inbound-number-provision-save', async (req, res, next) => {
   let phoneNumberId = req.query.phoneid;
   let phoneNumber = req.query.phoneNumber;
 
-  await insertPhoneNumberCampaignMap(campaignId,campaignName,phoneNumberId,phoneNumber);
+  await insertPhoneNumberCampaignMap(campaignId, campaignName, phoneNumberId, phoneNumber);
+  await addPhoneNumberToContactFlow(phoneNumberId, contactFlowId);
   res.json({ "message": "OK" });
 });
 

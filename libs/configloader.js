@@ -30,5 +30,6 @@ module.exports = {
   pauseBetweenAPICallInServer,
   pauseBetweenAPICallInClient,
   logLevel,
-  defaultOutboundQueueId
+  defaultOutboundQueueId,
+  contactFlowId
 };
