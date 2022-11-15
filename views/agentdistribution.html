@@ -203,7 +203,6 @@
         let agentname = agent.agentName;
         let campaignname = campaignToModify.campaignName;
         let assoc = "true";
-        console.log("Add:", campaignname, agentname, );
         let url = `/agent-distribution/distribute-agent?rpid=${rid}&campaignid=${campaignid}&assoc=${assoc}&agentname=${agentname}&campaignname=${campaignname}`;
         let response = await fetch(url);
         await sleep(pauseBetweenAPICallInClient);
@@ -215,12 +214,10 @@
         let agentname = agent.agentName;
         let campaignname = campaignToModify.campaignName;
         let assoc = "false";
-        console.log("Rem:", campaignname, agentname, );
         let url = `/agent-distribution/distribute-agent?rpid=${rid}&campaignid=${campaignid}&assoc=${assoc}&agentname=${agentname}&campaignname=${campaignname}`;
         let response = await fetch(url);
         await sleep(pauseBetweenAPICallInClient);
       }
-      console.log("Done.");
       await sleep(pauseBetweenAPICallInClient);
       hide_loader();
       window.location.replace('/agent-distribution/agent-distribution-success');

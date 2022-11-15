@@ -73,33 +73,6 @@ const setCampaignStatus = async (campaignName, campaignStatus) => {
   await modelCampaign.update({ "campaignName": campaignName, "campaignStatus": (campaignStatus == 'true' ? true : false) });
 } // end setCampaignStatus()
 
-const getUnprovisionedAgents = async (allAgentsFromConnect) => {
-  let unprovisionedAgents = [];
-  let allAgentsIdFromDB = [];
-  let allAgentsFromDB = await modelAgent.scan().exec();
-
-  for (let i = 0; i < allAgentsFromDB.length; i++) {
-    allAgentsIdFromDB[allAgentsIdFromDB.length] = allAgentsFromDB[i].agentId;
-    let dynaRPName = routingProfilePrefix + allAgentsFromDB[i].agentId;
-    if (dynaRPName != allAgentsFromDB[i].routingProfileName) {
-      unprovisionedAgents[unprovisionedAgents.length] = {
-        agentName: allAgentsFromDB[i].agentName,
-        agentId: allAgentsFromDB[i].agentId
-      };
-    }
-  } // next allAgentsFromDB[i]
-
-  for (let i = 0; i < allAgentsFromConnect.length; i++) {
-    if (!allAgentsIdFromDB.includes(allAgentsFromConnect[i].Id)) {
-      unprovisionedAgents[unprovisionedAgents.length] = {
-        agentName: allAgentsFromConnect[i].Username,
-        agentId: allAgentsFromConnect[i].Id
-      };
-    }
-  } // next allAgentsFromConnect[i]
-
-  return unprovisionedAgents;
-} // end getUnprovisionedAgents()
 
 const insertAgent = async (agentName, agentId, routingProfileName, routingProfileId) => {
   let newAgent = new modelAgent({
@@ -188,7 +161,6 @@ module.exports = {
   getAgents,
   getCampaigns,
   setCampaignStatus,
-  getUnprovisionedAgents,
   insertAgent,
   addCampaignToAgent,
   removeCampaignFromAgent,
