@@ -59,13 +59,13 @@
 </main>
 <script>
   function getMappedCampaignOfPhone(phoneNumber, phoneNumberCampaignMap) {
-    let mappedAgentArray = [];
+    
     for (let i = 0; i < phoneNumberCampaignMap.length; i++) {
       if (phoneNumber == phoneNumberCampaignMap[i].phoneNumber) {
         return phoneNumberCampaignMap[i]
       }
     } // next phoneNumberCampaignMap[i]
-    return [];
+    return {};
   } // end getMappedCampaignOfPhone
 
   const swapSelectedOptions = (fromSel, toSel) => {
@@ -165,8 +165,10 @@
       let mappedCampaignArray = getMappedCampaignOfPhone(phoneNumberToLook, phoneNumberCampaignMapFromDB);
 
       clearSelectOptions(selMappedCampaign);
-      if (mappedCampaignArray.length >0 ) {
-        selMappedCampaign.options[0] = new Option(
+      // console.log(Object.keys(mappedCampaignArray));
+      let campName = mappedCampaignArray.campaignName ?? "";
+      if (campName!="") {
+        selMappedCampaign.options[selMappedCampaign.options.length] = new Option(
           mappedCampaignArray.campaignName,
           mappedCampaignArray.campaignId
         );
