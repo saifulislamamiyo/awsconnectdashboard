@@ -44,7 +44,7 @@ const addPhoneNumberToContactFlow = async (phoneNumberId, contactFlowId) => {
     console.log("Attempting addPhoneNumberToContactFlow- PhoneNumberId:",phoneNumberId,", ContactFlowId:", contactFlowId);
     await connectClient.send(cmd);
   } catch (e) {
-    console.log(e.name, e.message);
+    console.log("Error: ", e.name, e.message);
     return null;
   }
 } // end addPhoneNumberToContactFlow()

@@ -41,7 +41,11 @@ router.get('/inbound-number-provision-save', async (req, res, next) => {
   let phoneNumber = req.query.phoneNumber;
 
   await insertPhoneNumberCampaignMap(campaignId, campaignName, phoneNumberId, phoneNumber);
-  await addPhoneNumberToContactFlow(phoneNumberId, contactFlowId);
+  if (campaignId != "") {
+    await addPhoneNumberToContactFlow(phoneNumberId, contactFlowId);
+  } else {
+    console.log("Inbound Number UN-Provision operation. Escaping AssociatePhoneNumberContactFlowCommand API call.")
+  }
   res.json({ "message": "OK" });
 });
 
