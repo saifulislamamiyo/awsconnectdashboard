@@ -42,7 +42,7 @@
             <% provisionedAgents.forEach(function(provisionedAgent){ %>
             <tr>
               <td>
-                <%=provisionedAgent.agentName%>
+                <%=provisionedAgent.Username%>
               </td>
             </tr>
             <% }); %>
@@ -69,8 +69,6 @@
         bottom: "{pager}"
       },
     });
-
-    document.querySelector(".dataTable-input").className = 'form-control';
 
 
     txtSearchAgent.addEventListener("keyup", (ev) => {

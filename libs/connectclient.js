@@ -26,12 +26,28 @@ const {
   ListHoursOfOperationsCommand,
   DescribeQueueCommand,
   UpdateQueueHoursOfOperationCommand,
-  UpdateQueueOutboundCallerConfigCommand
+  UpdateQueueOutboundCallerConfigCommand,
+  AssociatePhoneNumberContactFlowCommand
 } = require("@aws-sdk/client-connect");
 
 
 
 const connectClient = new ConnectClient(awsConfig);
+
+const addPhoneNumberToContactFlow = async (phoneNumberId, contactFlowId) => {
+  let cmd = new AssociatePhoneNumberContactFlowCommand({
+    InstanceId: awsInstance,
+    PhoneNumberId: phoneNumberId,
+    ContactFlowId: contactFlowId,
+  });
+  try {
+    console.log("Attempting addPhoneNumberToContactFlow- PhoneNumberId:",phoneNumberId,", ContactFlowId:", contactFlowId);
+    await connectClient.send(cmd);
+  } catch (e) {
+    console.log("Error: ", e.name, e.message);
+    return null;
+  }
+} // end addPhoneNumberToContactFlow()
 
 const getCampaignDetails = async (campaignId) => {
   let cmd = new DescribeQueueCommand({
@@ -246,4 +262,5 @@ module.exports = {
   getCampaignDetails,
   updateHourOfOperations,
   updateOutboundCallerIdNumberId,
+  addPhoneNumberToContactFlow,
 };

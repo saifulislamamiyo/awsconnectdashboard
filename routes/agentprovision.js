@@ -1,15 +1,76 @@
-const { pauseBetweenAPICallInClient, routingProfilePrefix } = require("../libs/configloader");
+const { pauseBetweenAPICallInClient, pauseBetweenAPICallInServer, routingProfilePrefix } = require("../libs/configloader");
 const express = require('express');
 const router = express.Router();
-const { getUnprovisionedAgents, insertAgent, getAgents: getAgentsFromDB } = require("../libs/ddbclient");
-const { createUserDynamicRouteProfile, getAgents: getAgentsFromConnect, listRoutingProfiles } = require("../libs/connectclient");
+const { insertAgent,
+  getAgents: getAgentsFromDB,
+  modelAgent
+} = require("../libs/ddbclient");
+
+const {
+  getRoutingProfileName,
+  getRoutingProfileId,
+  createUserDynamicRouteProfile,
+  getAgents: getAgentsFromConnect,
+  listRoutingProfiles
+} = require("../libs/connectclient");
+const { sleep } = require("../libs/utils");
+
+
+
+
+const getUnprovisionedAgents = async (allAgentsFromConnect) => {
+  let unprovisionedAgents = [];
+  let allAgentsIdFromDB = [];
+  let allAgentsFromDB = await getAgentsFromDB();
+
+  for (let i = 0; i < allAgentsFromDB.length; i++) {
+    // prepare all agents id array
+    allAgentsIdFromDB[allAgentsIdFromDB.length] = allAgentsFromDB[i].agentId;
+    // by convention get above agents dyna route profile
+    let dynaRPName = routingProfilePrefix + allAgentsFromDB[i].agentId;
+
+    // get routing profile name from connect
+    let rpIdOfAgent = await getRoutingProfileId(allAgentsFromDB[i].agentId)
+    await sleep(pauseBetweenAPICallInServer);
+    let rpNameOfAgent = await getRoutingProfileName(rpIdOfAgent)
+
+    // if above agent from db does not have dyna-route-profile, add him to unprovisioned array
+    if (dynaRPName != rpNameOfAgent) {
+      unprovisionedAgents[unprovisionedAgents.length] = {
+        agentName: allAgentsFromDB[i].agentName,
+        agentId: allAgentsFromDB[i].agentId
+      };
+    }
+  } // next allAgentsFromDB[i]
+
+  for (let i = 0; i < allAgentsFromConnect.length; i++) {
+    // if an agent from connect does not exist in db, add him in unprovisioned array
+    if (!allAgentsIdFromDB.includes(allAgentsFromConnect[i].Id)) {
+      unprovisionedAgents[unprovisionedAgents.length] = {
+        agentName: allAgentsFromConnect[i].Username,
+        agentId: allAgentsFromConnect[i].Id
+      };
+    }
+  } // next allAgentsFromConnect[i]
+
+  return unprovisionedAgents;
+} // end getUnprovisionedAgents()
+
+
+
 
 router.get("/", async (req, res, next) => {
-
-  let allAgentsFromDB = await getAgentsFromDB();
   let allAgentsFromConnect = await getAgentsFromConnect();
   let unprovisionedAgents = await getUnprovisionedAgents(allAgentsFromConnect);
-  let provisionedAgents = allAgentsFromDB.filter(a => allAgentsFromConnect.map(b => b.Id).includes(a.agentId));
+  let provisionedAgents = [];
+  let allunprovisionedAgentsId = unprovisionedAgents.map(b => b.agentId);
+
+  for (let n = 0; n < allAgentsFromConnect.length; n++) {
+    let idOfAgent = allAgentsFromConnect[n].Id;
+    if (!allunprovisionedAgentsId.includes(idOfAgent)) {
+      provisionedAgents[provisionedAgents.length] = allAgentsFromConnect[n];
+    }
+  }
 
   res.render("agentprovision", {
     title: "Agent Provision",
@@ -23,6 +84,7 @@ router.get("/", async (req, res, next) => {
 router.get("/provision-agent", async (req, res, next) => {
   let expectedRPName = routingProfilePrefix + req.query.agentid;
   try {
+    // todo: fix
     let dynaProfile = await createUserDynamicRouteProfile(req.query.agentid, req.query.agentname);
     await insertAgent(
       dynaProfile.userName,

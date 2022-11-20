@@ -2,12 +2,13 @@ const { config } = require('dotenv');
 const os = require('os');
 config();
 
-let pauseBetweenAPICallInServer = process.env.PAUSE_BETWEEN_API_CALL_IN_SERVER
-let pauseBetweenAPICallInClient = process.env.PAUSE_BETWEEN_API_CALL_IN_CLIENT
-let routingProfilePrefix = process.env.ROUTING_PROFILE_PREFIX
-let awsInstance = process.env.INSTANCE_ID
-let defaultOutboundQueueId = process.env.DEFAULT_OUTBOUND_QUEUE_ID
-let logLevel = process.env.LOG_LEVEL
+let pauseBetweenAPICallInServer = process.env.PAUSE_BETWEEN_API_CALL_IN_SERVER;
+let pauseBetweenAPICallInClient = process.env.PAUSE_BETWEEN_API_CALL_IN_CLIENT;
+let routingProfilePrefix = process.env.ROUTING_PROFILE_PREFIX;
+let awsInstance = process.env.INSTANCE_ID;
+let defaultOutboundQueueId = process.env.DEFAULT_OUTBOUND_QUEUE_ID;
+let contactFlowId = process.env.CONTACT_FLOW_ID;
+let logLevel = process.env.LOG_LEVEL;
 let awsConfig;
 
 if (os.hostname().indexOf("asifsmbp.local") > -1) {
@@ -29,5 +30,6 @@ module.exports = {
   pauseBetweenAPICallInServer,
   pauseBetweenAPICallInClient,
   logLevel,
-  defaultOutboundQueueId
+  defaultOutboundQueueId,
+  contactFlowId
 };

@@ -87,5 +87,5 @@ let initAgentDB = async () => {
 
 
 // // Run
-// initAgentDB();
+initAgentDB();
 initCampaignDB();

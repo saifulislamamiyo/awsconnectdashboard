@@ -39,6 +39,7 @@
             <%=campaign.campaignDescription%>
           </td>
           <td>
+            <span class="d-none"><%=campaign.campaignStatus%></span>
             <div class="form-check form-switch">
               <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.campaignStatus==true)?'checked':'' %> data-qid="<%=campaign.campaignId%>" data-qname="<%=campaign.campaignName%>" role="switch">
             </div>
@@ -64,6 +65,7 @@
             <%=campaign.campaignDescription%>
           </td>
           <td>
+            <span class="d-none"><%=campaign.campaignStatus%></span>
             <div class="form-check form-switch">
               <input class="form-check-input campaign-status-switch" type="checkbox" <%-(campaign.campaignStatus==true)?'checked':'' %> data-qid="<%=campaign.campaignId%>" data-qname="<%=campaign.campaignName%>" role="switch">
             </div>

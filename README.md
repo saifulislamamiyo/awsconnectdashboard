@@ -27,6 +27,9 @@ PK: campaignName
 
 Table 2: Cloudcall_Agent_Table
 PK: agentName
+
+Table 3: Cloudcall_Phone_Number_Table
+PK: phoneNumber
 ```
 
 ```
