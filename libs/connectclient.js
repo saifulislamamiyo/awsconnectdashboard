@@ -27,7 +27,8 @@ const {
   DescribeQueueCommand,
   UpdateQueueHoursOfOperationCommand,
   UpdateQueueOutboundCallerConfigCommand,
-  AssociatePhoneNumberContactFlowCommand
+  AssociatePhoneNumberContactFlowCommand,
+  DescribePhoneNumberCommand,
 } = require("@aws-sdk/client-connect");
 
 
@@ -41,7 +42,7 @@ const addPhoneNumberToContactFlow = async (phoneNumberId, contactFlowId) => {
     ContactFlowId: contactFlowId,
   });
   try {
-    console.log("Attempting addPhoneNumberToContactFlow- PhoneNumberId:",phoneNumberId,", ContactFlowId:", contactFlowId);
+    console.log("Attempting addPhoneNumberToContactFlow- PhoneNumberId:", phoneNumberId, ", ContactFlowId:", contactFlowId);
     await connectClient.send(cmd);
   } catch (e) {
     console.log("Error: ", e.name, e.message);
@@ -78,6 +79,31 @@ const getPhoneNumbers = async () => {
   )).PhoneNumberSummaryList;
   return phNums;
 };
+
+
+const getPhoneNumbersWithDesc = async () => {
+  let phArr = [];
+  let phNums = (await connectClient.send(
+    new ListPhoneNumbersCommand({
+      InstanceId: awsInstance
+    })
+  )).PhoneNumberSummaryList;
+
+  for (let ph of phNums) {
+    await sleep(pauseBetweenAPICallInServer);
+    phDesc = (await connectClient.send(
+      new DescribePhoneNumberCommand({
+        InstanceId: awsInstance,
+        PhoneNumberId: ph.Id
+      })
+    )).ClaimedPhoneNumberSummary.PhoneNumberDescription;
+    phArr[phArr.length] = { "Id": ph.Id, "PhoneNumber": ph.PhoneNumber, "PhoneNumberDesc": phDesc };
+  }
+  // console.log(phNums);
+  // console.log(phArr);
+  return phArr;
+};
+
 
 const getCampaigns = async (nextToken = "") => {
   let queues = [];
@@ -263,4 +289,5 @@ module.exports = {
   updateHourOfOperations,
   updateOutboundCallerIdNumberId,
   addPhoneNumberToContactFlow,
+  getPhoneNumbersWithDesc,
 };

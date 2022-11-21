@@ -1,5 +1,5 @@
 <%- include('_head.html'); %>
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">
       <%= title %>
@@ -14,14 +14,12 @@
   </div>
   <%- include('_alert.html'); %>
   <div class="row g-3">
-    <div class="col-md-4">
+    <div class="col-sm-5 col-md-5">
       <label for="selPhoneNumber" class="mb-1">Phone Number</label>
       <input type="text" class="form-control mb-2" placeholder="Search Phone..." id="txtSearchPhone">
       <select size="10" name="selPhoneNumber" id="selPhoneNumber" class="form-select">
         <% phoneNumbers.forEach(function(phoneNumber){%>
-
-        <option value="<%=phoneNumber.Id%>"><%=phoneNumber.PhoneNumber%></option>
-
+        <option value="<%=phoneNumber.Id%>"><%=phoneNumber.PhoneNumber%><%=String.fromCharCode(28);%>-&nbsp;<%=phoneNumber.PhoneNumberDesc%></option>
         <%});%>
       </select>
     </div>
@@ -36,7 +34,7 @@
     </div>
     <div class="col-md-2 text-center">
       <label for="" class="mt-md-5"></label>
-      <div class="form-control py-4 mt-md-3 mb-sm-3" style="height: 76%;">
+      <div class="form-control py-4 mt-md-2 mb-sm-3" style="height: 76%;">
         <div class="btn-group-vertical btn-group-sm mt-md-4">
           <button type="button" class="btn btn-primary" id="btnAdd">&leftarrow; Add</button>
           <button type="button" class="btn btn-danger" id="btnRem">&rightarrow; Rem</button>
@@ -47,7 +45,7 @@
     <div class="col-md-3">
       <label for="selAllCampaigns" class="mb-1">All Campaigns</label>
       <input type="text" class="form-control mb-2" placeholder="Search Campaign..." id="txtSearchAllCampaign">
-      <select size="10" name="selAllCampaigns" id="selAllCampaigns" class="form-select">
+      <select size="11" name="selAllCampaigns" id="selAllCampaigns" class="form-select">
         <% campaigns.forEach(function(campaign){%>
         <% if (campaign.campaignStatus) {%>
         <option value="<%=campaign.campaignId%>"><%=campaign.campaignName%></option>
@@ -56,10 +54,10 @@
       </select>
     </div>
   </div>
-</main>
+
 <script>
   function getMappedCampaignOfPhone(phoneNumber, phoneNumberCampaignMap) {
-    
+
     for (let i = 0; i < phoneNumberCampaignMap.length; i++) {
       if (phoneNumber == phoneNumberCampaignMap[i].phoneNumber) {
         return phoneNumberCampaignMap[i]
@@ -99,13 +97,13 @@
     }; // next i
   }; // end function swapSelectedOptions
 
- 
+
 
   document.addEventListener("DOMContentLoaded", async (eDOMContentLoaded) => {
     const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient%>;
     const phoneNumberCampaignMapFromDB = <%-JSON.stringify(phoneNumberCampaignMap)%>;
     const allPhoneNumber = <%-JSON.stringify(phoneNumbers)%>;
-    
+
     let selPhoneNumber = document.getElementById('selPhoneNumber');
     let selMappedCampaign = document.getElementById('selMappedCampaign');
     let selAllCampaigns = document.getElementById('selAllCampaigns');
@@ -160,20 +158,18 @@
     }); // btnRem click event listener
 
     selPhoneNumber.addEventListener('change', (evClickSelPhoneNumber) => {
-      let phoneNumberToLook = evClickSelPhoneNumber.target.options[evClickSelPhoneNumber.target.selectedIndex].text;
-
+      let phoneNumberValWithDesc = evClickSelPhoneNumber.target.options[evClickSelPhoneNumber.target.selectedIndex].text;
+      let phoneNumberToLook = phoneNumberValWithDesc.split(String.fromCharCode(28))[0];
+      phoneNumberToLook = phoneNumberToLook.trim();
       let mappedCampaignArray = getMappedCampaignOfPhone(phoneNumberToLook, phoneNumberCampaignMapFromDB);
-
       clearSelectOptions(selMappedCampaign);
-      // console.log(Object.keys(mappedCampaignArray));
       let campName = mappedCampaignArray.campaignName ?? "";
-      if (campName!="") {
+      if (campName != "") {
         selMappedCampaign.options[selMappedCampaign.options.length] = new Option(
           mappedCampaignArray.campaignName,
           mappedCampaignArray.campaignId
         );
       }
-      
     }); // selPhoneNumber.addEventListener('change'
 
     btnSave.addEventListener("click", async (evClickBtnSave) => {
@@ -181,18 +177,14 @@
         alert("No Phone Number Selected");
         return;
       }
-      // if (!selMappedCampaign.options.length) {
-      //   alert("No Campaign Added to Provision");
-      //   return;
-      // }
 
-      show_loader();
-
-      let campaignIdVal = selMappedCampaign.options.length>0 ?   selMappedCampaign.options[0].value ?? "" : "";
-      let campaignNameVal = selMappedCampaign.options.length>0 ? selMappedCampaign.options[0].text ?? "" : "";
+      let campaignIdVal = selMappedCampaign.options.length > 0 ? selMappedCampaign.options[0].value ?? "" : "";
+      let campaignNameVal = selMappedCampaign.options.length > 0 ? selMappedCampaign.options[0].text ?? "" : "";
       let phoneIdVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].value;
-      let phoneNumberVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].text;
-
+      let phoneNumberValWithDesc = selPhoneNumber.options[selPhoneNumber.selectedIndex].text;
+      let phoneNumberVal = phoneNumberValWithDesc.split(String.fromCharCode(28))[0];
+      phoneNumberVal = phoneNumberVal.trim();
+      show_loader();
       let fetchUrl = `/inbound-number-provision/inbound-number-provision-save?campaignid=${campaignIdVal}&campaignname=${campaignNameVal}&phoneid=${phoneIdVal}&phoneNumber=${phoneNumberVal}`;
       await fetch(fetchUrl);
       hide_loader();
