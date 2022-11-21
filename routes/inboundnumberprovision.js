@@ -5,24 +5,24 @@ const { sleep } = require("../libs/utils");
 const {
   getCampaigns,
   getPhoneNumberCampaignMap,
-  insertPhoneNumberCampaignMap
+  insertPhoneNumberCampaignMap,
 } = require("../libs/ddbclient");
 
 const {
-  getPhoneNumbers,
-  addPhoneNumberToContactFlow
+  getPhoneNumbersWithDesc,
+  addPhoneNumberToContactFlow,
 } = require("../libs/connectclient");
 
 
 
 router.get("/", async (req, res, next) => {
   let campaigns = await getCampaigns();
-  let phoneNumbers = await getPhoneNumbers();
+  let phoneNumbersWithDesc = await getPhoneNumbersWithDesc();
   let phoneNumberCampaignMap = await getPhoneNumberCampaignMap();
   res.render("inboundnumberprovision", {
     title: "Inbound Number Provision",
     campaigns: campaigns,
-    phoneNumbers: phoneNumbers,
+    phoneNumbers: phoneNumbersWithDesc,
     phoneNumberCampaignMap: phoneNumberCampaignMap,
     pauseBetweenAPICallInClient: pauseBetweenAPICallInClient,
   });
