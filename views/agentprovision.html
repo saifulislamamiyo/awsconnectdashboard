@@ -21,7 +21,7 @@
 
       <select size="15" multiple name="selUnprovisioned" id="selUnprovisioned" class="form-select">
         <% unprovisionedAgents.forEach(function(agents){%>
-        <option value="<%=agents.agentId%>"><%=agents.agentName%></option>
+        <option value="<%=agents.Id%>"><%=agents.Username%></option>
         <%});%>
       </select>
       <button type="button" class="btn btn-success mt-3" id="btnProvision">&rightarrow; Provision Selected Agents</button>
@@ -42,7 +42,7 @@
             <% provisionedAgents.forEach(function(provisionedAgent){ %>
             <tr>
               <td>
-                <%=provisionedAgent.Username%>
+                <%=provisionedAgent.agentName%>
               </td>
             </tr>
             <% }); %>
