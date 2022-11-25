@@ -6,8 +6,10 @@
     "test": "nyc mocha --recursive --timeout 10000",
     "dev": "DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
     "start": "node ./bin/www",
-    "pm-start": "./node_modules/pm2/bin/pm2 start bin/www --name ccconfigpanel --time --log logs/logs.txt",
-    "pm-stop": "./node_modules/pm2/bin/pm2 stop ccconfigpanel"
+    "pm-loc-start": "./node_modules/pm2/bin/pm2 start bin/www --name ccconfigpanel-loc --time --log logs/logs.txt",
+    "pm-loc-stop": "./node_modules/pm2/bin/pm2 stop ccconfigpanel-loc",
+    "pm-start": "pm2 start bin/www --name ccconfigpanel --time --log logs/logs.txt",
+    "pm-stop": "pm2 stop ccconfigpanel"
   },
   "dependencies": {
     "@aws-sdk/client-connect": "^3.188.0",
@@ -22,7 +24,6 @@
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "pm2": "^5.2.2",
     "winston": "^3.8.2"
   },
   "devDependencies": {
