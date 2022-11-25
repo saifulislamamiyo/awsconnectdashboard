@@ -60,15 +60,15 @@ const getUnprovisionedAgents = async (allAgentsFromConnect) => {
 
 
 router.get("/", async (req, res, next) => {
-  let allAgentsFromConnect = await getAgentsFromConnect();
-  let unprovisionedAgents = await getUnprovisionedAgents(allAgentsFromConnect);
-  let provisionedAgents = [];
-  let allunprovisionedAgentsId = unprovisionedAgents.map(b => b.agentId);
+  let allAgentsFromConnect = await getAgentsFromConnect(); //UserSummaryList: Username, Id
+  let provisionedAgents = await getAgentsFromDB(); // agentName, agentId
+  let unprovisionedAgents = [];
+  let provisionedAgentsId = provisionedAgents.map(b => b.agentId);
 
   for (let n = 0; n < allAgentsFromConnect.length; n++) {
     let idOfAgent = allAgentsFromConnect[n].Id;
-    if (!allunprovisionedAgentsId.includes(idOfAgent)) {
-      provisionedAgents[provisionedAgents.length] = allAgentsFromConnect[n];
+    if (!provisionedAgentsId.includes(idOfAgent)) {
+      unprovisionedAgents[unprovisionedAgents.length] = allAgentsFromConnect[n];
     }
   }
 
@@ -97,7 +97,7 @@ router.get("/provision-agent", async (req, res, next) => {
     console.log(e);
     if (e.name == "DuplicateResourceException") {
       console.log("Handling DuplicateResourceException");
-      let allRoutingProfiles = await listRoutingProfiles();
+      let allRoutingProfiles = await listRoutingProfiles(); // from connect
       for (let r = 0; r < allRoutingProfiles.length; r++) {
         if (allRoutingProfiles[r].Name = expectedRPName) {
           await insertAgent(req.query.agentname, req.query.agentid, allRoutingProfiles[r].Name, allRoutingProfiles[r].Id)
