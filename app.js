@@ -5,6 +5,10 @@ const path = require('path');
 const logger = require('morgan');
 const session = require('express-session');
 const flash = require('express-flash');
+const compression = require('express-compression');
+const minifyHTML = require('express-minify-html-2');
+
+const { pageCompress } = require('./libs/configloader');
 
 /* Import routes */
 const campaignsRouter = require('./routes/campaigns');
@@ -23,16 +27,40 @@ const app = express();
 app.engine('.html', require('ejs').__express);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
+if (pageCompress == 1) {
+  console.log("PAGE COMPRESSION ON");
+  app.use(minifyHTML({
+    override: true,
+    exception_url: false,
+    htmlMinifier: {
+      removeComments: true,
+      collapseWhitespace: true,
+      collapseBooleanAttributes: false,
+      removeAttributeQuotes: false,
+      removeEmptyAttributes: false,
+      minifyJS: true
+    }
+  }));
+  //===========================
+  app.use(compression());
+  //===========================
+} // end if page compress
+
+
+
+
+
+// ======================
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+// TODO: Session secret
 app.use(session({
   secret: 'Todo: Load from env config',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false, httpOnly:true,  maxAge: 1000 * 36000 },
+  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 36000 },
 }));
 app.use(flash());
 
@@ -45,7 +73,7 @@ app.use('/agent-provision', agentProvision);
 app.use('/agent-distribution', agentDistribution);
 app.use('/inbound-number-provision', inboundNumberProvision);
 app.use('/fault', fault);
-// TODO: 
+// TODO: reports and dashboards
 app.use('/agent-dashboard', agentDashboardRouter);
 app.use('/campaign-dashboard', campaignDashboardRouter);
 
