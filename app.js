@@ -7,8 +7,7 @@ const session = require('express-session');
 const flash = require('express-flash');
 const compression = require('express-compression');
 const minifyHTML = require('express-minify-html-2');
-
-const { pageCompress } = require('./libs/configloader');
+const { pageCompress, sessionSecret } = require('./libs/configloader');
 
 /* Import routes */
 const campaignsRouter = require('./routes/campaigns');
@@ -41,23 +40,14 @@ if (pageCompress == 1) {
       minifyJS: true
     }
   }));
-  //===========================
   app.use(compression());
-  //===========================
 } // end if page compress
-
-
-
-
-
-// ======================
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// TODO: Session secret
 app.use(session({
-  secret: 'Todo: Load from env config',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 36000 },

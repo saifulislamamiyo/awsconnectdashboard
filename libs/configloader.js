@@ -10,6 +10,7 @@ let defaultOutboundQueueId = process.env.DEFAULT_OUTBOUND_QUEUE_ID;
 let contactFlowId = process.env.CONTACT_FLOW_ID;
 let logLevel = process.env.LOG_LEVEL;
 let pageCompress = process.env.PAGE_COMPRESS;
+let sessionSecret = process.env.SESSION_SECRET;
 let awsConfig;
 
 if (os.hostname().indexOf("asifsmbp.local") > -1) {
@@ -34,4 +35,5 @@ module.exports = {
   defaultOutboundQueueId,
   contactFlowId,
   pageCompress,
+  sessionSecret,
 };
