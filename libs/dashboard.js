@@ -1,28 +1,4 @@
 /**
-* connect:
-*  getCampaignDashboardDataFromConnect
-*  getAgentDashboardDataFromConnect
-*/
-
-/**
-* ddb:
-*  saveCampaignDashboardData
-*  saveAgentDashboardData
-*  loadCampaignDashboardData
-*  loadAgentDashboardData
-*/
-
-/**
-* Data acquisition 
-*  setInterval(async ()=>{
-*    await getCampaignDashboardDataFromConnect;
-*    await saveCampaignDashboardData;
-*    await getAgentDashboardDataFromConnect;
-*    await saveAgentDashboardData;
-*  }, dashboardDataAcquisitionInterval);
-*/
-
-/**
 * Imports
 */
 const { dashboardDataAcquisitionInterval, enableDashboardDataAcquisition } = require('./configloader');
@@ -51,7 +27,34 @@ const sendCampaignDashboard = async (io) => {
 
 
 /**
-* Data acquisition 
+* Data acquisition
+*/
+
+/**
+* Data acquisition TODO: 
+* Remove getCampaignDashboardDataFromConnect and getAgentDashboardDataFromConnect from connectclient.js
+* Implement getCampaignDashboardDataFromConnect and getAgentDashboardDataFromConnect in dashboard.js.
+*
+* getCampaignDashboardDataFromConnect:
+*   getActiveCampaigns from DDB
+*   getDashboardMetric from CONNECT
+*   saveCampaignDashboardData in DDB
+*
+* getAgentDashboardDataFromConnect:
+*   getActiveCampaigns from DDB
+*   getAgentMetric from CONNECT
+*   saveAgentDashboardData in DDB
+*
+* Acquisition interval flow will be like -
+*
+* if (enableDashboardDataAcquisition==1) {
+*   setInterval(async () => {
+*     await getCampaignDashboardDataFromConnect();
+*     await getAgentDashboardDataFromConnect();
+*   }, dashboardDataAcquisitionInterval);
+* }
+*
+*
 */
 if (enableDashboardDataAcquisition==1) {
   setInterval(async () => {
@@ -61,6 +64,7 @@ if (enableDashboardDataAcquisition==1) {
     await saveAgentDashboardData(data);
   }, dashboardDataAcquisitionInterval);
 }
+
 /** 
 * Exports
 */
