@@ -146,6 +146,17 @@ const getCampaigns = async () => {
   return campaigns;
 } // end getCampaigns()
 
+const getActiveCampaigns = async () => {
+  let campaigns = await modelCampaign.scan().where('campaignStatus').eq(true).exec();
+  let campObject = {};
+  let campIdArr = []
+  for(let n=0;n<campaigns.length;n++){
+    campObject[campaigns[n].campaignId] = campaigns[n].campaignName;
+    campIdArr[campIdArr.length] = campaigns[n].campaignId;
+  }
+  return {'details': campObject, 'summary': campIdArr};
+} // end getActiveCampaigns()
+
 const setCampaignStatus = async (campaignName, campaignStatus) => {
   await modelCampaign.update({ "campaignName": campaignName, "campaignStatus": (campaignStatus == 'true' ? true : false) });
 } // end setCampaignStatus()
@@ -253,5 +264,6 @@ module.exports = {
   saveAgentDashboardData,
   loadCampaignDashboardData,
   loadAgentDashboardData,
+  getActiveCampaigns,
 };
 

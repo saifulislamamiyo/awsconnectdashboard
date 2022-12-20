@@ -25,17 +25,17 @@
 /**
 * Imports
 */
-const { dashboardDataAcquisitionInterval } = require('./configloader');
+const { dashboardDataAcquisitionInterval, enableDashboardDataAcquisition } = require('./configloader');
 
 const {
-  saveCampaignDashboardData, 
-  saveAgentDashboardData, 
-  loadCampaignDashboardData, 
+  saveCampaignDashboardData,
+  saveAgentDashboardData,
+  loadCampaignDashboardData,
   loadAgentDashboardData
 } = require('./ddbclient');
 
 const {
-  getCampaignDashboardDataFromConnect, 
+  getCampaignDashboardDataFromConnect,
   getAgentDashboardDataFromConnect,
 } = require('./connectclient');
 
@@ -53,14 +53,14 @@ const sendCampaignDashboard = async (io) => {
 /**
 * Data acquisition 
 */
-  setInterval(async ()=>{
+if (enableDashboardDataAcquisition==1) {
+  setInterval(async () => {
     let data = await getCampaignDashboardDataFromConnect();
     await saveCampaignDashboardData(data);
     data = await getAgentDashboardDataFromConnect();
     await saveAgentDashboardData(data);
   }, dashboardDataAcquisitionInterval);
-
-
+}
 /** 
 * Exports
 */

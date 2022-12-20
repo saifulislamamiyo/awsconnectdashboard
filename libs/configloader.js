@@ -15,6 +15,7 @@ let awsConfig;
 let campaignDashboardRefreshInterval = process.env.CAMPAIGN_DASHBOARD_REFRESH_INTERVAL;
 let agentDashboardRefreshInterval = process.env.AGENT_DASHBOARD_REFRESH_INTERVAL;
 let dashboardDataAcquisitionInterval = process.env.DASHBOARD_DATA_ACQUISITION_INTERVAL;
+let enableDashboardDataAcquisition = process.env.ENABLE_DASHBOARD_DATA_ACQUISITION;
 
 if (os.hostname().indexOf("asifsmbp.local") > -1) {
   awsConfig = {
@@ -42,4 +43,5 @@ module.exports = {
   campaignDashboardRefreshInterval,
   agentDashboardRefreshInterval,
   dashboardDataAcquisitionInterval,
+  enableDashboardDataAcquisition
 };

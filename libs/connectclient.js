@@ -8,7 +8,7 @@ const {
 
 const { loggedInUser } = require("./auth");
 
-const {sleep, getCurrentISODateOnly} = require("./utils");
+const { sleep, getCurrentISODateOnly } = require("./utils");
 
 const {
   ConnectClient,
@@ -35,7 +35,7 @@ const {
   GetCurrentMetricDataCommand
 } = require("@aws-sdk/client-connect");
 
-const {logger} = require("./logger")
+const { logger } = require("./logger")
 
 
 /** 
@@ -48,6 +48,39 @@ const connectClient = new ConnectClient(awsConfig);
 */
 
 // ----- dashboard starts ------
+
+const getAgentMetric = async (queueIdArr) => {
+  let cmd = new GetCurrentMetricDataCommand({
+    "InstanceId": awsInstance,
+    "Filters": { "Queues": queueIdArr },
+    "CurrentMetrics": [
+      {
+        "Name": "AGENTS_ONLINE",
+        "Unit": "COUNT"
+      },
+      {
+        "Name": "AGENTS_AVAILABLE",
+        "Unit": "COUNT"
+      },
+      {
+        "Name": "OLDEST_CONTACT_AGE",
+        "Unit": "SECONDS"
+      },
+      {
+        "Name": "AGENTS_ERROR",
+        "Unit": "COUNT"
+      }
+    ],
+  });
+  try {
+    let r = await connectClient.send(cmd);
+    return r.MetricResults;
+  } catch (e) {
+    logger.error(e);
+    return []
+  }
+}
+
 const getMetric = async (queueId) => {
   // time constants
   var MS_PER_MINUTE = 60000;
@@ -113,7 +146,7 @@ const randomIntBetween = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-const getAgentDashboardDataFromConnect = async()=>{
+const getAgentDashboardDataFromConnect = async () => {
   let fakeData = {
     "recordId": "1",
     "available": String(randomIntBetween(5, 15)),
@@ -430,4 +463,5 @@ module.exports = {
   getMetric,
   getCampaignDashboardDataFromConnect,
   getAgentDashboardDataFromConnect,
+  getAgentMetric,
 };
