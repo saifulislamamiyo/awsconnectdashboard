@@ -31,6 +31,10 @@ const schemaCampaignDashboard = new dynamoose.Schema({
     "type": String,
     "hashKey": true
   },
+  "reportDate": {
+    "type": String,
+    "rangeKey": true
+  },
   "campaignId": String,
   "totalCall": String,
   "currentCall": String,
@@ -39,7 +43,6 @@ const schemaCampaignDashboard = new dynamoose.Schema({
   "avgHandlingTime": String,
   "avgTalkTime": String,
   "avgWrapUpTime": String,
-  "reportDate": String,
   "author": String,
 }, {
   "timestamps": true,
@@ -108,7 +111,7 @@ const modelAgentDashboard = dynamoose.model("Cloudcall_Agent_Dashboard_Table", s
  * Functions 
  */
 const loadCampaignDashboardData = async () => {
-  let campaignDashboardData = await modelCampaignDashboard.scan().exec();
+  let campaignDashboardData = await modelCampaignDashboard.scan().where("reportDate").eq(getCurrentISODateOnly()).exec();
   return campaignDashboardData;
 }
 const loadAgentDashboardData = async () => {

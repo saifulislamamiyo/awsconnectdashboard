@@ -55,9 +55,9 @@ const getMetric = async (queueId) => {
   var DURATIONINMINUTES = 23.80 * 60;
   // get start and end time
   var date = Date.now();
-  var endTime = new Date(date);
-  var startTime = new Date(endTime - DURATIONINMINUTES * MS_PER_MINUTE);
-  var flooredStartTime = new Date(Math.floor(startTime.getTime() / COEFF) * COEFF)
+  var endTime = new Date(date); // TODO: var endTime = new Date();
+  var startTime = new Date(endTime - DURATIONINMINUTES * MS_PER_MINUTE); // TODO: make it todays 00 hour:- let startTime = new Date(getFullYear, getMonth, getDate, hours=0, minutes=0, seconds=0, milliseconds=0)
+  var flooredStartTime = new Date(Math.floor(startTime.getTime() / COEFF) * COEFF) // TODO: this will not be needed, remove
   var flooredEndTime = new Date(Math.floor(endTime.getTime() / COEFF) * COEFF)
   logger.info(`Report StartTime:${flooredStartTime} Report EndTime:${flooredEndTime}`)
 
