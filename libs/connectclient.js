@@ -39,7 +39,7 @@ const { logger } = require("./logger")
 
 
 /** 
-* Initi Connect
+* Init Connect
 */
 const connectClient = new ConnectClient(awsConfig);
 
@@ -63,15 +63,16 @@ const getAgentMetric = async (queueIdArr) => {
         "Unit": "COUNT"
       },
       {
-        "Name": "OLDEST_CONTACT_AGE",
-        "Unit": "SECONDS"
+        "Name": "AGENTS_ON_CALL",
+        "Unit": "COUNT"
       },
       {
-        "Name": "AGENTS_ERROR",
+        "Name": "AGENTS_ON_CONTACT",
         "Unit": "COUNT"
       }
     ],
   });
+
   try {
     let r = await connectClient.send(cmd);
     return r.MetricResults;
@@ -81,61 +82,62 @@ const getAgentMetric = async (queueIdArr) => {
   }
 }
 
-const getMetric = async (queueId) => {
-  // time constants
-  var MS_PER_MINUTE = 60000;
-  var COEFF = 1000 * 60 * 5;
-  var DURATIONINMINUTES = 23.80 * 60;
-  // get start and end time
-  var date = Date.now();
-  var endTime = new Date(date); // TODO: var endTime = new Date();
-  var startTime = new Date(endTime - DURATIONINMINUTES * MS_PER_MINUTE); // TODO: make it todays 00 hour:- let startTime = new Date(getFullYear, getMonth, getDate, hours=0, minutes=0, seconds=0, milliseconds=0)
-  var flooredStartTime = new Date(Math.floor(startTime.getTime() / COEFF) * COEFF) // TODO: this will not be needed, remove
-  var flooredEndTime = new Date(Math.floor(endTime.getTime() / COEFF) * COEFF)
-  logger.info(`Report StartTime:${flooredStartTime} Report EndTime:${flooredEndTime}`)
+const getCampaignMetric = async (queueIdArr) => {
+  const COEFF = 1000 * 60 * 5;
+  let currentDateTime = new Date();
+  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  let endTime = new Date(Math.floor(currentDateTime.getTime() / COEFF) * COEFF); // floor to nearest multiple of 5 min
 
   let cmd = new GetMetricDataCommand({
     "InstanceId": awsInstance,
-    "StartTime": flooredStartTime,
-    "EndTime": flooredEndTime,
+    "StartTime": startTime,
+    "EndTime": endTime,
     "Filters": {
-      "Queues": [queueId],
-      "Channels": ["VOICE"]
+      "Queues": queueIdArr,
     },
     "Groupings": [
       "QUEUE",
-      "CHANNEL"
     ],
     "HistoricalMetrics": [
       {
-        "Name": "AFTER_CONTACT_WORK_TIME",
-        "Unit": "SECONDS",
-        "Statistic": "AVG"
-      },
-      {
-        "Name": "CONTACTS_QUEUED",
+        "Name": "CONTACTS_HANDLED", // total call
         "Unit": "COUNT",
         "Statistic": "SUM"
       },
       {
-        "Name": "CONTACTS_HANDLED",
+        "Name": "CONTACTS_QUEUED", // call waiting
         "Unit": "COUNT",
         "Statistic": "SUM"
       },
       {
-        "Name": "HANDLE_TIME",
+        "Name": "HANDLE_TIME", // avg handle time
         "Unit": "SECONDS",
         "Statistic": "AVG"
       },
+      {
+        "Name":"INTERACTION_TIME", // avg talk time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+      {
+        "Name":"AFTER_CONTACT_WORK_TIME", // avg wrapup time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+      {
+        "Name":"INTERACTION_AND_HOLD_TIME", // avg talk time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+
     ]
   });
-
 
   try {
     let res_all = await connectClient.send(cmd);
     return res_all.MetricResults
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     return [];
   }
 };
@@ -460,8 +462,8 @@ module.exports = {
   updateOutboundCallerIdNumberId,
   addPhoneNumberToContactFlow,
   getPhoneNumbersWithDesc,
-  getMetric,
   getCampaignDashboardDataFromConnect,
   getAgentDashboardDataFromConnect,
   getAgentMetric,
+  getCampaignMetric,
 };
