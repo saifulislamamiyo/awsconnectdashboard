@@ -1,10 +1,49 @@
 const { awsConfig, routingProfilePrefix } = require("./configloader")
 const dynamoose = require("dynamoose");
 const { loggedInUser } = require("./auth");
-
+const { logger } = require("./logger");
+const { sleep, getCurrentISODateOnly } = require("./utils");
 
 const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
 dynamoose.aws.ddb.set(ddb);
+
+/**
+ * Schema
+ */
+
+const schemaAgentDashboard = new dynamoose.Schema({
+  "recordId": {
+    "type": String,
+    "hashKey": true
+  },
+  "available": String,
+  "busy": String,
+  "inCall": String,
+  "unavailable": String,
+  "reportDate": String,
+  "author": String,
+}, {
+  "timestamps": true,
+});
+
+const schemaCampaignDashboard = new dynamoose.Schema({
+  "campaignName": {
+    "type": String,
+    "hashKey": true
+  },
+  "campaignId": String,
+  "totalCall": String,
+  "currentCall": String,
+  "callWaiting": String,
+  "agentInQueue": String,
+  "avgHandlingTime": String,
+  "avgTalkTime": String,
+  "avgWrapUpTime": String,
+  "reportDate": String,
+  "author": String,
+}, {
+  "timestamps": true,
+});
 
 const schemaCampaign = new dynamoose.Schema({
   "campaignName": {
@@ -55,9 +94,44 @@ const schemaPhoneNumber = new dynamoose.Schema({
   "timestamps": true,
 });
 
+/**
+ * Schema
+ */
+
 const modelCampaign = dynamoose.model("Cloudcall_Campaign_Table", schemaCampaign);
 const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
 const modelPhoneNumber = dynamoose.model("Cloudcall_Phone_Number_Table", schemaPhoneNumber);
+const modelCampaignDashboard = dynamoose.model("Cloudcall_Campaign_Dashboard_Table", schemaCampaignDashboard);
+const modelAgentDashboard = dynamoose.model("Cloudcall_Agent_Dashboard_Table", schemaAgentDashboard);
+
+/** 
+ * Functions 
+ */
+const loadCampaignDashboardData = async () => {
+  let campaignDashboardData = await modelCampaignDashboard.scan().exec();
+  return campaignDashboardData;
+}
+const loadAgentDashboardData = async () => {
+  let agentDashboardData = await modelAgentDashboard.scan().exec();
+  return agentDashboardData;
+}
+
+const saveAgentDashboardData = async (dashboardData) => {
+  logger.info('Saving agent dashboard data.');
+  let newAgentDashboard = new modelAgentDashboard(dashboardData);
+  await newAgentDashboard.save();
+  logger.info('Saving agent dashboard data completed.');
+}
+
+const saveCampaignDashboardData = async (dashboardData) => {
+  logger.info('Saving campaign dashboard data.');
+  for (data of dashboardData) {
+    let newCampaignDashboard = new modelCampaignDashboard(data);
+    await newCampaignDashboard.save();
+  }
+  logger.info('Saving campaign dashboard data completed.');
+}
+
 
 const getAgents = async () => {
   let agents = await modelAgent.scan().exec();
@@ -145,7 +219,7 @@ const getPhoneNumberCampaignMap = async () => {
 
 let insertPhoneNumberCampaignMap = async (campaignId, campaignName, phoneNumberId, phoneNumber) => {
   let phoneNumberCampaignMapIItem = new modelPhoneNumber({
-    phoneNumber: "+"+String(phoneNumber).trim(),
+    phoneNumber: "+" + String(phoneNumber).trim(),
     phoneNumberId: phoneNumberId,
     campaignName: campaignName,
     campaignId: campaignId,
@@ -158,6 +232,8 @@ module.exports = {
   modelCampaign,
   modelAgent,
   modelPhoneNumber,
+  modelCampaignDashboard,
+  modelAgentDashboard,
   getAgents,
   getCampaigns,
   setCampaignStatus,
@@ -170,5 +246,9 @@ module.exports = {
   getCampaignDescription,
   getPhoneNumberCampaignMap,
   insertPhoneNumberCampaignMap,
+  saveCampaignDashboardData,
+  saveAgentDashboardData,
+  loadCampaignDashboardData,
+  loadAgentDashboardData,
 };
 

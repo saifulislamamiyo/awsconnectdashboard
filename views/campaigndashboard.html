@@ -1,24 +1,188 @@
 <%- include('_head.html'); %>
-  
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">
-        <%= title %>
-      </h1>
-      <% if (1) { %>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
-          </div>
-        </div>
-        <% } %>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">
+    <%= title %>
+  </h1>
+  <% if (1) { %>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
     </div>
+  </div>
+  <% } %>
+</div>
 
-    <%- include('_alert.html'); %>
-    
-    <center>
-      <img src="/images/undraw_charts_re_5qe9.svg" alt="dashboatd" class="img-fluid opacity-50 mt-4" style="max-width: 70vh">
-    </center>
+<%- include('_alert.html'); %>
 
-  
+<!-- campaign-status -->
+<div class="d-flex flex-wrap justify-content-evenly mb-3" id="campaign-status">
+  <div class="spinner-border text-secondary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
 
-  <%- include('_foot.html'); %>
+<!-- Total Today -->
+<div class="row">
+  <div class="d-flex flex-wrap justify-content-evenly mb-3">
+    <div class="card mb-3 border-success" style="min-width:95%;">
+      <div class="card-header bg-success bg-gradient text-white text-center">
+        <b>Total Today</b>
+      </div>
+      <div class="card-body text-center bg-gradient">
+        <h1 id="total-call">
+          <div class="spinner-grow text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Avg and Agent -->
+<div class="row">
+  <!-- Avg -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card mb-3 border-secondary">
+      <div class="card-header bg-dark bg-gradient text-white">
+        <b>Avg Handling Time</b>
+      </div>
+      <div class="card-body text-center">
+        <h3 class="card-title" id="avg-handling-time">
+          <div class="spinner-grow text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="card mb-3 border-secondary">
+      <div class="card-header bg-dark bg-gradient text-white">
+        <b>Avg Talk Time</b>
+      </div>
+      <div class="card-body text-center">
+        <h3 class="card-title" id="avg-talk-time">
+          <div class="spinner-grow text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="card mb-3 border-secondary">
+      <div class="card-header bg-dark bg-gradient text-white">
+        <b>Avg Wrap-up Time</b>
+      </div>
+      <div class="card-body text-center">
+        <h3 class="card-title" id="avg-wrapup-time">
+          <div class="spinner-grow text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card mb-3 border-secondary">
+      <div class="card-header bg-secondary bg-gradient text-white">
+        <b>Agent Status</b>
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="javascript:void(0)">Available Agents</a>
+            <span class="badge bg-success rounded-pill" id="available-agents">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="javascript:void(0)">Busy Agents</a>
+            <span class="badge bg-warning rounded-pill" id="busy-agents">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="javascript:void(0)">Agents in Call</a>
+            <span class="badge bg-info rounded-pill" id="agents-in-call">0</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="javascript:void(0)">Unavailable Agents</a>
+            <span class="badge bg-danger rounded-pill" id="unavailable-agents">0</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/javascripts/socket.io.min.js"></script>
+<script>
+  const makeCampaignStatusBox = (data) => {
+    template = `<div class="card border-secondary mb-3" style="min-width:15rem; max-width: 25rem;">
+    <div class="card-header bg-primary bg-gradient text-white border-secondary"><b>${data.campaignName}</b></div>
+    <div class="card-body bg-light bg-gradient text-center">
+      <h4 class="card-title">Total ${data.totalCall}</h4>
+      <h3 class="card-subtitle">${data.currentCall}</h3>
+      <h5 class="card-text text-end">${data.callWaiting}</h5>
+    </div>
+    <div class="card-footer bg-dark bg-gradient border-secondary text-center text-warning"><b>Call Waiting: ${data.agentInQueue}</b></div>
+    </div>`;
+    return template;
+  }
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    let serverURL = window.location.host;
+    let socket = io.connect(serverURL);
+    // console.log("DOMContentLoaded", serverURL);
+    socket.on('campaign-dashboard', function(incoming) {
+
+      let incomingCampaignData = incoming.campaignData;
+      let incomingAgentData = incoming.agentData[0];
+
+      console.log(incomingAgentData);
+
+      let campaignStatusBoxes = "";
+      let avgHandlingTime = 0;
+      let avgTalkTime = 0;
+      let avgWrapupTime = 0;
+      let totalToday = 0;
+      for (let n = 0; n < incomingCampaignData.length; n++) {
+        // console.log(incomingCampaignData[n])
+        campaignStatusBoxes += makeCampaignStatusBox(incomingCampaignData[n]);
+        avgHandlingTime += parseInt(incomingCampaignData[n].avgHandlingTime);
+        avgTalkTime += parseInt(incomingCampaignData[n].avgTalkTime);
+        avgWrapupTime += parseInt(incomingCampaignData[n].avgWrapUpTime);
+        totalToday += parseInt(incomingCampaignData[n].totalCall);
+      }
+      avgHandlingTime = incomingCampaignData.length == 0 ? 0 : parseInt(avgHandlingTime / incomingCampaignData.length);
+      avgTalkTime = incomingCampaignData.length == 0 ? 0 : parseInt(avgTalkTime / incomingCampaignData.length);
+      avgWrapupTime = incomingCampaignData.length == 0 ? 0 : parseInt(avgWrapupTime / incomingCampaignData.length);
+
+      // console.log(avgHandlingTime, avgTalkTime, avgWrapupTime, totalToday);
+
+
+      document.getElementById('campaign-status').innerHTML = campaignStatusBoxes;
+      document.getElementById('total-call').innerHTML = totalToday;
+      document.getElementById('avg-handling-time').innerHTML = avgHandlingTime + " s";
+      document.getElementById('avg-talk-time').innerHTML = avgTalkTime + " s";
+      document.getElementById('avg-wrapup-time').innerHTML = avgWrapupTime + " s";
+      document.getElementById('available-agents').innerHTML = incomingAgentData.available;
+      document.getElementById('busy-agents').innerHTML = incomingAgentData.busy;
+      document.getElementById('agents-in-call').innerHTML = incomingAgentData.inCall;
+      document.getElementById('unavailable-agents').innerHTML = incomingAgentData.unavailable;
+      
+    });
+    socket.on('connect', function() {
+      console.log("Socket Connected");
+    });
+    socket.on('disconnect', function() {
+      console.log("Socket Disconnected");
+    });
+    socket.on('reconnect_attempt', function(attempt) {
+      console.log("Socket Disconnected! Retrying to connect... " + attempt);
+    });
+  });
+</script>
+<%- include('_foot.html'); %>

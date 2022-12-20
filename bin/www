@@ -7,8 +7,10 @@
 const app = require('../app');
 const debug = require('debug')('awsconnectdashboard:server');
 const http = require('http');
-
-
+const { Server: SocketIOServer } = require("socket.io");
+const {logger} = require('../libs/logger')
+const {sendCampaignDashboard} = require('../libs/dashboard')
+const {campaignDashboardRefreshInterval} = require('../libs/configloader')
 /**
  * Get port from environment and store in Express.
  */
@@ -22,6 +24,25 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
+
+/**
+ * Create SocketIO Server.
+ */
+
+const io = new SocketIOServer(server, { cors: { origin: '*' } });
+
+io.on("connection", (socket) => {
+  let handshake = socket.handshake;
+  logger.info(`Socket connected: ${handshake.address}`);
+});
+
+/**
+* Send dashboard data
+*/
+
+setInterval(async ()=>{
+  await sendCampaignDashboard(io);
+}, campaignDashboardRefreshInterval);
 
 /**
  * Listen on provided port, on all network interfaces.

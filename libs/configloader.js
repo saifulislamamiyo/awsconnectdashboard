@@ -12,6 +12,9 @@ let logLevel = process.env.LOG_LEVEL;
 let pageCompress = process.env.PAGE_COMPRESS;
 let sessionSecret = process.env.SESSION_SECRET;
 let awsConfig;
+let campaignDashboardRefreshInterval = process.env.CAMPAIGN_DASHBOARD_REFRESH_INTERVAL;
+let agentDashboardRefreshInterval = process.env.AGENT_DASHBOARD_REFRESH_INTERVAL;
+let dashboardDataAcquisitionInterval = process.env.DASHBOARD_DATA_ACQUISITION_INTERVAL;
 
 if (os.hostname().indexOf("asifsmbp.local") > -1) {
   awsConfig = {
@@ -36,4 +39,7 @@ module.exports = {
   contactFlowId,
   pageCompress,
   sessionSecret,
+  campaignDashboardRefreshInterval,
+  agentDashboardRefreshInterval,
+  dashboardDataAcquisitionInterval,
 };
