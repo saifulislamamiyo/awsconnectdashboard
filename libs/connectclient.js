@@ -88,6 +88,8 @@ const getCampaignMetric = async (queueIdArr) => {
   let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
   let endTime = new Date(Math.floor(currentDateTime.getTime() / COEFF) * COEFF); // floor to nearest multiple of 5 min
 
+  if(endTime<=startTime) return [];
+
   let cmd = new GetMetricDataCommand({
     "InstanceId": awsInstance,
     "StartTime": startTime,
