@@ -13,6 +13,15 @@ const getCurrentISODateOnly = (withOffset = false) => {
   }
 }
 
+const getTimeRangeInMultipleOf5 = () => {
+  let currentDateTime = new Date();
+  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  flooredMinMultipleOf5 = Math.floor(currentDateTime.getMinutes() / 5) * 5;
+  let endTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), currentDateTime.getHours(), flooredMinMultipleOf5, 0, 0);
+  startFromEpoch = startTime / 1000;
+  endFromEpoch = endTime / 1000;
+  returnTimeRange = [startFromEpoch, endFromEpoch]
+  return returnTimeRange;
+}
 
-
-module.exports = { sleep, getCurrentISODateOnly }
+module.exports = { sleep, getCurrentISODateOnly, getTimeRangeInMultipleOf5 }

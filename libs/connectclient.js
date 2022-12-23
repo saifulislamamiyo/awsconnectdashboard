@@ -8,7 +8,7 @@ const {
 
 const { loggedInUser } = require("./auth");
 
-const { sleep, getCurrentISODateOnly } = require("./utils");
+const { sleep, getCurrentISODateOnly, getTimeRangeInMultipleOf5 } = require("./utils");
 
 const {
   ConnectClient,
@@ -83,12 +83,8 @@ const getAgentMetric = async (queueIdArr) => {
 }
 
 const getCampaignMetric = async (queueIdArr) => {
-  const COEFF = 1000 * 60 * 5;
-  let currentDateTime = new Date();
-  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
-  let endTime = new Date(Math.floor(currentDateTime.getTime() / COEFF) * COEFF); // floor to nearest multiple of 5 min
-
-  if(endTime<=startTime) return [];
+  let [startTime, endTime] = getTimeRangeInMultipleOf5();
+  if (endTime <= startTime) return [];
 
   let cmd = new GetMetricDataCommand({
     "InstanceId": awsInstance,
@@ -117,17 +113,17 @@ const getCampaignMetric = async (queueIdArr) => {
         "Statistic": "AVG"
       },
       {
-        "Name":"INTERACTION_TIME", // avg talk time
+        "Name": "INTERACTION_TIME", // avg talk time
         "Unit": "SECONDS",
         "Statistic": "AVG"
       },
       {
-        "Name":"AFTER_CONTACT_WORK_TIME", // avg wrapup time
+        "Name": "AFTER_CONTACT_WORK_TIME", // avg wrapup time
         "Unit": "SECONDS",
         "Statistic": "AVG"
       },
       {
-        "Name":"INTERACTION_AND_HOLD_TIME", // avg talk time
+        "Name": "INTERACTION_AND_HOLD_TIME", // avg talk time
         "Unit": "SECONDS",
         "Statistic": "AVG"
       },

@@ -99,10 +99,6 @@
             <span class="badge bg-success rounded-pill" id="available-agents">0</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="javascript:void(0)">Busy Agents</a>
-            <span class="badge bg-warning rounded-pill" id="busy-agents">0</span>
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
             <a href="javascript:void(0)">Agents in Call</a>
             <span class="badge bg-info rounded-pill" id="agents-in-call">0</span>
           </li>
@@ -123,11 +119,11 @@
     template = `<div class="card border-secondary mb-3" style="min-width:15rem; max-width: 25rem;">
     <div class="card-header bg-primary bg-gradient text-white border-secondary"><b>${data.campaignName}</b></div>
     <div class="card-body bg-light bg-gradient text-center">
-      <h4 class="card-title">Total ${data.totalCall}</h4>
-      <h3 class="card-subtitle">${data.currentCall}</h3>
-      <h5 class="card-text text-end">${data.callWaiting}</h5>
+      <h4 class="card-title text-start" title='Total Call'>Total ${data.totalCall}</h4>
+      <h3 class="card-subtitle" title='Current Call'><svg style="width:18px;height:18px;margin-bottom:5px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 3l-6 6m0 0V4m0 5h5M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"></path></svg>&nbsp;${data.currentCall}</h3>
+      <h5 class="card-text text-end" title='Agent in Queue'><svg style="width:18px;height:18px;margin-bottom:5px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>&nbsp;${data.callWaiting}</h5>
     </div>
-    <div class="card-footer bg-dark bg-gradient border-secondary text-center text-warning"><b>Call Waiting: ${data.agentInQueue}</b></div>
+    <div class="card-footer bg-dark bg-gradient border-secondary text-center text-warning" title='Call Waiting'><b>Call Waiting: ${data.agentInQueue}</b></div>
     </div>`;
     return template;
   }
@@ -137,11 +133,11 @@
     let socket = io.connect(serverURL);
     // console.log("DOMContentLoaded", serverURL);
     socket.on('campaign-dashboard', function(incoming) {
-
+      // console.log("Received Data");
       let incomingCampaignData = incoming.campaignData;
       let incomingAgentData = incoming.agentData[0];
 
-      console.log(incomingAgentData);
+      // console.log(incomingAgentData);
 
       let campaignStatusBoxes = "";
       let avgHandlingTime = 0;
@@ -169,19 +165,18 @@
       document.getElementById('avg-talk-time').innerHTML = avgTalkTime + " s";
       document.getElementById('avg-wrapup-time').innerHTML = avgWrapupTime + " s";
       document.getElementById('available-agents').innerHTML = incomingAgentData.available;
-      document.getElementById('busy-agents').innerHTML = incomingAgentData.busy;
       document.getElementById('agents-in-call').innerHTML = incomingAgentData.inCall;
       document.getElementById('unavailable-agents').innerHTML = incomingAgentData.unavailable;
-      
+
     });
     socket.on('connect', function() {
-      console.log("Socket Connected");
+      console.log("Dashboard Connected");
     });
     socket.on('disconnect', function() {
-      console.log("Socket Disconnected");
+      console.log("Dashboard Disconnected");
     });
     socket.on('reconnect_attempt', function(attempt) {
-      console.log("Socket Disconnected! Retrying to connect... " + attempt);
+      console.log("Dashboard Disconnected! Retrying to connect... " + attempt);
     });
   });
 </script>
