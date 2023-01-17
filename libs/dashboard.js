@@ -75,15 +75,15 @@ if (1 == 1) {
     logger.info("Getting latest ContactID(s) to retrieve details (CDR)");
     let contacts = await getLonelyContacts();
     for (n = 0; n < contacts.length; n++) {
-      logger.info(`Retrieving CDR for contactId: ${contacts[n].contactId}`);
-      let r = await getContactCDR(contacts[n].contactId);
+      logger.info(`Retrieving CDR for ContactID: ${contacts[n].ContactID}`);
+      let r = await getContactCDR(contacts[n].ContactID);
       logger.info(r);
       if (r) {
-        logger.info(`Saving CDR for contactId: ${contacts[n].contactId}`);
+        logger.info(`Saving CDR for ContactID: ${contacts[n].ContactID}`);
         await saveContactCDR(r);
       } else {
         await saveContactCDR({
-          "contactId": contacts[n].contactId,
+          "ContactID": contacts[n].ContactID,
           "describeContactCalled": 2
         });
       }

@@ -50,16 +50,16 @@ const connectClient = new ConnectClient(awsConfig);
 
 // ----- get agent's CDR data ------
 
-const getContactCDR = async (contactId) => {
+const getContactCDR = async (ContactID) => {
   let cmd = new DescribeContactCommand({
     "InstanceId": awsInstance,
-    "ContactId": contactId
+    "ContactId": ContactID
   });
   try {
     let r = await connectClient.send(cmd);
     r = r.Contact;
     return {
-      "contactId": r.Id,
+      "ContactID": r.Id,
       "describeContactCalled": 1,
       "initiationMethod": r.InitiationMethod,
       "channel": r.Channel,

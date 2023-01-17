@@ -14,7 +14,7 @@ dynamoose.aws.ddb.set(ddb);
 
 
 const schemaCDR = new dynamoose.Schema({
-  "contactId": {
+  "ContactID": {
     "type": String,
     "hashKey": true
   },
