@@ -137,7 +137,7 @@ const getFullCDR = async()=>{
   let currentDateTime = new Date();
   let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
   let startFromEpoch = startTime / 1000;
-  let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).where('initiationTimestamp').ge(startFromEpoch).exec();
+  let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
   return contacts;
 }
 
