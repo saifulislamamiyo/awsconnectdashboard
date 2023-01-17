@@ -20,6 +20,8 @@ const inboundNumberProvision = require('./routes/inboundnumberprovision');
 const fault = require('./routes/fault');
 const campaignDashboardRouter = require('./routes/campaigndashboard');
 const agentDashboardRouter = require('./routes/agentdashboard');
+const agentWiseReportRouter = require('./routes/agentwisereport');
+const campaignWiseReportRouter = require('./routes/campaignwisereport');
 
 /* Set app */
 const app = express();
@@ -66,6 +68,8 @@ app.use('/fault', fault);
 // TODO: reports and dashboards
 app.use('/agent-dashboard', agentDashboardRouter);
 app.use('/campaign-dashboard', campaignDashboardRouter);
+app.use('/agent-wise-report', agentWiseReportRouter);
+app.use('/campaign-wise-report', campaignWiseReportRouter);
 
 
 /* Catch 404 and forward to error handler */

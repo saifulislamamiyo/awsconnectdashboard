@@ -32,7 +32,8 @@ const {
   AssociatePhoneNumberContactFlowCommand,
   DescribePhoneNumberCommand,
   GetMetricDataCommand,
-  GetCurrentMetricDataCommand
+  GetCurrentMetricDataCommand,
+  DescribeContactCommand,
 } = require("@aws-sdk/client-connect");
 
 const { logger } = require("./logger")
@@ -46,6 +47,36 @@ const connectClient = new ConnectClient(awsConfig);
 /**
 * Functions
 */
+
+// ----- get agent's CDR data ------
+
+const getContactCDR = async (contactId) => {
+  let cmd = new DescribeContactCommand({
+    "InstanceId": awsInstance,
+    "ContactId": contactId
+  });
+  try {
+    let r = await connectClient.send(cmd);
+    r = r.Contact;
+    return {
+      "contactId": r.Id,
+      "describeContactCalled": 1,
+      "initiationMethod": r.InitiationMethod,
+      "channel": r.Channel,
+      "queueId": r.QueueInfo.Id,
+      "agentId": r.AgentInfo.Id,
+      "connectedToAgentTimestamp": r.AgentInfo.ConnectedToAgentTimestamp,
+      "enqueueTimestamp": r.QueueInfo.EnqueueTimestamp,
+      "initiationTimestamp": r.InitiationTimestamp,
+      "disconnectTimestamp": r.DisconnectTimestamp,
+      "lastUpdateTimestamp": r.LastUpdateTimestamp,
+      "duration": (r.DisconnectTimestamp - r.InitiationTimestamp) / 1000
+    }
+  } catch (e) {
+    logger.error(e.name ?? e.message ?? e);
+    return;
+  }
+}
 
 // ----- dashboard starts ------
 
@@ -464,4 +495,5 @@ module.exports = {
   getAgentDashboardDataFromConnect,
   getAgentMetric,
   getCampaignMetric,
+  getContactCDR,
 };

@@ -1,0 +1,122 @@
+agent-activity-dashboard
+
+CloudCall_CDR - 
+ContactId   
+QueueId     QueueInfo.Id
+AgentId     AgentInfo.Id
+InitiationTimestamp
+DisconnectTimestamp
+Duration
+
+
+
+QueueName   [Cloudcall_Campaign_Table.campaignId -> campaignName]
+AgentName   [Cloudcall_Agent_Table.agentId-> agentName]
+
+
+1. Every 30 min
+   a. Scan table CloudCall_CDR and filter records that does not have QueueId
+   b. Every 500ms Call DescribeContact for each record found from (a)
+   c. Populate CloudCall_CDR
+2. View report last 24 hour
+
+
+# Params
+
+Total Call = CONTACTS_ABANDONED + CONTACTS_HANDLED_INCOMING
+Current Call = SLOTS_ACTIVE
+Agent in Queue = AGENTS_AVAILABLE
+Call Waiting = CONTACTS_IN_QUEUE
+
+avg handle time = HANDLE_TIME
+avg talk time = INTERACTION_AND_HOLD_TIME
+avg wrapup time = AFTER_CONTACT_WORK_TIME
+
+available = AGENTS_AVAILABLE
+in a call = AGENTS_ON_CALL
+unavailable = AGENTS_NON_PRODUCTIVE
+
+DONE Left align Total call
+DONE Hints on Mouse over
+DONE Remove Busy Agents
+DONE Add phon icon prefix to Current call
+DONE add clock icon prefix to Agent in Queue
+
+
+## Todos
+
+2022-12-19 11:00 PM - 03:00 AM = 04h 00m
+2022-12-20 10:00 AM - 11:30 AM = 01h 30m
+2022-12-20 12:45 AM - 03:45 PM = 03h 00m
+2022-12-20 06:40 PM - 07:24 PM = 00h 44m
+2022-12-20 07:40 PM - 09:20 PM = 01h 40m
+2022-12-20 09:40 PM - 10:37 PM = 00h 57m
+2022-12-23 04:45 PM - 06:45 PM = 01h 00m
+2022-12-23 09:00 PM - 09:39 PM = 01h 00m
+
+--
+## TODO
+
+Test log level
+Log rotation
+replace all console.log in server side
+collapsible sidebar menu
+function name spelling
+set appropiate log level when calling. for example replace logger.info to logger.error
+
+## TRY:
+
+make hash-key using campaignName and reportDate
+find and item using campaignName and reportDate and update it
+
+## Todo (Dashboard)
+
+TODO:
+
+Steps:
+
+1. API = GetMetricData and GetCurrentMetricData
+2. Get active queue ids from ddb
+3. Check if for every queue id API is needed to be callled
+4. Collect API response, parse and store in ddb
+5. Load ddb into client by sockect
+
+
+
+
+## Todo (Pre-Dashboard)
+
+TODO: display Version in new branch and commit, merge
+
+TODO: Update README in new branch and commit, merge
+
+TODO: Add help page in new branch and commit, merge
+
+TODO: Lightweight Tags https://git-scm.com/book/en/v2/Git-Basics-Tagging
+
+TODO: Redesign Error/Fault Pages
+
+DONE: Add session secret in new branch and commit, merge
+
+DONE: Uglify js and CSS and commit, merge
+  const COEFF = 1000 * 60 * 5;
+  let currentDateTime = new Date();
+  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  let endTime = new Date(Math.floor(
+
+
+# Todo
+
+TODO: display Version in new branch and commit, merge
+
+TODO: Update README in new branch and commit, merge
+
+TODO: Add help page in new branch and commit, merge
+
+TODO: Lightweight Tags https://git-scm.com/book/en/v2/Git-Basics-Tagging
+
+TODO: Redesign Error/Fault Pages
+
+DONE: Add session secret in new branch and commit, merge
+
+DONE: Uglify js and CSS and commit, merge

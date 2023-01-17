@@ -3,6 +3,7 @@ const dynamoose = require("dynamoose");
 const { loggedInUser } = require("./auth");
 const { logger } = require("./logger");
 const { sleep, getCurrentISODateOnly } = require("./utils");
+const { Connect } = require("@aws-sdk/client-connect");
 
 const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
 dynamoose.aws.ddb.set(ddb);
@@ -10,6 +11,25 @@ dynamoose.aws.ddb.set(ddb);
 /**
  * Schema
  */
+
+
+const schemaCDR = new dynamoose.Schema({
+  "contactId": {
+    "type": String,
+    "hashKey": true
+  },
+  "describeContactCalled": Number,
+  "initiationMethod": String,
+  "channel":String,
+  "queueId": String,
+  "agentId": String,
+  "connectedToAgentTimestamp":Date,
+  "enqueueTimestamp": Date,
+  "initiationTimestamp": Date,
+  "disconnectTimestamp": Date,
+  "lastUpdateTimestamp": Date,
+  "duration":Number,
+});
 
 const schemaAgentDashboard = new dynamoose.Schema({
   "recordId": {
@@ -98,7 +118,7 @@ const schemaPhoneNumber = new dynamoose.Schema({
 });
 
 /**
- * Schema
+ * Models
  */
 
 const modelCampaign = dynamoose.model("Cloudcall_Campaign_Table", schemaCampaign);
@@ -106,10 +126,32 @@ const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
 const modelPhoneNumber = dynamoose.model("Cloudcall_Phone_Number_Table", schemaPhoneNumber);
 const modelCampaignDashboard = dynamoose.model("Cloudcall_Campaign_Dashboard_Table", schemaCampaignDashboard);
 const modelAgentDashboard = dynamoose.model("Cloudcall_Agent_Dashboard_Table", schemaAgentDashboard);
+const modelCDR = dynamoose.model("CloudCall_CDR", schemaCDR);
+
 
 /** 
  * Functions 
  */
+
+const getFullCDR = async()=>{
+  let currentDateTime = new Date();
+  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  let startFromEpoch = startTime / 1000;
+  let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).where('initiationTimestamp').ge(startFromEpoch).exec();
+  return contacts;
+}
+
+
+const getLonelyContacts = async()=>{
+  let contacts = await modelCDR.scan().where("describeContactCalled").not().exists().exec();
+  return contacts;
+}
+
+const saveContactCDR = async(cdr)=> {
+  let c = new modelCDR(cdr);
+  c.save()
+}
+
 const loadCampaignDashboardData = async () => {
   let campaignDashboardData = await modelCampaignDashboard.scan().where("reportDate").eq(getCurrentISODateOnly()).exec();
   return campaignDashboardData;
@@ -150,11 +192,11 @@ const getActiveCampaigns = async () => {
   let campaigns = await modelCampaign.scan().where('campaignStatus').eq(true).exec();
   let campObject = {};
   let campIdArr = []
-  for(let n=0;n<campaigns.length;n++){
+  for (let n = 0; n < campaigns.length; n++) {
     campObject[campaigns[n].campaignId] = campaigns[n].campaignName;
     campIdArr[campIdArr.length] = campaigns[n].campaignId;
   }
-  return {'details': campObject, 'summary': campIdArr};
+  return { 'details': campObject, 'summary': campIdArr };
 } // end getActiveCampaigns()
 
 const setCampaignStatus = async (campaignName, campaignStatus) => {
@@ -248,6 +290,7 @@ module.exports = {
   modelPhoneNumber,
   modelCampaignDashboard,
   modelAgentDashboard,
+  modelCDR,
   getAgents,
   getCampaigns,
   setCampaignStatus,
@@ -265,5 +308,8 @@ module.exports = {
   loadCampaignDashboardData,
   loadAgentDashboardData,
   getActiveCampaigns,
+  getLonelyContacts,
+  saveContactCDR,
+  getFullCDR,
 };
 

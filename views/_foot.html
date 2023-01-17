@@ -4,6 +4,13 @@
 <script src="/javascripts/bootstrap.bundle.min.js"></script>
 <script src="/javascripts/feather.min.js"></script>
 <script src="/javascripts/simple-datatables.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+ 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.13.1/b-2.3.3/b-html5-2.3.3/b-print-2.3.3/datatables.min.js"></script>
+
 <script src="/javascripts/client.js"></script>
 <script>
   loading_modal = new bootstrap.Modal('#loading_modal');
@@ -15,17 +22,29 @@
   function hide_loader() {
     loading_modal.hide();
   }
-  
+
   document.addEventListener("DOMContentLoaded", (ev) => {
-    
+
     let spinnerTargets = document.querySelectorAll('.spinner-trigger');
     for (let spinnerTarget of spinnerTargets) {
       spinnerTarget.addEventListener('click', (e) => show_loader())
     };
 
     let dataTableInput = document.querySelector(".dataTable-input");
-    if(dataTableInput) dataTableInput.className = 'form-control';
+    if (dataTableInput) dataTableInput.className = 'form-control';
 
+  });
+
+
+
+
+  $(document).ready(function() {
+    $('#reporting-table').DataTable({
+      dom:"Blfrtip",
+      buttons: [
+      'copy', 'csv', 'excel', 'pdf', 'print'
+      ]
+    });
   });
 </script>
 </body>

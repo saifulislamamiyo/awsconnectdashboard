@@ -1,0 +1,57 @@
+<%- include('_head.html'); %>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">
+    <%= title %>
+  </h1>
+  <% if (true) { %>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<%- include('_alert.html'); %>
+
+<center>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="reporting-table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Agent Name</th>
+          <th scope="col">Campaign Name</th>
+          <th scope="col">Total Calls</th>
+          <th scope="col">Total Talk Time</th>
+          <th scope="col">Avg Talk Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% aggCDR.forEach(function(cdr){ %>
+        <tr>
+          <td>
+            <%=cdr.agentName%>
+          </td>
+          <td>
+            <%=cdr.campaignName%>
+          </td>
+          <td>
+            <%=cdr.describeContactCalled%>
+          </td>
+          <td>
+            <%=cdr.duration%>
+          </td>
+          <td>
+            <%=(cdr.duration/cdr.describeContactCalled).toFixed(2)%>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</center>
+
+
+
+<%- include('_foot.html'); %>
