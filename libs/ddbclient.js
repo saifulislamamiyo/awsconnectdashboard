@@ -137,9 +137,16 @@ const getFullCDR = async()=>{
   let currentDateTime = new Date();
   let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
   let startFromEpoch = startTime / 1000;
+  // // try 1:
   // let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
-  let cnd = new dynamoose.Condition().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch);
-  let contacts = await modelCDR.scan(cnd).exec()
+  // // try 2
+  // let cnd = new dynamoose.Condition().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch);
+  // let contacts = await modelCDR.scan(cnd).exec()
+  // // try 3
+
+  let scanned = await modelCDR.scan().where('describeContactCalled').eq(1);
+  let contacts = scanned = scanned.where('initiationTimestamp').ge(startFromEpoch).exec();
+  
   return contacts;
 }
 
