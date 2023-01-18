@@ -134,9 +134,13 @@ const modelCDR = dynamoose.model("CloudCall_CDR", schemaCDR);
  */
 
 const getFullCDR = async()=>{
-  let currentDateTime = new Date();
-  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
-  let startFromEpoch = startTime / 1000;
+  // TODO: Try with fixing timezone
+
+  // // off for try 4
+  // let currentDateTime = new Date();
+  // let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  // let startFromEpoch = startTime / 1000;
+
   // // try 1:
   // let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
   // // try 2
@@ -144,9 +148,16 @@ const getFullCDR = async()=>{
   // let contacts = await modelCDR.scan(cnd).exec()
   // // try 3
 
-  let scanned = await modelCDR.scan().where('describeContactCalled').eq(1);
-  let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
+  // let scanned = await modelCDR.scan().where('describeContactCalled').eq(1);
+  // let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
   
+  // // try 4
+  let currentDateTime = new Date();
+  let offset = currentDateTime.getTimezoneOffset();
+  currentDateTime = new Date(currentDateTime.getTime() - (offset * 60 * 1000));
+  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  let startFromEpoch = startTime / 1000;
+  let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
   return contacts;
 }
 
