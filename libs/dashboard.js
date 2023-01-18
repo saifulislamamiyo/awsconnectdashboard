@@ -70,7 +70,7 @@ if (enableDashboardDataAcquisition == 1) {
 }
 
 
-if (1 == 1) {
+if (enableDashboardDataAcquisition == 1) { 
   setIntervalAsync(async () => {
     logger.info("Getting latest ContactID(s) to retrieve details (CDR)");
     let contacts = await getLonelyContacts();

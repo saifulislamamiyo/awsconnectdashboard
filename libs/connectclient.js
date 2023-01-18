@@ -65,12 +65,12 @@ const getContactCDR = async (ContactID) => {
       "channel": r.Channel,
       "queueId": r.QueueInfo.Id,
       "agentId": r.AgentInfo.Id,
-      "connectedToAgentTimestamp": r.AgentInfo.ConnectedToAgentTimestamp,
-      "enqueueTimestamp": r.QueueInfo.EnqueueTimestamp,
-      "initiationTimestamp": r.InitiationTimestamp,
-      "disconnectTimestamp": r.DisconnectTimestamp,
-      "lastUpdateTimestamp": r.LastUpdateTimestamp,
-      "duration": (r.DisconnectTimestamp - r.InitiationTimestamp) / 1000
+      "connectedToAgentTimestamp":  r.AgentInfo.ConnectedToAgentTimestamp.getTime() / 1000,
+      "enqueueTimestamp": r.QueueInfo.EnqueueTimestamp.getTime() / 1000,
+      "initiationTimestamp": r.InitiationTimestamp.getTime() / 1000,
+      "disconnectTimestamp": r.DisconnectTimestamp.getTime() / 1000,
+      "lastUpdateTimestamp": r.LastUpdateTimestamp.getTime() / 1000,
+      "duration": ((r.DisconnectTimestamp.getTime() / 1000) - (r.InitiationTimestamp.getTime() / 1000))
     }
   } catch (e) {
     logger.error(e.name ?? e.message ?? e);

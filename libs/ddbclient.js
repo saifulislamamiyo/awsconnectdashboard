@@ -3,7 +3,6 @@ const dynamoose = require("dynamoose");
 const { loggedInUser } = require("./auth");
 const { logger } = require("./logger");
 const { sleep, getCurrentISODateOnly } = require("./utils");
-const { Connect } = require("@aws-sdk/client-connect");
 
 const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
 dynamoose.aws.ddb.set(ddb);
@@ -20,15 +19,15 @@ const schemaCDR = new dynamoose.Schema({
   },
   "describeContactCalled": Number,
   "initiationMethod": String,
-  "channel":String,
+  "channel": String,
   "queueId": String,
   "agentId": String,
-  "connectedToAgentTimestamp":Date,
-  "enqueueTimestamp": Date,
-  "initiationTimestamp": Date,
-  "disconnectTimestamp": Date,
-  "lastUpdateTimestamp": Date,
-  "duration":Number,
+  "connectedToAgentTimestamp": Number,
+  "enqueueTimestamp": Number,
+  "initiationTimestamp": Number,
+  "disconnectTimestamp": Number,
+  "lastUpdateTimestamp": Number,
+  "duration": Number,
 });
 
 const schemaAgentDashboard = new dynamoose.Schema({
@@ -133,7 +132,7 @@ const modelCDR = dynamoose.model("CloudCall_CDR", schemaCDR);
  * Functions 
  */
 
-const getFullCDR = async()=>{
+const getFullCDR = async () => {
   // TODO: Try with fixing timezone
 
   // // off for try 4
@@ -150,24 +149,35 @@ const getFullCDR = async()=>{
 
   // let scanned = await modelCDR.scan().where('describeContactCalled').eq(1);
   // let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
-  
+
   // // try 4
   let currentDateTime = new Date();
   let offset = currentDateTime.getTimezoneOffset();
   currentDateTime = new Date(currentDateTime.getTime() - (offset * 60 * 1000));
   let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
   let startFromEpoch = startTime / 1000;
-  let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
+
+  // console.log("PX:", startFromEpoch);
+
+  let contacts = await modelCDR.scan()
+    .where('describeContactCalled').eq(1)
+    .and()
+    .where('initiationTimestamp').ge(startFromEpoch)
+    .exec();
+
+  // for (c of contacts) {
+  //   console.log('PX: ', c.ContactID, typeof c.initiationTimestamp, c.initiationTimestamp)
+  // }
+
   return contacts;
 }
 
-
-const getLonelyContacts = async()=>{
+const getLonelyContacts = async () => {
   let contacts = await modelCDR.scan().where("describeContactCalled").not().exists().exec();
   return contacts;
 }
 
-const saveContactCDR = async(cdr)=> {
+const saveContactCDR = async (cdr) => {
   let c = new modelCDR(cdr);
   c.save()
 }
@@ -176,6 +186,7 @@ const loadCampaignDashboardData = async () => {
   let campaignDashboardData = await modelCampaignDashboard.scan().where("reportDate").eq(getCurrentISODateOnly()).exec();
   return campaignDashboardData;
 }
+
 const loadAgentDashboardData = async () => {
   let agentDashboardData = await modelAgentDashboard.scan().exec();
   return agentDashboardData;
@@ -196,7 +207,6 @@ const saveCampaignDashboardData = async (dashboardData) => {
   }
   logger.info('Saving campaign dashboard data completed.');
 }
-
 
 const getAgents = async () => {
   let agents = await modelAgent.scan().exec();
@@ -222,7 +232,6 @@ const getActiveCampaigns = async () => {
 const setCampaignStatus = async (campaignName, campaignStatus) => {
   await modelCampaign.update({ "campaignName": campaignName, "campaignStatus": (campaignStatus == 'true' ? true : false) });
 } // end setCampaignStatus()
-
 
 const insertAgent = async (agentName, agentId, routingProfileName, routingProfileId) => {
   let newAgent = new modelAgent({
@@ -273,7 +282,6 @@ const insertCampaign = async (campaignName, campaignId, campaignDesc, campaignSt
   await campaignItem.save();
 } // end insertCampaign()
 
-
 const updatedCampaign = async (campaignName, campaignDescription) => {
   let camp = await modelCampaign.update({
     "campaignName": campaignName,
@@ -281,7 +289,6 @@ const updatedCampaign = async (campaignName, campaignDescription) => {
   });
   return camp;
 } // end updatedCampaign()
-
 
 const getCampaignDescription = async (campaignName) => {
   let camp = await modelCampaign.get(campaignName);
