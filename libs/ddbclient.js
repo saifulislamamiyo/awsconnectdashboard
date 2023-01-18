@@ -145,7 +145,7 @@ const getFullCDR = async()=>{
   // // try 3
 
   let scanned = await modelCDR.scan().where('describeContactCalled').eq(1);
-  let contacts = await scanned.where('initiationTimestamp').ge(startFromEpoch).exec();
+  let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
   
   return contacts;
 }
