@@ -1,4 +1,7 @@
-const { pauseBetweenAPICallInClient, contactFlowId } = require("../libs/configloader");
+const {
+  pauseBetweenAPICallInClient,
+  contactFlowId,
+} = require("../libs/configloader");
 const express = require("express");
 const router = express.Router();
 const { sleep } = require("../libs/utils");
@@ -12,8 +15,6 @@ const {
   getPhoneNumbersWithDesc,
   addPhoneNumberToContactFlow,
 } = require("../libs/connectclient");
-
-
 
 router.get("/", async (req, res, next) => {
   let campaigns = await getCampaigns();
@@ -33,20 +34,30 @@ router.get("/inbound-number-provision-success", (req, res, next) => {
   res.redirect("/inbound-number-provision");
 }); // router.get("/inbound-number-provision-success")
 
-router.get('/inbound-number-provision-save', async (req, res, next) => {
-
+router.get("/inbound-number-provision-save", async (req, res, next) => {
   let campaignId = req.query.campaignid;
   let campaignName = req.query.campaignname;
   let phoneNumberId = req.query.phoneid;
   let phoneNumber = req.query.phoneNumber;
+  let phoneNumberDesc = req.query.phoneNumerDesc;
+  let tollFreeNumber = req.query.tollFreeNumber;
 
-  await insertPhoneNumberCampaignMap(campaignId, campaignName, phoneNumberId, phoneNumber);
+  await insertPhoneNumberCampaignMap(
+    campaignId,
+    campaignName,
+    phoneNumberId,
+    phoneNumber,
+    phoneNumberDesc,
+    tollFreeNumber
+  );
   if (campaignId != "") {
     await addPhoneNumberToContactFlow(phoneNumberId, contactFlowId);
   } else {
-    console.log("Inbound Number UN-Provision operation. Escaping AssociatePhoneNumberContactFlowCommand API call.")
+    console.log(
+      "Inbound Number UN-Provision operation. Escaping AssociatePhoneNumberContactFlowCommand API call."
+    );
   }
-  res.json({ "message": "OK" });
+  res.json({ message: "OK" });
 });
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { awsConfig, routingProfilePrefix } = require("./configloader")
+const { awsConfig, routingProfilePrefix } = require("./configloader");
 const dynamoose = require("dynamoose");
 const { loggedInUser } = require("./auth");
 const { logger } = require("./logger");
@@ -11,145 +11,173 @@ dynamoose.aws.ddb.set(ddb);
  * Schema
  */
 
-
 const schemaCDRSet = new dynamoose.Schema({
-  "ContactID": {
-    "type": String,
-    "hashKey": true
+  ContactID: {
+    type: String,
+    hashKey: true,
   },
-  "describeContactCalled": Number,
-  "initiationMethod": String,
-  "channel": String,
-  "queueId": String,
-  "agentId": String,
-  "connectedToAgentTimestamp": Number,
-  "enqueueTimestamp": Number,
-  "initiationTimestamp": Number,
-  "disconnectTimestamp": Number,
-  "lastUpdateTimestamp": Number,
-  "duration": Number,
+  describeContactCalled: Number,
+  initiationMethod: String,
+  channel: String,
+  queueId: String,
+  agentId: String,
+  connectedToAgentTimestamp: Number,
+  enqueueTimestamp: Number,
+  initiationTimestamp: Number,
+  disconnectTimestamp: Number,
+  lastUpdateTimestamp: Number,
+  duration: Number,
 });
-
 
 const schemaCDRGet = new dynamoose.Schema({
-  "ContactID": {
-    "type": String,
-    "hashKey": true
+  ContactID: {
+    type: String,
+    hashKey: true,
   },
-  "describeContactCalled": Number,
-  "initiationMethod": String,
-  "channel": String,
-  "queueId": String,
-  "agentId": String,
-  "connectedToAgentTimestamp": Number,
-  "enqueueTimestamp": Number,
-  "initiationTimestamp": Number,
-  "disconnectTimestamp": Number,
-  "lastUpdateTimestamp": Number,
-  "duration": Number,
+  describeContactCalled: Number,
+  initiationMethod: String,
+  channel: String,
+  queueId: String,
+  agentId: String,
+  connectedToAgentTimestamp: Number,
+  enqueueTimestamp: Number,
+  initiationTimestamp: Number,
+  disconnectTimestamp: Number,
+  lastUpdateTimestamp: Number,
+  duration: Number,
 });
 
-const schemaAgentDashboard = new dynamoose.Schema({
-  "recordId": {
-    "type": String,
-    "hashKey": true
+const schemaAgentDashboard = new dynamoose.Schema(
+  {
+    recordId: {
+      type: String,
+      hashKey: true,
+    },
+    available: String,
+    busy: String,
+    inCall: String,
+    unavailable: String,
+    reportDate: String,
+    author: String,
   },
-  "available": String,
-  "busy": String,
-  "inCall": String,
-  "unavailable": String,
-  "reportDate": String,
-  "author": String,
-}, {
-  "timestamps": true,
-});
+  {
+    timestamps: true,
+  }
+);
 
-const schemaCampaignDashboard = new dynamoose.Schema({
-  "campaignName": {
-    "type": String,
-    "hashKey": true
+const schemaCampaignDashboard = new dynamoose.Schema(
+  {
+    campaignName: {
+      type: String,
+      hashKey: true,
+    },
+    reportDate: {
+      type: String,
+      rangeKey: true,
+    },
+    campaignId: String,
+    totalCall: String,
+    currentCall: String,
+    callWaiting: String,
+    agentInQueue: String,
+    avgHandlingTime: String,
+    avgTalkTime: String,
+    avgWrapUpTime: String,
+    author: String,
   },
-  "reportDate": {
-    "type": String,
-    "rangeKey": true
-  },
-  "campaignId": String,
-  "totalCall": String,
-  "currentCall": String,
-  "callWaiting": String,
-  "agentInQueue": String,
-  "avgHandlingTime": String,
-  "avgTalkTime": String,
-  "avgWrapUpTime": String,
-  "author": String,
-}, {
-  "timestamps": true,
-});
+  {
+    timestamps: true,
+  }
+);
 
-const schemaCampaign = new dynamoose.Schema({
-  "campaignName": {
-    "type": String,
-    "hashKey": true
+const schemaCampaign = new dynamoose.Schema(
+  {
+    campaignName: {
+      type: String,
+      hashKey: true,
+    },
+    campaignId: String,
+    campaignDescription: String,
+    campaignStatus: Boolean,
+    author: String,
   },
-  "campaignId": String,
-  "campaignDescription": String,
-  "campaignStatus": Boolean,
-  "author": String,
-}, {
-  "timestamps": true,
-});
+  {
+    timestamps: true,
+  }
+);
 
-const schemaAgent = new dynamoose.Schema({
-  "agentName": {
-    "type": String,
-    "hashKey": true
+const schemaAgent = new dynamoose.Schema(
+  {
+    agentName: {
+      type: String,
+      hashKey: true,
+    },
+    agentId: String,
+    routingProfileName: String,
+    routingProfileId: String,
+    campaigns: {
+      type: Array,
+      schema: [
+        {
+          type: Object,
+          schema: {
+            campaignName: String,
+            campaignId: String,
+          },
+        },
+      ],
+    },
+    author: String,
   },
-  "agentId": String,
-  "routingProfileName": String,
-  "routingProfileId": String,
-  "campaigns": {
-    "type": Array,
-    "schema": [{
-      "type": Object,
-      "schema": {
-        "campaignName": String,
-        "campaignId": String,
-      }
-    }],
-  },
-  "author": String,
-}, {
-  "timestamps": true,
-});
+  {
+    timestamps: true,
+  }
+);
 
-const schemaPhoneNumber = new dynamoose.Schema({
-  "phoneNumber": {
-    "type": String,
-    "hashKey": true
+const schemaPhoneNumber = new dynamoose.Schema(
+  {
+    phoneNumber: {
+      type: String,
+      hashKey: true,
+    },
+    phoneNumberId: String,
+    phoneNumberDesc: String,
+    tollFreeNumber: String,
+    campaignName: String,
+    campaignId: String,
+    author: String,
   },
-  "phoneNumberId": String,
-  "campaignName": String,
-  "campaignId": String,
-  "author": String,
-}, {
-  "timestamps": true,
-});
+  {
+    timestamps: true,
+  }
+);
 
 /**
  * Models
  */
 
-const modelCampaign = dynamoose.model("Cloudcall_Campaign_Table", schemaCampaign);
+const modelCampaign = dynamoose.model(
+  "Cloudcall_Campaign_Table",
+  schemaCampaign
+);
 const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
-const modelPhoneNumber = dynamoose.model("Cloudcall_Phone_Number_Table", schemaPhoneNumber);
-const modelCampaignDashboard = dynamoose.model("Cloudcall_Campaign_Dashboard_Table", schemaCampaignDashboard);
-const modelAgentDashboard = dynamoose.model("Cloudcall_Agent_Dashboard_Table", schemaAgentDashboard);
+const modelPhoneNumber = dynamoose.model(
+  "Cloudcall_Phone_Number_Table",
+  schemaPhoneNumber
+);
+const modelCampaignDashboard = dynamoose.model(
+  "Cloudcall_Campaign_Dashboard_Table",
+  schemaCampaignDashboard
+);
+const modelAgentDashboard = dynamoose.model(
+  "Cloudcall_Agent_Dashboard_Table",
+  schemaAgentDashboard
+);
 const modelCDRSet = dynamoose.model("CloudCall_CDR", schemaCDRSet);
 const modelCDRGet = dynamoose.model("CloudCall_CDR", schemaCDRGet);
 
-
-/** 
- * Functions 
+/**
+ * Functions
  */
 
 const getFullCDR = async () => {
@@ -173,16 +201,27 @@ const getFullCDR = async () => {
   // // try 4
   let currentDateTime = new Date();
   let offset = currentDateTime.getTimezoneOffset();
-  currentDateTime = new Date(currentDateTime.getTime() - (offset * 60 * 1000));
-  let startTime = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), 0, 0, 0, 0);
+  currentDateTime = new Date(currentDateTime.getTime() - offset * 60 * 1000);
+  let startTime = new Date(
+    currentDateTime.getFullYear(),
+    currentDateTime.getMonth(),
+    currentDateTime.getDate(),
+    0,
+    0,
+    0,
+    0
+  );
   let startFromEpoch = startTime / 1000;
 
   // console.log("PX:", startFromEpoch);
 
-  let contacts = await modelCDRGet.scan()
-    .where('describeContactCalled').eq(1)
+  let contacts = await modelCDRGet
+    .scan()
+    .where("describeContactCalled")
+    .eq(1)
     .and()
-    .where('initiationTimestamp').ge(startFromEpoch)
+    .where("initiationTimestamp")
+    .ge(startFromEpoch)
     .exec();
 
   // for (c of contacts) {
@@ -190,94 +229,115 @@ const getFullCDR = async () => {
   // }
 
   return contacts;
-}
+};
 
 const getLonelyContacts = async () => {
-  let contacts = await modelCDRGet.scan().where("describeContactCalled").not().exists().exec();
+  let contacts = await modelCDRGet
+    .scan()
+    .where("describeContactCalled")
+    .not()
+    .exists()
+    .exec();
   return contacts;
-}
+};
 
 const saveContactCDR = async (cdr) => {
-  try{
+  try {
     let c = await modelCDRSet.update(cdr);
     return true;
-  } catch(e){
+  } catch (e) {
     logger.error(e.name ?? e.message ?? e);
     return false;
   }
-}
+};
 
 const loadCampaignDashboardData = async () => {
-  let campaignDashboardData = await modelCampaignDashboard.scan().where("reportDate").eq(getCurrentISODateOnly()).exec();
+  let campaignDashboardData = await modelCampaignDashboard
+    .scan()
+    .where("reportDate")
+    .eq(getCurrentISODateOnly())
+    .exec();
   return campaignDashboardData;
-}
+};
 
 const loadAgentDashboardData = async () => {
   let agentDashboardData = await modelAgentDashboard.scan().exec();
   return agentDashboardData;
-}
+};
 
 const saveAgentDashboardData = async (dashboardData) => {
-  logger.info('Saving agent dashboard data.');
+  logger.info("Saving agent dashboard data.");
   let newAgentDashboard = new modelAgentDashboard(dashboardData);
   await newAgentDashboard.save();
-  logger.info('Saving agent dashboard data completed.');
-}
+  logger.info("Saving agent dashboard data completed.");
+};
 
 const saveCampaignDashboardData = async (dashboardData) => {
-  logger.info('Saving campaign dashboard data.');
+  logger.info("Saving campaign dashboard data.");
   for (data of dashboardData) {
     let newCampaignDashboard = new modelCampaignDashboard(data);
     await newCampaignDashboard.save();
   }
-  logger.info('Saving campaign dashboard data completed.');
-}
+  logger.info("Saving campaign dashboard data completed.");
+};
 
 const getAgents = async () => {
   let agents = await modelAgent.scan().exec();
   return agents;
-} // end getAgents()
+}; // end getAgents()
 
 const getCampaigns = async () => {
   let campaigns = await modelCampaign.scan().exec();
   return campaigns;
-} // end getCampaigns()
+}; // end getCampaigns()
 
 const getActiveCampaigns = async () => {
-  let campaigns = await modelCampaign.scan().where('campaignStatus').eq(true).exec();
+  let campaigns = await modelCampaign
+    .scan()
+    .where("campaignStatus")
+    .eq(true)
+    .exec();
   let campObject = {};
-  let campIdArr = []
+  let campIdArr = [];
   for (let n = 0; n < campaigns.length; n++) {
     campObject[campaigns[n].campaignId] = campaigns[n].campaignName;
     campIdArr[campIdArr.length] = campaigns[n].campaignId;
   }
-  return { 'details': campObject, 'summary': campIdArr };
-} // end getActiveCampaigns()
+  return { details: campObject, summary: campIdArr };
+}; // end getActiveCampaigns()
 
 const setCampaignStatus = async (campaignName, campaignStatus) => {
-  await modelCampaign.update({ "campaignName": campaignName, "campaignStatus": (campaignStatus == 'true' ? true : false) });
-} // end setCampaignStatus()
+  await modelCampaign.update({
+    campaignName: campaignName,
+    campaignStatus: campaignStatus == "true" ? true : false,
+  });
+}; // end setCampaignStatus()
 
-const insertAgent = async (agentName, agentId, routingProfileName, routingProfileId) => {
+const insertAgent = async (
+  agentName,
+  agentId,
+  routingProfileName,
+  routingProfileId
+) => {
   let newAgent = new modelAgent({
     agentName: agentName,
     agentId: agentId,
     routingProfileName: routingProfileName,
     routingProfileId: routingProfileId,
-    author: loggedInUser.userId
+    author: loggedInUser.userId,
   });
   await newAgent.save();
-} // end insertAgent()
+}; // end insertAgent()
 
 let addCampaignToAgent = async (agentName, campaignName, campaignId) => {
   let result = await modelAgent.get(agentName);
   let campaigns = result.campaigns ?? [];
 
-  let newCampaign = { "campaignName": campaignName, "campaignId": campaignId }
-  campaigns.push(newCampaign)
+  let newCampaign = { campaignName: campaignName, campaignId: campaignId };
+  campaigns.push(newCampaign);
 
-  await modelAgent.update({ "agentName": agentName, "campaigns": campaigns });
-} // end addCampaignToAgent()
+  await modelAgent.update({ agentName: agentName, campaigns: campaigns });
+}; // end addCampaignToAgent()
 
 let removeCampaignFromAgent = async (agentName, campaignName, campaignId) => {
   let result = await modelAgent.get(agentName);
@@ -285,53 +345,70 @@ let removeCampaignFromAgent = async (agentName, campaignName, campaignId) => {
   let updatedCampaigns = [];
   for (let campaign of campaigns) {
     if (campaign.campaignName != campaignName) {
-      updatedCampaigns[updatedCampaigns.length] = campaign
+      updatedCampaigns[updatedCampaigns.length] = campaign;
     }
   } // next campaign
-  await modelAgent.update({ "agentName": agentName, "campaigns": updatedCampaigns });
-} // end removeCampaignToAgent()
+  await modelAgent.update({
+    agentName: agentName,
+    campaigns: updatedCampaigns,
+  });
+}; // end removeCampaignToAgent()
 
 const campaignExists = async (campaignName) => {
   let result = await modelCampaign.get(campaignName);
   return result === undefined;
-} // end campaignExists()
+}; // end campaignExists()
 
-const insertCampaign = async (campaignName, campaignId, campaignDesc, campaignStatus) => {
+const insertCampaign = async (
+  campaignName,
+  campaignId,
+  campaignDesc,
+  campaignStatus
+) => {
   let campaignItem = new modelCampaign({
     campaignName: campaignName,
     campaignId: campaignId,
     campaignDescription: campaignDesc,
     campaignStatus: campaignStatus,
-    author: loggedInUser.userId
+    author: loggedInUser.userId,
   });
   await campaignItem.save();
-} // end insertCampaign()
+}; // end insertCampaign()
 
 const updatedCampaign = async (campaignName, campaignDescription) => {
   let camp = await modelCampaign.update({
-    "campaignName": campaignName,
-    "campaignDescription": campaignDescription
+    campaignName: campaignName,
+    campaignDescription: campaignDescription,
   });
   return camp;
-} // end updatedCampaign()
+}; // end updatedCampaign()
 
 const getCampaignDescription = async (campaignName) => {
   let camp = await modelCampaign.get(campaignName);
-  return (camp === undefined ? "" : camp.campaignDescription ?? "");
-} // end updatedCampaign()
+  return camp === undefined ? "" : camp.campaignDescription ?? "";
+}; // end updatedCampaign()
 
 const getPhoneNumberCampaignMap = async () => {
   let phoneCampMap = await modelPhoneNumber.scan().exec();
   return phoneCampMap;
 }; // end getPhoneNumberCampaignMap()
 
-let insertPhoneNumberCampaignMap = async (campaignId, campaignName, phoneNumberId, phoneNumber) => {
+let insertPhoneNumberCampaignMap = async (
+  campaignId,
+  campaignName,
+  phoneNumberId,
+  phoneNumber,
+  phoneNumberDesc,
+  tollFreeNumber
+) => {
   let phoneNumberCampaignMapIItem = new modelPhoneNumber({
     phoneNumber: "+" + String(phoneNumber).trim(),
     phoneNumberId: phoneNumberId,
+    phoneNumberDesc: phoneNumberDesc,
+    tollFreeNumber: tollFreeNumber,
     campaignName: campaignName,
     campaignId: campaignId,
-    author: loggedInUser.userId
+    author: loggedInUser.userId,
   });
   await phoneNumberCampaignMapIItem.save();
 }; // end insertPhoneNumberCampaignMap()
@@ -365,4 +442,3 @@ module.exports = {
   saveContactCDR,
   getFullCDR,
 };
-
