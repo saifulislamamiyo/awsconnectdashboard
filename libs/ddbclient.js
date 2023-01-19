@@ -12,7 +12,26 @@ dynamoose.aws.ddb.set(ddb);
  */
 
 
-const schemaCDR = new dynamoose.Schema({
+const schemaCDRSet = new dynamoose.Schema({
+  "ContactID": {
+    "type": String,
+    "hashKey": true
+  },
+  "describeContactCalled": Number,
+  "initiationMethod": String,
+  "channel": String,
+  "queueId": String,
+  "agentId": String,
+  "connectedToAgentTimestamp": Number,
+  "enqueueTimestamp": Number,
+  "initiationTimestamp": Number,
+  "disconnectTimestamp": Number,
+  "lastUpdateTimestamp": Number,
+  "duration": Number,
+});
+
+
+const schemaCDRGet = new dynamoose.Schema({
   "ContactID": {
     "type": String,
     "hashKey": true
@@ -125,7 +144,8 @@ const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
 const modelPhoneNumber = dynamoose.model("Cloudcall_Phone_Number_Table", schemaPhoneNumber);
 const modelCampaignDashboard = dynamoose.model("Cloudcall_Campaign_Dashboard_Table", schemaCampaignDashboard);
 const modelAgentDashboard = dynamoose.model("Cloudcall_Agent_Dashboard_Table", schemaAgentDashboard);
-const modelCDR = dynamoose.model("CloudCall_CDR", schemaCDR);
+const modelCDRSet = dynamoose.model("CloudCall_CDR", schemaCDRSet);
+const modelCDRGet = dynamoose.model("CloudCall_CDR", schemaCDRGet);
 
 
 /** 
@@ -141,13 +161,13 @@ const getFullCDR = async () => {
   // let startFromEpoch = startTime / 1000;
 
   // // try 1:
-  // let contacts = await modelCDR.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
+  // let contacts = await modelCDRGet.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
   // // try 2
   // let cnd = new dynamoose.Condition().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch);
-  // let contacts = await modelCDR.scan(cnd).exec()
+  // let contacts = await modelCDRGet.scan(cnd).exec()
   // // try 3
 
-  // let scanned = await modelCDR.scan().where('describeContactCalled').eq(1);
+  // let scanned = await modelCDRGet.scan().where('describeContactCalled').eq(1);
   // let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
 
   // // try 4
@@ -159,7 +179,7 @@ const getFullCDR = async () => {
 
   // console.log("PX:", startFromEpoch);
 
-  let contacts = await modelCDR.scan()
+  let contacts = await modelCDRGet.scan()
     .where('describeContactCalled').eq(1)
     .and()
     .where('initiationTimestamp').ge(startFromEpoch)
@@ -173,13 +193,18 @@ const getFullCDR = async () => {
 }
 
 const getLonelyContacts = async () => {
-  let contacts = await modelCDR.scan().where("describeContactCalled").not().exists().exec();
+  let contacts = await modelCDRGet.scan().where("describeContactCalled").not().exists().exec();
   return contacts;
 }
 
 const saveContactCDR = async (cdr) => {
-  let c = new modelCDR(cdr);
-  c.save()
+  try{
+    let c = await modelCDRSet.update(cdr);
+    return true;
+  } catch(e){
+    logger.error(e.name ?? e.message ?? e);
+    return false;
+  }
 }
 
 const loadCampaignDashboardData = async () => {
@@ -317,7 +342,8 @@ module.exports = {
   modelPhoneNumber,
   modelCampaignDashboard,
   modelAgentDashboard,
-  modelCDR,
+  modelCDRGet,
+  modelCDRSet,
   getAgents,
   getCampaigns,
   setCampaignStatus,

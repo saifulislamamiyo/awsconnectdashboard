@@ -89,7 +89,7 @@ if (enableDashboardDataAcquisition == 1) {
       }
       await sleep(500);
     }
-  }, 1200000);
+  }, 2000);
 }
 
 

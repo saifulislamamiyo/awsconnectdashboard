@@ -1,4 +1,4 @@
-const { modelCDR } = require('../libs/ddbclient.js');
+const { modelCDRGet, modelCDRSet } = require('../libs/ddbclient.js');
 const { getContactCDR } = require('../libs/connectclient.js');
 
 // (async()=>{
@@ -8,7 +8,7 @@ const { getContactCDR } = require('../libs/connectclient.js');
 
 (async()=>{
 
-const res = await modelCDR.scan().exec();
+const res = await modelCDRGet.scan().exec();
 console.log('~'.repeat(20));
 for (let n = 0; n < res.length; n++) {
   console.log(
@@ -27,10 +27,5 @@ for (let n = 0; n < res.length; n++) {
     );
 }
 console.log('~'.repeat(20));
-// for (let n = 0; n < res.length; n++) {
-//   new modelCDR({
-//     "ContactID": res[n].ContactID
-//   }).save()
-// }
-// console.log(res)
+// --------------------------------------------------------
 })()

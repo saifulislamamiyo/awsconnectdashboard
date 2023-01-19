@@ -1,8 +1,8 @@
-const { modelAgent, modelCDR } = require("./libs/ddbclient");
+const { modelAgent, modelCDRGet } = require("./libs/ddbclient");
 
 
 // (async()=>{
-// let r = await modelCDR.scan().exec();
+// let r = await modelCDRGet.scan().exec();
 // console.log(r.length)
 // })();
 

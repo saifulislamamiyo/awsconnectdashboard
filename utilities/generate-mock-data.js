@@ -1,4 +1,4 @@
-const { modelAgent, modelCDR } = require("../libs/ddbclient");
+const { modelAgent, modelCDRSet } = require("../libs/ddbclient");
 
 let mockAgents100 = [
   {
@@ -228,8 +228,8 @@ let mockAgents100 = [
 // ];
 // for(let n=0;n<actContactID.length;n++){
 //   let thisActContactID = actContactID[n];
-//   new modelCDR(thisActContactID).save();
-//   // new modelCDR(thisActContactID).delete();
+//   new modelCDRSet(thisActContactID).save();
+//   // new modelCDRSet(thisActContactID).delete();
 // };
 
 
@@ -244,7 +244,7 @@ let mockAgents100 = [
 // }
 
 /**
- * INSERT/DELETE Mock CDR
+ * INSERT OR OVERWRITE/DELETE Mock CDR
  */
 
 let mockCDRS = [
@@ -285,7 +285,7 @@ function sleepFor(sleepDuration){
 
 for (let n = 0; n < mockCDRS.length; n++) {
   let thisMockCDR = mockCDRS[n];
-  let newCDR = new modelCDR(thisMockCDR);
+  let newCDR = new modelCDRSet(thisMockCDR);
   // newCDR.delete()
   console.log(`saving ${n}`)
   newCDR.save()
