@@ -195,7 +195,7 @@
     }); // btnRem click event listener
 
     selPhoneNumber.addEventListener('change', (evClickSelPhoneNumber) => {
-      let phoneNumberValWithDesc = evClickSelPhoneNumber.target.options[evClickSelPhoneNumber.target.selectedIndex].text;
+      let phoneNumberValWithDesc = evClickSelPhoneNumber.target.options[evClickSelPhoneNumber.target.selectedIndex].value;
       let phoneNumberToLook = phoneNumberValWithDesc.split(String.fromCharCode(28))[0];
       phoneNumberToLook = phoneNumberToLook.trim();
       let mappedCampaignArray = getMappedCampaignOfPhone(phoneNumberToLook, phoneNumberCampaignMapFromDB);
