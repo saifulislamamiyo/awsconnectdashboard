@@ -39,9 +39,9 @@ router.get("/inbound-number-provision-save", async (req, res, next) => {
   let campaignName = req.query.campaignname;
   let phoneNumberId = req.query.phoneid;
   let phoneNumber = req.query.phoneNumber;
-  let phoneNumberDesc = req.query.phoneNumerDesc;
+  let phoneNumberDesc = req.query.phoneNumberDesc;
   let tollFreeNumber = req.query.tollFreeNumber;
-
+  
   await insertPhoneNumberCampaignMap(
     campaignId,
     campaignName,
