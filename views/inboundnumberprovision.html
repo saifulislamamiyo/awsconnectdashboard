@@ -219,8 +219,9 @@
       let campaignNameVal = selMappedCampaign.options.length > 0 ? selMappedCampaign.options[0].text ?? "" : "";
       let phoneIdVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].value.split(String.fromCharCode(28))[1].trim();
       let phoneNumberVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].value.split(String.fromCharCode(28))[0].trim();
-      let tollFreeNumber = selPhoneNumber.options[selPhoneNumber.selectedIndex].text.split(String.fromCharCode(28))[0].trim();
-      let phoneNumerDesc = selPhoneNumber.options[selPhoneNumber.selectedIndex].text.split(String.fromCharCode(28))[1].trim();
+      let selectedPhDesc = selPhoneNumber.options[selPhoneNumber.selectedIndex].text.trim();
+      let tollFreeNumber = selectedPhDesc.split(String.fromCharCode(32))[0].trim();
+      let phoneNumerDesc = selectedPhDesc.substring(selectedPhDesc.indexOf(' ')+1).trim();
       // phoneNumberVal = phoneNumberVal.trim();
       show_loader();
       let fetchUrl = `/inbound-number-provision/inbound-number-provision-save?campaignid=${campaignIdVal}&campaignname=${campaignNameVal}&phoneid=${phoneIdVal}&phoneNumber=${phoneNumberVal}&phoneNumberDesc=${phoneNumerDesc}&tollFreeNumber=${tollFreeNumber}`;
