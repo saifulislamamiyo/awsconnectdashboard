@@ -221,10 +221,10 @@
       let phoneNumberVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].value.split(String.fromCharCode(28))[0].trim();
       let selectedPhDesc = selPhoneNumber.options[selPhoneNumber.selectedIndex].text.trim();
       let tollFreeNumber = selectedPhDesc.split(String.fromCharCode(32))[0].trim();
-      let phoneNumerDesc = selectedPhDesc.substring(selectedPhDesc.indexOf(' ')+1).trim();
+      let phoneNumberDesc = selectedPhDesc.substring(selectedPhDesc.indexOf(' ')+1).trim();
       // phoneNumberVal = phoneNumberVal.trim();
       show_loader();
-      let fetchUrl = `/inbound-number-provision/inbound-number-provision-save?campaignid=${campaignIdVal}&campaignname=${campaignNameVal}&phoneid=${phoneIdVal}&phoneNumber=${phoneNumberVal}&phoneNumberDesc=${phoneNumerDesc}&tollFreeNumber=${tollFreeNumber}`;
+      let fetchUrl = `/inbound-number-provision/inbound-number-provision-save?campaignid=${campaignIdVal}&campaignname=${campaignNameVal}&phoneid=${phoneIdVal}&phoneNumber=${phoneNumberVal}&phoneNumberDesc=${phoneNumberDesc}&tollFreeNumber=${tollFreeNumber}`;
       await fetch(fetchUrl);
       hide_loader();
       window.location.replace('/inbound-number-provision/inbound-number-provision-success');
