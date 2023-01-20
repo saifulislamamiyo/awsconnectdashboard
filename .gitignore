@@ -3,6 +3,7 @@ px_test.json
 sample-metric.json
 dynamoose-test.js
 _TODO.md
+.env.dev.our
 # Logs
 logs
 *.log
