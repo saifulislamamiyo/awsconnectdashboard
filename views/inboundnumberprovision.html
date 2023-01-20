@@ -195,7 +195,7 @@
     }); // btnRem click event listener
 
     selPhoneNumber.addEventListener('change', (evClickSelPhoneNumber) => {
-      let phoneNumberValWithDesc = evClickSelPhoneNumber.target.options[evClickSelPhoneNumber.target.selectedIndex].value;
+      let phoneNumberValWithDesc = evClickSelPhoneNumber.target.options[evClickSelPhoneNumber.target.selectedIndex].text;
       let phoneNumberToLook = phoneNumberValWithDesc.split(String.fromCharCode(28))[0];
       phoneNumberToLook = phoneNumberToLook.trim();
       let mappedCampaignArray = getMappedCampaignOfPhone(phoneNumberToLook, phoneNumberCampaignMapFromDB);
@@ -221,10 +221,10 @@
       let phoneNumberVal = selPhoneNumber.options[selPhoneNumber.selectedIndex].value.split(String.fromCharCode(28))[0].trim();
       let selectedPhDesc = selPhoneNumber.options[selPhoneNumber.selectedIndex].text.trim();
       let tollFreeNumber = selectedPhDesc.split(String.fromCharCode(32))[0].trim();
-      let phoneNumberDesc = selectedPhDesc.substring(selectedPhDesc.indexOf(' ')+1).trim();
+      let phoneNumerDesc = selectedPhDesc.substring(selectedPhDesc.indexOf(' ')+1).trim();
       // phoneNumberVal = phoneNumberVal.trim();
       show_loader();
-      let fetchUrl = `/inbound-number-provision/inbound-number-provision-save?campaignid=${campaignIdVal}&campaignname=${campaignNameVal}&phoneid=${phoneIdVal}&phoneNumber=${phoneNumberVal}&phoneNumberDesc=${phoneNumberDesc}&tollFreeNumber=${tollFreeNumber}`;
+      let fetchUrl = `/inbound-number-provision/inbound-number-provision-save?campaignid=${campaignIdVal}&campaignname=${campaignNameVal}&phoneid=${phoneIdVal}&phoneNumber=${phoneNumberVal}&phoneNumberDesc=${phoneNumerDesc}&tollFreeNumber=${tollFreeNumber}`;
       await fetch(fetchUrl);
       hide_loader();
       window.location.replace('/inbound-number-provision/inbound-number-provision-success');
