@@ -2,7 +2,7 @@
 * Imports
 */
 const { setIntervalAsync, clearIntervalAsync } = require('set-interval-async');
-const { dashboardDataAcquisitionInterval, enableDashboardDataAcquisition } = require('./configloader');
+const { dashboardDataAcquisitionInterval, enableDashboardDataAcquisition, cdrDataAcquisitionInterval } = require('./configloader');
 const { logger } = require("./logger");
 const { sleep } = require("./utils");
 const {
@@ -70,7 +70,7 @@ if (enableDashboardDataAcquisition == 1) {
 }
 
 
-if (enableDashboardDataAcquisition == 1) { 
+if (enableDashboardDataAcquisition == 1) {
   setIntervalAsync(async () => {
     logger.info("Getting latest ContactID(s) to retrieve details (CDR)");
     let contacts = await getLonelyContacts();
@@ -89,7 +89,7 @@ if (enableDashboardDataAcquisition == 1) {
       }
       await sleep(500);
     }
-  }, 1200000);
+  }, parseInt(cdrDataAcquisitionInterval));
 }
 
 

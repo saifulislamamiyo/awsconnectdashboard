@@ -21,6 +21,7 @@ let dashboardDataAcquisitionInterval =
 let enableDashboardDataAcquisition =
   process.env.ENABLE_DASHBOARD_DATA_ACQUISITION;
 var runtimeEnv = process.env.NODE_ENV || "prod";
+let cdrDataAcquisitionInterval = process.env.ENABLE_DASHBOARD_DATA_ACQUISITION;
 
 if (runtimeEnv !== "prod") {
   awsConfig = {
@@ -49,4 +50,5 @@ module.exports = {
   agentDashboardRefreshInterval,
   dashboardDataAcquisitionInterval,
   enableDashboardDataAcquisition,
+  cdrDataAcquisitionInterval,
 };
