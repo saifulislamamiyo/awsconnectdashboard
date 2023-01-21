@@ -60,18 +60,23 @@ router.get('/', async (req, res, next) => {
       campaignName: arrCampaignsSearchVal ? arrCampaignsSearchVal.campaignName : "",
       callNumber: theCDR.DialedNumber,
       callDirection: theCDR.CallDirection,
-      callStartTime: new Date(theCDR.initiationTimestamp).toISOString(),
+      callStartTime: new Date(1000 * theCDR.initiationTimestamp).toLocaleString('en-us'),
       talkTime: theCDR.duration,
-      waitTime: theCDR.enqueueTimestamp && theCDR.connectedToAgentTimestamp ? (theCDR.connectedToAgentTimestamp - theCDR.enqueueTimestamp):0,
-      wrapTime: theCDR.WrapUpAt ? (theCDR.connectedToAgentTimestamp-theCDR.WrapUpAt) : 0,
+      waitTime: theCDR.enqueueTimestamp && theCDR.connectedToAgentTimestamp ? (theCDR.connectedToAgentTimestamp - theCDR.enqueueTimestamp) : 0,
+      wrapTime: theCDR.WrapUpAt ? (theCDR.connectedToAgentTimestamp - theCDR.WrapUpAt) : 0,
       calls: theCDR.describeContactCalled,
+      customerNumber: theCDR.CustomerNumber,
     }
     primaryProcessedCDRCount += 1;
   }
 
   let agentSummary = groupByWithSum(primaryProcessedCDR, 'agentName', 'talkTime, waitTime, wrapTime, calls')
-  console.log(agentSummary);
-  res.render('agentdashboard', { title: 'Agent Dashboard',agentSummary:agentSummary[0], allCDR: primaryProcessedCDR });
+
+  res.render('agentdashboard', {
+    title: 'Agent Dashboard',
+    agentSummary: agentSummary[0],
+    allCDR: primaryProcessedCDR 
+  });
 });
 
 module.exports = router;

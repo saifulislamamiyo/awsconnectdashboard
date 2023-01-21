@@ -1,22 +1,22 @@
 <%- include('_head.html'); %>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3">
-    <h1 class="h2">
-        <%= title %>
-    </h1>
-    <% if (true) { %>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group me-2">
-                <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3">
+        <h1 class="h2">
+            <%= title %>
+        </h1>
+        <% if (true) { %>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+                </div>
             </div>
-        </div>
-        <% } %>
-</div>
+            <% } %>
+    </div>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
-    <h5>Report Date: <%= new Date().toISOString().split('T')[0] %>
-    </h5>
-</div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
+        <h5>Report Date: <%= new Date().toLocaleDateString('en-us') %>
+        </h5>
+    </div>
 
     <%- include('_alert.html'); %>
 
@@ -34,7 +34,6 @@
                 <div class="table-responsive mt-4">
                     <table class="table table-bordered">
                         <thead class="table-dark">
-
                             <th>Talk Time</th>
                             <th>Wait Time</th>
                             <th>Wrap Time</th>
@@ -64,19 +63,28 @@
                         <table class="table table-bordered table-striped" id="reporting-table">
                             <thead class="table-dark">
                                 <tr>
-
-                                    <th scope="col">Campaign Name</th>
-                                    <th scope="col">Call Number</th>
+                                    <th scope="col">Date Time</th>
+                                    <th scope="col">Customer Number</th>
                                     <th scope="col">Call Direction</th>
-                                    <th scope="col">Call Started At</th>
+                                    <th scope="col">Campaign Name</th>
+                                    <th scope="col">Campaign Hotline</th>
                                     <th scope="col">Talk Time</th>
-                                    <th scope="col">Wait Time</th>
                                     <th scope="col">Wrap Time</th>
+                                    <th scope="col">Wait Time</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% allCDR.forEach(function(cdr){ %>
                                     <tr>
+                                        <td>
+                                            <%=cdr.callStartTime%>
+                                        </td>
+                                        <td>
+                                            <%=cdr.customerNumber%>
+                                        </td>
+                                        <td>
+                                            <%=cdr.callDirection%>
+                                        </td>
                                         <td>
                                             <%= cdr.campaignName ? cdr.campaignName : "Not Applicable" %>
                                         </td>
@@ -84,16 +92,10 @@
                                             <%=cdr.callNumber ? cdr.callNumber : "Not Applicable" %>
                                         </td>
                                         <td>
-                                            <%=cdr.callDirection%>
-                                        </td>
-                                        <td>
-                                            <%=cdr.callStartTime%>
-                                        </td>
-                                        <td>
                                             <%=cdr.talkTime.toFixed(2)%>
                                         </td>
                                         <td>
-                                            <%=cdr.waitTime.toFixed(2)%>
+                                            <%=cdr.wrapTime.toFixed(2)%>
                                         </td>
                                         <td>
                                             <%=cdr.waitTime.toFixed(2)%>
@@ -106,18 +108,4 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <%- include('_foot.html'); %>

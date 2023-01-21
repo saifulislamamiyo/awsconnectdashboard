@@ -61,6 +61,7 @@ Campaign Name (NA if OUTBOUD)
 Campaign Hotline  (DO)
 Talk Time
 Wrap Time
+Wait time
 
 
 
