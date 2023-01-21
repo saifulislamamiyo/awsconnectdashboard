@@ -46,9 +46,31 @@ The relevant items here are:
 - Talk-time cumulative total of call durations since midnight for that particular Agent
 - Wait Time - Total time in queue for all calls for that agent (from midnight) -- Not required
 - Wrap Time - Total after call work for that agent since midnight
-XXXX - baad  apatoto - Pause time - Total cumulative time agent was not in an Available state since midnight (OCCUPANCY of GetMetricData)
 - Calls - Total call count of received calls for that agent today - Can we have this split between inbound and outbound calls
 
+
+
+Call Detais: (Agent filter = AgentName is Hardcoded)
+------------------
+21- Jan- 2023
+
+Date Time (Human Readable) (Sorted by)
+Customer Number
+Call Direction
+Campaign Name (NA if OUTBOUD)
+Campaign Hotline  (DO)
+Talk Time
+Wrap Time
+
+
+
+
+
+--
+Showing report of <human date>
+--
+
+XXXX - baad  apatoto - Pause time - Total cumulative time agent was not in an Available state since midnight (OCCUPANCY of GetMetricData)
 ---
 
 They would also like the Call History tab, that lists all calls received by that Agent today

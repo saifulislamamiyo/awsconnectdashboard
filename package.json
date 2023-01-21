@@ -6,6 +6,7 @@
     "start": "node ./bin/www",
     "test": "nyc mocha --recursive --timeout 10000",
     "dev": "NODE_ENV=dev DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
+    "dev-ndf": "NODE_ENV=dev DEV_NO_DATE_FILTER=1 DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
     "uglifycss": "node utilities/uglifycss.js",
     "uglifyjs": "node utilities/uglifyjs.js",
     "pm-loc-start": "./node_modules/pm2/bin/pm2 start bin/www --name ccconfigpanel-loc --time --log logs/logs.txt",

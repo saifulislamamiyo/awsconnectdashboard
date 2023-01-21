@@ -5,5 +5,5 @@
 1. In .env, introduced following variable. This value is in milliseconds.
 CDR_DATA_ACQUISITION_INTERVAL=3000 #1200000 (20min x 60 sec x 1000ms)
 
-
-2. In prod, uncomment line 229-231 iin ddbclient.js
+2. set environmental variable to escape date filter in reports
+npm run dev-ndf

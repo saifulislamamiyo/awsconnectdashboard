@@ -57,7 +57,7 @@ router.get('/', async (req, res, next) => {
       calls: parseInt(theCDR.describeContactCalled),
       disconnect: (theCDR.enqueueTimestamp && !theCDR.connectedToAgentTimestamp) ? 1 : 0,
       talkTime: theCDR.duration,
-      waitTime: (theCDR.connectedToAgentTimestamp - theCDR.enqueueTimestamp),
+      waitTime: !theCDR.connectedToAgentTimestamp ? 0 : (theCDR.connectedToAgentTimestamp - theCDR.enqueueTimestamp),
     }
     primaryProcessedCDRCount += 1;
   }

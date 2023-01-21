@@ -221,15 +221,25 @@ const getFullCDR = async () => {
   let startFromEpoch = startTime / 1000;
 
   // console.log("PX:", startFromEpoch);
+  let noDateFilter = process.env.DEV_NO_DATE_FILTER || "0";
 
-  let contacts = await modelCDRGet
-    .scan()
-    .where("describeContactCalled")
-    .eq(1)
-    .and()
-    .where("initiationTimestamp")
-    .ge(startFromEpoch)
-    .exec();
+
+  let contacts;
+
+  if (noDateFilter != "0") {
+    contacts = await modelCDRGet.scan()
+      .where("describeContactCalled")
+      .eq(1)
+      .exec();
+  } else {
+    contacts = await modelCDRGet.scan()
+      .where("describeContactCalled")
+      .eq(1)
+      .and()
+      .where("initiationTimestamp")
+      .ge(startFromEpoch)
+      .exec();
+  }
 
   // for (c of contacts) {
   //   console.log('PX: ', c.ContactID, typeof c.initiationTimestamp, c.initiationTimestamp)
