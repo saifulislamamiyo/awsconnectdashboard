@@ -1,24 +1,75 @@
 <%- include('_head.html'); %>
-  
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">
-        <%= title %>
-      </h1>
-      <% if (true) { %>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
-          </div>
-        </div>
-        <% } %>
+        <h1 class="h2">
+            <%= title %>
+        </h1>
+        <% if (true) { %>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+                </div>
+            </div>
+            <% } %>
     </div>
-
     <%- include('_alert.html'); %>
-    
-    <center>
-      <img src="/images/undraw_analytics_re_dkf8.svg" alt="dashboatd" class="img-fluid opacity-50" style="max-width: 70vh">
-    </center>
-
-
-
-  <%- include('_foot.html'); %>
+        <div class="table-responsive">
+            <div id="reporting-table-wrapper" class="dataTables_wrapper dt-bootstrap5">
+                <table class="table table-bordered table-striped" id="reporting-table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Inbound Group</th>
+                            <th scope="col">Inbound Group Name</th>
+                            <th scope="col">Calls</th>
+                            <th scope="col">Connects</th>
+                            <th scope="col">Disconnect</th>
+                            <th scope="col">Disconnect Rate</th>
+                            <th scope="col">Talk Time</th>
+                            <th scope="col">Avg Talk Time</th>
+                            <th scope="col">Wait time</th>
+                            <th scope="col">Avg Wait time</th>
+                            <th scope="col">Longest Wait time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% aggCDR.forEach(function(cdr){ %>
+                            <tr>
+                                <td>
+                                    <%=cdr.inboundGroup%>
+                                </td>
+                                <td>
+                                    <%=cdr.inboundGroupName%>
+                                </td>
+                                <td>
+                                    <%=cdr.calls%>
+                                </td>
+                                <td>
+                                    <%=cdr.connects%>
+                                </td>
+                                <td>
+                                    <%=cdr.disconnect%>
+                                </td>
+                                <td>
+                                    <%=cdr.disconnectRate%>
+                                </td>
+                                <td>
+                                    <%=cdr.talkTime.toFixed(2)%>
+                                </td>
+                                <td>
+                                    <%=cdr.avgTalkTime.toFixed(2)%>
+                                </td>
+                                <td>
+                                    <%=cdr.waitTime.toFixed(2)%>
+                                </td>
+                                <td>
+                                    <%=cdr.avgWaitTime.toFixed(2)%>
+                                </td>
+                                <td>
+                                    <%=cdr.longestWaitTime.toFixed(2)%>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<%- include('_foot.html'); %>

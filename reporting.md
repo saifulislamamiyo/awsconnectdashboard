@@ -10,18 +10,18 @@ Summary Report
    - avg talk time
 
 
-2. Campaign wise
-   - Inbound Group (tollFreeNumber)
-   - Inbound Group Name (campaignName)
-   - Calls : total incoming calls
-   - Connects : Total incoming calls - Abandoned calls
-   - Disconnect: Abandoned calls (EnqueueTimestamp available, but ConnectedToAgentTimestamp unavailable)
-   - Disconnect Rate: Calculated as a percentage of Calls
-   - Talk : total talk time. handling time = `end_time` - `start_time`
-   - Average Talk
-   - Wait time: total time calls waited in queue for this campaign (ConnectedToAgentTimestamp - EnqueueTimestamp)
-   - Average wait
-   - Longest wait
+   2. Campaign wise
+      - Inbound Group (tollFreeNumber)
+      - Inbound Group Name (campaignName)
+      - Calls : total incoming calls
+[s]      - Connects : Total incoming calls - Abandoned calls
+      - Disconnect: Abandoned calls (EnqueueTimestamp available, but ConnectedToAgentTimestamp unavailable)
+[s]      - Disconnect Rate: Calculated as a percentage of Calls
+      - Talk : total talk time. handling time = `end_time` - `start_time`
+[s]   - Average Talk
+      - Wait time: total time calls waited in queue for this campaign (ConnectedToAgentTimestamp - EnqueueTimestamp)
+[s]      - Average wait
+[s]      - Longest wait
 
 ## // start_time + queue_time + agent_talk_time + wrap_up_time
 CDR:
