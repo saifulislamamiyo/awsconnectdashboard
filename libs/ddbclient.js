@@ -45,6 +45,13 @@ const schemaCDRGet = new dynamoose.Schema({
   disconnectTimestamp: Number,
   lastUpdateTimestamp: Number,
   duration: Number,
+  CallDirection: String,
+  CustomerNumber: String,
+  StartTime: String,
+  DialedNumber: String,
+  DialNumberDesc: String,
+  DialedConnectNumber: String,
+  AgentUserName: String,
 });
 
 const schemaAgentDashboard = new dynamoose.Schema(
@@ -230,6 +237,7 @@ const getFullCDR = async () => {
 
   return contacts;
 };
+
 
 const getLonelyContacts = async () => {
   let contacts = await modelCDRGet

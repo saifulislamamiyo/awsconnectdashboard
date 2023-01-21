@@ -56,24 +56,25 @@ const getContactCDR = async (ContactID) => {
     "ContactId": ContactID
   });
   try {
-    let r = await connectClient.send(cmd);
-    r = r.Contact;
-    return {
+    let res = await connectClient.send(cmd);
+    let r = res.Contact;
+    let ret = {
       "ContactID": r.Id,
       "describeContactCalled": 1,
       "initiationMethod": r.InitiationMethod,
       "channel": r.Channel,
-      "queueId": r.QueueInfo.Id,
+      "queueId": r.QueueInfo !== undefined ? r.QueueInfo.Id : '',
       "agentId": r.AgentInfo.Id,
-      "connectedToAgentTimestamp":  r.AgentInfo.ConnectedToAgentTimestamp.getTime() / 1000,
-      "enqueueTimestamp": r.QueueInfo.EnqueueTimestamp.getTime() / 1000,
+      "connectedToAgentTimestamp": r.AgentInfo.ConnectedToAgentTimestamp.getTime() / 1000,
+      "enqueueTimestamp": r.QueueInfo !== undefined ? r.QueueInfo.EnqueueTimestamp.getTime() / 1000: 0,
       "initiationTimestamp": r.InitiationTimestamp.getTime() / 1000,
       "disconnectTimestamp": r.DisconnectTimestamp.getTime() / 1000,
       "lastUpdateTimestamp": r.LastUpdateTimestamp.getTime() / 1000,
       "duration": ((r.DisconnectTimestamp.getTime() / 1000) - (r.InitiationTimestamp.getTime() / 1000))
     }
+    return ret;
   } catch (e) {
-    logger.error(e.name ?? e.message ?? e);
+    console.log(e);
     return;
   }
 }
