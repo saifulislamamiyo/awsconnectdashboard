@@ -39,20 +39,22 @@
 
 
   $(document).ready(function() {
-    // var table = $('#reporting-table').DataTable({
-    //   lengthChange: true,
-    //   dom: 'Bfltrip',
-    //   buttons: [
-    //     'csv', 'excel', 'pdf', 'print'
-    //   ]
-    // });
-    // table.buttons().container().appendTo('#reporting-table-wrapper .col-md-6:eq(0)');
 
 
-    $("#reporting-table").DataTable({
-      "responsive": true, "lengthChange": true, "autoWidth": false,lengthMenu: [25, 50, 100],
-      "buttons": ["csv", "excel", "pdf", "print"]
-    }).buttons().container().appendTo('#reporting-table-wrapper .col-md-6:eq(0)');
+    var table = $('#reporting-table').DataTable({
+      lengthChange: true,
+      dom: 'Bfltrip',
+      buttons: [
+        'csv', 'excel', 'pdf', 'print'
+      ]
+    });
+    table.buttons().container().appendTo('#reporting-table-wrapper .col-md-6:eq(0)');
+
+
+    // $("#reporting-table").DataTable({
+    //   "responsive": true, "lengthChange": true, "autoWidth": false,lengthMenu: [25, 50, 100],
+    //   "buttons": ["csv", "excel", "pdf", "print"]
+    // }).buttons().container().appendTo('#reporting-table-wrapper .col-md-6:eq(0)');
 
 
   });

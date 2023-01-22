@@ -6,7 +6,7 @@ const {
   pauseBetweenAPICallInServer,
 } = require("./configloader");
 
-const { loggedInUser } = require("./auth");
+const { defaultUser } = require("./auth");
 
 const { sleep, getCurrentISODateOnly, getTimeRangeInMultipleOf5 } = require("./utils");
 
@@ -85,12 +85,12 @@ const getContactCDR = async (ContactID) => {
 const getAgentMetric = async (queueIdArr) => {
   let cmd = new GetCurrentMetricDataCommand({
     "InstanceId": awsInstance,
-    "Filters": { "Queues": queueIdArr },
+    "Filters": { 
+      "Queues": queueIdArr,
+      "Channels": ["VOICE"]
+    },
+    "Groupings": ["CHANNEL", "QUEUE"],
     "CurrentMetrics": [
-      {
-        "Name": "AGENTS_ONLINE",
-        "Unit": "COUNT"
-      },
       {
         "Name": "AGENTS_AVAILABLE",
         "Unit": "COUNT"
@@ -100,9 +100,9 @@ const getAgentMetric = async (queueIdArr) => {
         "Unit": "COUNT"
       },
       {
-        "Name": "AGENTS_ON_CONTACT",
+        "Name": "AGENTS_NON_PRODUCTIVE",
         "Unit": "COUNT"
-      }
+      },
     ],
   });
 
@@ -110,7 +110,8 @@ const getAgentMetric = async (queueIdArr) => {
     let r = await connectClient.send(cmd);
     return r.MetricResults;
   } catch (e) {
-    logger.error(e);
+    console.log('error');
+    console.log(e);
     return []
   }
 }
@@ -168,7 +169,7 @@ const getCampaignMetric = async (queueIdArr) => {
     let res_all = await connectClient.send(cmd);
     return res_all.MetricResults
   } catch (e) {
-    logger.error(e)
+    console.log(e)
     return [];
   }
 };
@@ -187,7 +188,7 @@ const getAgentDashboardDataFromConnect = async () => {
     "inCall": String(randomIntBetween(5, 15)),
     "unavailable": String(randomIntBetween(5, 15)),
     "reportDate": String(getCurrentISODateOnly()),
-    "author": loggedInUser.userId
+    "author": defaultUser.userId
   };
   return fakeData;
 }
@@ -229,7 +230,7 @@ const getCampaignDashboardDataFromConnect = async () => {
       "avgTalkTime": String(randomIntBetween(40, 300)),
       "avgWrapUpTime": String(randomIntBetween(40, 300)),
       "reportDate": String(getCurrentISODateOnly()),
-      "author": loggedInUser.userId
+      "author": defaultUser.userId
     };
   }
   return fakeData;

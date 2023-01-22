@@ -1,15 +1,24 @@
+const bcrypt = require('bcrypt')
 const { awsConfig, routingProfilePrefix } = require("./configloader");
 const dynamoose = require("dynamoose");
-const { loggedInUser } = require("./auth");
+const { defaultUser } = require("./auth");
 const { logger } = require("./logger");
 const { sleep, getCurrentISODateOnly } = require("./utils");
-
 const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
 dynamoose.aws.ddb.set(ddb);
 
 /**
  * Schema
  */
+
+const schemaUser = new dynamoose.Schema({
+  username: {
+    type: String,
+    hashKey: true,
+  },
+  admin: Number,
+  passwordHash: String,
+});
 
 const schemaCDRSet = new dynamoose.Schema({
   ContactID: {
@@ -182,7 +191,7 @@ const modelAgentDashboard = dynamoose.model(
 );
 const modelCDRSet = dynamoose.model("CloudCall_CDR", schemaCDRSet);
 const modelCDRGet = dynamoose.model("CloudCall_CDR", schemaCDRGet);
-
+const modelUser = dynamoose.model("CloudCall_User", schemaUser);
 /**
  * Functions
  */
@@ -207,7 +216,7 @@ const getFullCDR = async () => {
 
   // // try 4
   let currentDateTime = new Date();
-  let offset = currentDateTime.getTimezoneOffset();
+  let offset = 0;// currentDateTime.getTimezoneOffset();
   currentDateTime = new Date(currentDateTime.getTime() - offset * 60 * 1000);
   let startTime = new Date(
     currentDateTime.getFullYear(),
@@ -342,7 +351,7 @@ const insertAgent = async (
     agentId: agentId,
     routingProfileName: routingProfileName,
     routingProfileId: routingProfileId,
-    author: loggedInUser.userId,
+    author: defaultUser.userId,
   });
   await newAgent.save();
 }; // end insertAgent()
@@ -388,7 +397,7 @@ const insertCampaign = async (
     campaignId: campaignId,
     campaignDescription: campaignDesc,
     campaignStatus: campaignStatus,
-    author: loggedInUser.userId,
+    author: defaultUser.userId,
   });
   await campaignItem.save();
 }; // end insertCampaign()
@@ -426,10 +435,32 @@ let insertPhoneNumberCampaignMap = async (
     tollFreeNumber: tollFreeNumber,
     campaignName: campaignName,
     campaignId: campaignId,
-    author: loggedInUser.userId,
+    author: defaultUser.userId,
   });
   await phoneNumberCampaignMapIItem.save();
 }; // end insertPhoneNumberCampaignMap()
+
+
+
+// -- user authentication [start]-----------------------------
+const checkUserCred = async (userName, pwdPlain) => {
+  let user = await modelUser.scan().where('username').eq(userName).exec();
+  if (user.count) {
+    let usr = user[0];
+    let pwdMatched = bcrypt.compareSync(pwdPlain, usr.passwordHash);
+    if (pwdMatched) {
+      return [usr.username, usr.admin]
+    } else {
+      return false
+    }
+  }
+  else {
+    return false;
+  }
+}
+// -- user authentication [end]-----------------------------
+
+
 
 module.exports = {
   modelCampaign,
@@ -439,6 +470,7 @@ module.exports = {
   modelAgentDashboard,
   modelCDRGet,
   modelCDRSet,
+  modelUser,
   getAgents,
   getCampaigns,
   setCampaignStatus,
@@ -459,4 +491,5 @@ module.exports = {
   getLonelyContacts,
   saveContactCDR,
   getFullCDR,
+  checkUserCred,
 };

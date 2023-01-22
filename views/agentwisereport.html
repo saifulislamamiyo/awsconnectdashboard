@@ -40,7 +40,7 @@
                         <% aggCDR.forEach(function(cdr){ %>
                             <tr>
                                 <td>
-                                    <%=cdr.agentName%>
+                                    <%=cdr.agentName ? cdr.agentName : "Not Applicable" %>
                                 </td>
                                 <td>
                                     <%=cdr.CallDirection%>

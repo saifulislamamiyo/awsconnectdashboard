@@ -1,0 +1,24 @@
+<%- include('_head.html'); %>
+<div class="col-md-9 col-lg-6">
+  <div class="text-bg-dark rounded-4 p-5 pt-4 m-5">
+    <div>
+      <h1 class="h2 p-3"><%=title%></h1>
+      <%- include('_alert.html'); %>
+    </div>
+    <form name="authForm" id="authForm" method="post" action="/auth/login">
+      <div class="mb-3">
+        <label for="authUserName" class="form-label">Username</label>
+        <input type="text" class="form-control " name="authUserName" id="authUserName" value="">
+      </div>
+      <div class="mb-3">
+        <label for="authUserPassword" class="form-label">Password</label>
+        <input type="password" class="form-control " name="authUserPassword" id="authUserPassword" value="" maxlength="24">
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<script>
+</script>
+<%- include('_foot.html'); %>

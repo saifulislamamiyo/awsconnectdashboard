@@ -42,16 +42,16 @@
                         <tbody>
 
                             <td>
-                                <%=agentSummary.talkTime.toFixed(2)%>
+                                <%=agentSummary ? agentSummary.talkTime.toFixed(2) : "" %>
                             </td>
                             <td>
-                                <%=agentSummary.waitTime.toFixed(2)%>
+                                <%=agentSummary ? agentSummary.waitTime.toFixed(2) : "" %>
                             </td>
                             <td>
-                                <%=agentSummary.wrapTime.toFixed(2)%>
+                                <%=agentSummary ? agentSummary.wrapTime.toFixed(2) : "" %>
                             </td>
                             <td>
-                                <%=agentSummary.calls%>
+                                <%=agentSummary ? agentSummary.calls : "" %>
                             </td>
                         </tbody>
                     </table>

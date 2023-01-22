@@ -45,18 +45,22 @@ router.get('/', async (req, res, next) => {
     // If current CDR's queueID is unavailable, skip further processing
     // if (!theCDR.queueId) continue;
 
-    // If current CDS's agentId does not mmatch with logged in agentId, skip further processing
-    // if() continue;
+  
 
     // Get campaignName from current CDR's queueId
     let arrCampaignsSearchVal = arrCampaigns.find(o => o.campaignId == theCDR.queueId);
-
     // Get agentName from current CDR's agentId
     let arrAgentsSearchVal = arrAgents.find(o => o.agentId == theCDR.agentId);
+    let currAgentName = arrAgentsSearchVal ? arrAgentsSearchVal.agentName : ""
+
+    // If current CDS's agentId does not mmatch with logged in agentId, skip further processing
+    if (currAgentName != req.session.username ) continue;
+
+
 
     // make primary array of CDR (i.e primaryProcessedCDR) by processing values of CDR Array
     primaryProcessedCDR[primaryProcessedCDRCount] = {
-      agentName: arrAgentsSearchVal ? arrAgentsSearchVal.agentName : "",
+      agentName: currAgentName,
       campaignName: arrCampaignsSearchVal ? arrCampaignsSearchVal.campaignName : "",
       callNumber: theCDR.DialedNumber,
       callDirection: theCDR.CallDirection,
