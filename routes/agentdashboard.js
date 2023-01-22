@@ -54,7 +54,7 @@ router.get('/', async (req, res, next) => {
     let currAgentName = arrAgentsSearchVal ? arrAgentsSearchVal.agentName : ""
 
     // If current CDS's agentId does not mmatch with logged in agentId, skip further processing
-    if (currAgentName != req.session.username ) continue;
+    // if (currAgentName != req.session.username ) continue;
 
 
 

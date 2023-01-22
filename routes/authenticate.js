@@ -39,6 +39,4 @@ router.get('/logout', async function (req, res, next) {
   res.redirect('/auth/login');
 });
 
-
-
 module.exports = router;

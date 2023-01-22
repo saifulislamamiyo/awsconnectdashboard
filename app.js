@@ -8,7 +8,6 @@ const flash = require('express-flash');
 const compression = require('express-compression');
 const minifyHTML = require('express-minify-html-2');
 const { pageCompress, sessionSecret } = require('./libs/configloader');
-const { allowAdminAndNonAdmin, allowAdminOnly } = require('./libs/auth');
 
 /* Import routes */
 const campaignsRouter = require('./routes/campaigns');
@@ -23,7 +22,6 @@ const campaignDashboardRouter = require('./routes/campaigndashboard');
 const agentDashboardRouter = require('./routes/agentdashboard');
 const agentWiseReportRouter = require('./routes/agentwisereport');
 const campaignWiseReportRouter = require('./routes/campaignwisereport');
-const authRouter = require('./routes/authenticate');
 
 /* Set app */
 const app = express();
@@ -58,30 +56,21 @@ app.use(session({
 }));
 app.use(flash());
 
-
-app.use(function(req, res, next) {
-  res.locals.username= req.session.username
-  res.locals.admin = req.session.admin;
-  next();
-});
-
-
 /* Register routes */
-app.use('/auth', authRouter);
-app.use('/agent-dashboard', allowAdminAndNonAdmin, agentDashboardRouter);
-app.use('/', allowAdminOnly, homeRouter);
-app.use('/campaigns',allowAdminOnly, campaignsRouter);
-app.use('/create-campaign',allowAdminOnly, createCampaignRouter);
-app.use('/edit-campaign', allowAdminOnly,editCampaignRouter);
-app.use('/agent-provision', allowAdminOnly,agentProvision);
-app.use('/agent-distribution', allowAdminOnly, agentDistribution);
-app.use('/inbound-number-provision', allowAdminOnly, inboundNumberProvision);
+
+app.use('/', homeRouter);
+app.use('/campaigns', campaignsRouter);
+app.use('/create-campaign', createCampaignRouter);
+app.use('/edit-campaign',editCampaignRouter);
+app.use('/agent-provision',agentProvision);
+app.use('/agent-distribution', agentDistribution);
+app.use('/inbound-number-provision', inboundNumberProvision);
 app.use('/fault', fault);
 // reports and dashboards
-app.use('/campaign-dashboard', allowAdminOnly, campaignDashboardRouter);
-app.use('/agent-wise-report', allowAdminOnly, agentWiseReportRouter);
-app.use('/campaign-wise-report', allowAdminOnly, campaignWiseReportRouter);
-
+app.use('/campaign-dashboard', campaignDashboardRouter);
+app.use('/agent-wise-report', agentWiseReportRouter);
+app.use('/campaign-wise-report', campaignWiseReportRouter);
+app.use('/agent-dashboard', agentDashboardRouter);
 
 /* Catch 404 and forward to error handler */
 app.use((req, res, next) => {
