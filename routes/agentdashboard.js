@@ -64,7 +64,7 @@ router.get('/', async (req, res, next) => {
       campaignName: arrCampaignsSearchVal ? arrCampaignsSearchVal.campaignName : "",
       callNumber: theCDR.DialedNumber,
       callDirection: theCDR.CallDirection,
-      callStartTime: new Date(1000 * theCDR.initiationTimestamp).toLocaleString('en-us'),
+      callStartTime: new Date(1000 * theCDR.initiationTimestamp).toLocaleString('en-US'),
       talkTime: theCDR.duration,
       waitTime: theCDR.enqueueTimestamp && theCDR.connectedToAgentTimestamp ? (theCDR.connectedToAgentTimestamp - theCDR.enqueueTimestamp) : 0,
       wrapTime: theCDR.WrapUpAt ? (theCDR.connectedToAgentTimestamp - theCDR.WrapUpAt) : 0,
