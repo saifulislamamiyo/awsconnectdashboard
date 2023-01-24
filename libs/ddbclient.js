@@ -197,7 +197,6 @@ const modelUser = dynamoose.model("CloudCall_User", schemaUser);
  */
 
 const getFullCDR = async () => {
-  // TODO: Try with fixing timezone
 
   // // off for try 4
   // let currentDateTime = new Date();
@@ -206,11 +205,12 @@ const getFullCDR = async () => {
 
   // // try 1:
   // let contacts = await modelCDRGet.scan().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch).exec();
+
   // // try 2
   // let cnd = new dynamoose.Condition().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch);
   // let contacts = await modelCDRGet.scan(cnd).exec()
+  
   // // try 3
-
   // let scanned = await modelCDRGet.scan().where('describeContactCalled').eq(1);
   // let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
 
@@ -230,7 +230,9 @@ const getFullCDR = async () => {
     0
   );
   let startFromEpoch = startTime / 1000;
+  
   */
+
 
   // Try 5
   /*
@@ -248,7 +250,7 @@ const getFullCDR = async () => {
   */
 
 
-  // Try 6
+  // // Try 6
 
   // var today = new Date();  // Returns UTC datetime
   // var todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 1, 0);
@@ -259,21 +261,48 @@ const getFullCDR = async () => {
   // var offsetMidnightDateTimeEpoch = offsetMidnightDateTime.getTime() / 1000;
 
 
-  // Try 7
+
+  // // Try 7:
+
+  /*
+  let curServerDate = new Date();
+  let curServerMidnight = new Date(curServerDate.getFullYear(), curServerDate.getMonth(), curServerDate.getDate(), 0, 0, 0, 0);
+  let curServerMidnightEpoch = curServerMidnight.getTime()/1000;
+  let curServerDateEpoch = curServerDate.getTime()/1000;
+  console.log(curServerDateEpoch, curServerMidnightEpoch, curServerDateEpoch> curServerMidnightEpoch);
+  */
+
+  // // try 8
+  // let currentDateTime = new Date();
+  // let startTime = new Date(
+  //   currentDateTime.getFullYear(),
+  //   currentDateTime.getMonth(),
+  //   currentDateTime.getDate(),
+  //   0,
+  //   0,
+  //   0,
+  //   0
+  // );
+  // let startFromEpoch = startTime / 1000;
+
+  // Try 9
+
   let today = new Date();   // server datetime
   let localoffset = -(today.getTimezoneOffset() / 60); // server tz offset
   let destoffset = 11; // Sydney tz offset GMT+11
   let offset = destoffset - localoffset;
   let offsetDateTime = new Date(new Date().getTime() + offset * 3600 * 1000); // Sydney datetime
   let offsetDateTimetoUTCMidnightInMS = Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0, 0, 0);
+  let offsetDateTimetoUTCMidnight = offsetDateTimetoUTCMidnightInMS / 1000;
   console.log(`Server datetime: ${today}`);
   console.log(`Server TZ: ${localoffset}`);
   console.log(`Sydney TZ: ${destoffset}`);
   console.log(`Sydney time from Server time: ${offsetDateTime}`);
-  console.log(`Sydney time to UTC Midnight EPOCH: ${offsetDateTimetoUTCMidnightInMS/1000}`);
-  // ---------------------------------------------
-  let startFromEpoch = offsetDateTimetoUTCMidnightInMS / 1000;
-  // ---------------------------------------------
+  console.log(`Sydney time to UTC Midnight EPOCH: ${offsetDateTimetoUTCMidnight}`);
+
+  // --------------------------------------------------------
+  let startFromEpoch = offsetDateTimetoUTCMidnight;
+  // --------------------------------------------------------
 
   let noDateFilter = process.env.DEV_NO_DATE_FILTER || "0";
 
@@ -292,7 +321,7 @@ const getFullCDR = async () => {
       .eq(1)
       .and()
       .where("initiationTimestamp")
-      .ge(parseFloat(startFromEpoch))
+      .ge(startFromEpoch)
       .exec();
   }
   // 1674529013.135
