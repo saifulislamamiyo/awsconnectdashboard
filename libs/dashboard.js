@@ -60,7 +60,7 @@ const sendCampaignDashboard = async (io) => {
 *
 *
 */
-if (enableDashboardDataAcquisition == 1) {
+if (enableDashboardDataAcquisition === 11) {
   setIntervalAsync(async () => {
     let data = await getCampaignDashboardDataFromConnect();
     await saveCampaignDashboardData(data);

@@ -7,6 +7,7 @@ const {getCampaigns} = require("../libs/ddbclient");
 /* GET home page. */
 router.get('/', async (req, res, next) => {
 
+/*
   let allCampaigns = await getCampaigns();
   let arrCampaigns = [];
 
@@ -23,7 +24,7 @@ router.get('/', async (req, res, next) => {
 
   console.log(arrCampaigns);
   console.log(agentMetric);
-
+*/
 
   res.render('campaigndashboard', { title: 'Campaign Dashboard' });
 });

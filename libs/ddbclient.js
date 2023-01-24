@@ -250,41 +250,53 @@ const getFullCDR = async () => {
 
   // Try 6
 
-  var today = new Date();  // Returns UTC datetime
-  var todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 1, 0);
-  var localoffset = -(today.getTimezoneOffset() / 60);
-  var destoffset = 11; // GMT+11 for Sydney
-  var offset = destoffset - localoffset;
-  var offsetMidnightDateTime = new Date(todayMidnight.getTime() + offset * 3600 * 1000);
-  var offsetMidnightDateTimeEpoch = offsetMidnightDateTime.getTime() / 1000;
+  // var today = new Date();  // Returns UTC datetime
+  // var todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 1, 0);
+  // var localoffset = -(today.getTimezoneOffset() / 60);
+  // var destoffset = 11; // GMT+11 for Sydney
+  // var offset = destoffset - localoffset;
+  // var offsetMidnightDateTime = new Date(todayMidnight.getTime() + offset * 3600 * 1000);
+  // var offsetMidnightDateTimeEpoch = offsetMidnightDateTime.getTime() / 1000;
 
-  console.log(
-    "today (UTC)", today,
-    "\ntodayMidnight", todayMidnight,
-    "\noffsetMidnightDateTime (Sydney GMT+11)", offsetMidnightDateTime,
-    "\noffsetMidnightDateTimeEpoch", offsetMidnightDateTimeEpoch,
-  );
 
-  let startFromEpoch = offsetMidnightDateTimeEpoch;
+  // Try 7
+  let today = new Date();   // server datetime
+  let localoffset = -(today.getTimezoneOffset() / 60); // server tz offset
+  let destoffset = 11; // Sydney tz offset GMT+11
+  let offset = destoffset - localoffset;
+  let offsetDateTime = new Date(new Date().getTime() + offset * 3600 * 1000); // Sydney datetime
+  let offsetDateTimetoUTCMidnightInMS = Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0, 0, 0);
+  console.log(`Server datetime: ${today}`);
+  console.log(`Server TZ: ${localoffset}`);
+  console.log(`Sydney TZ: ${destoffset}`);
+  console.log(`Sydney time from Server time: ${offsetDateTime}`);
+  console.log(`Sydney time to UTC Midnight EPOCH: ${offsetDateTimetoUTCMidnightInMS/1000}`);
+  // ---------------------------------------------
+  let startFromEpoch = offsetDateTimetoUTCMidnightInMS / 1000;
+  // ---------------------------------------------
+
   let noDateFilter = process.env.DEV_NO_DATE_FILTER || "0";
 
   let contacts;
 
   if (noDateFilter != "0") {
+    console.log("NO Date Filter");
     contacts = await modelCDRGet.scan()
       .where("describeContactCalled")
       .eq(1)
       .exec();
   } else {
+    console.log("{@_@} With Date Filter >=", startFromEpoch);
     contacts = await modelCDRGet.scan()
       .where("describeContactCalled")
       .eq(1)
       .and()
       .where("initiationTimestamp")
-      .ge(startFromEpoch)
+      .ge(parseFloat(startFromEpoch))
       .exec();
   }
-
+  // 1674529013.135
+  // 1674558001
   // for (c of contacts) {
   //   console.log('PX: ', c.ContactID, typeof c.initiationTimestamp, c.initiationTimestamp)
   // }
