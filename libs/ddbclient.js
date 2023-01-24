@@ -61,6 +61,7 @@ const schemaCDRGet = new dynamoose.Schema({
   DialNumberDesc: String,
   DialedConnectNumber: String,
   AgentUserName: String,
+  WrapUpAt: String,
 });
 
 const schemaAgentDashboard = new dynamoose.Schema(

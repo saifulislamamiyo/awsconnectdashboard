@@ -65,7 +65,7 @@ router.get('/', async (req, res, next) => {
       callStartTime: new Date(1000 * theCDR.initiationTimestamp).toLocaleString('en-US'),
       talkTime: theCDR.duration,
       waitTime: theCDR.enqueueTimestamp && theCDR.connectedToAgentTimestamp ? (theCDR.connectedToAgentTimestamp - theCDR.enqueueTimestamp) : 0,
-      wrapTime: theCDR.WrapUpAt ? (theCDR.connectedToAgentTimestamp - theCDR.WrapUpAt) : 0,
+      wrapTime: theCDR.WrapUpAt ? (theCDR.WrapUpAt - theCDR.connectedToAgentTimestamp) : 0,
       calls: theCDR.describeContactCalled,
       customerNumber: theCDR.CustomerNumber,
     }
