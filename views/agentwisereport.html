@@ -52,10 +52,10 @@
                                     <%=cdr.describeContactCalled%>
                                 </td>
                                 <td>
-                                    <%=cdr.duration.toFixed(2)%>
+                                    <%= new Date(cdr.duration * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                                 <td>
-                                    <%=(cdr.duration /cdr.describeContactCalled).toFixed(2)%>
+                                    <%= new Date((cdr.duration /cdr.describeContactCalled) * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                             </tr>
                             <% }); %>

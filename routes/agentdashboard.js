@@ -54,7 +54,7 @@ router.get('/', async (req, res, next) => {
     let currAgentName = arrAgentsSearchVal ? arrAgentsSearchVal.agentName : ""
 
     // If current CDS's agentId does not mmatch with logged in agentId, skip further processing
-    if (currAgentName != "steve.moran@right2drive.com.au" ) continue;
+    // if (currAgentName != "steve.moran@right2drive.com.au" ) continue;
 
     // make primary array of CDR (i.e primaryProcessedCDR) by processing values of CDR Array
     primaryProcessedCDR[primaryProcessedCDRCount] = {

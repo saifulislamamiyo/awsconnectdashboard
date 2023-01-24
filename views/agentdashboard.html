@@ -42,13 +42,13 @@
                         <tbody>
 
                             <td>
-                                <%=agentSummary ? agentSummary.talkTime.toFixed(2) : "" %>
+                                <%=new Date((agentSummary ? agentSummary.talkTime: 0) * 1000).toISOString().slice(11, 19)%>
                             </td>
                             <td>
-                                <%=agentSummary ? agentSummary.waitTime.toFixed(2) : "" %>
+                                <%=new Date((agentSummary ? agentSummary.waitTime: 0) * 1000).toISOString().slice(11, 19)%>
                             </td>
                             <td>
-                                <%=agentSummary ? agentSummary.wrapTime.toFixed(2) : "" %>
+                                <%=new Date((agentSummary ? agentSummary.wrapTime: 0) * 1000).toISOString().slice(11, 19)%>
                             </td>
                             <td>
                                 <%=agentSummary ? agentSummary.calls : "" %>
@@ -92,13 +92,13 @@
                                             <%=cdr.callNumber ? cdr.callNumber : "Not Applicable" %>
                                         </td>
                                         <td>
-                                            <%=cdr.talkTime.toFixed(2)%>
+                                            <%=new Date(cdr.talkTime * 1000).toISOString().slice(11, 19)%>
                                         </td>
                                         <td>
-                                            <%=cdr.wrapTime.toFixed(2)%>
+                                            <%=new Date(cdr.wrapTime * 1000).toISOString().slice(11, 19)%>
                                         </td>
                                         <td>
-                                            <%=cdr.waitTime.toFixed(2)%>
+                                            <%=new Date(cdr.waitTime * 1000).toISOString().slice(11, 19)%>
                                         </td>
                                     </tr>
                                     <% }); %>

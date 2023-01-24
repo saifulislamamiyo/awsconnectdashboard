@@ -58,19 +58,19 @@
                                     <%=cdr.disconnectRate%>%
                                 </td>
                                 <td>
-                                    <%=cdr.talkTime.toFixed(2)%>
+                                    <%= new Date(cdr.talkTime * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                                 <td>
-                                    <%=cdr.avgTalkTime.toFixed(2)%>
+                                    <%= new Date(cdr.avgTalkTime * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                                 <td>
-                                    <%=cdr.waitTime.toFixed(2)%>
+                                    <%= new Date(cdr.waitTime * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                                 <td>
-                                    <%=cdr.avgWaitTime.toFixed(2)%>
+                                    <%= new Date(cdr.avgWaitTime * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                                 <td>
-                                    <%=cdr.longestWaitTime.toFixed(2)%>
+                                    <%= new Date(cdr.longestWaitTime * 1000).toISOString().slice(11, 19);  %>
                                 </td>
                             </tr>
                             <% }); %>
