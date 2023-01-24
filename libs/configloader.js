@@ -21,7 +21,7 @@ let dashboardDataAcquisitionInterval =
 let enableDashboardDataAcquisition =
   process.env.ENABLE_DASHBOARD_DATA_ACQUISITION;
 var runtimeEnv = process.env.NODE_ENV || "prod";
-let cdrDataAcquisitionInterval = process.env.ENABLE_DASHBOARD_DATA_ACQUISITION;
+let cdrDataAcquisitionInterval = process.env.CDR_DATA_ACQUISITION_INTERVAL;
 
 if (runtimeEnv !== "prod") {
   awsConfig = {
