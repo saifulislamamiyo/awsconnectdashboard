@@ -1,24 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
     <meta name="author" content="a_r_p">
-    <title>Error</title>
+
+    <title>Connect Admin - Unauthorized</title>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/images/favicon_io/site.webmanifest">
+    <!-- Bootstrap 5 -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="/stylesheets/client.css" rel="stylesheet">
+
 </head>
 
 <body>
-    <center>
-        <h1>
-            <%= message %>
-        </h1>
-        <h2>
-            <%= error.status %>
-        </h2>
-    </center>
-    <pre><%= error.stack %></pre>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-bg-dark px-5 py-4 mt-5 rounded text-center">
+                <div class="row">
+                    <div class="col-12 p-4">
+                        <h1 class="h2 mb-5">Connect Admin - Error<%- status ? " " + status : "" -%>!</h1>
+                        <hr />
+                    </div>
+
+                    <div class="col-12">
+                        <p class="fw-bold fs-5">
+                            <%= message ? (message =="Not Found" ? "The page you are looking for is not found." :  message): "An Error Occured" %>
+                        </p>
+                        <p class="fw-bold">Please go back..</p>
+                        <a class="btn btn-danger btn-lg mt-5 mb-5" href="/">&larr; Back </a>
+                    </div>
+                    <% if (stack) { %>
+                    <div class="col-12 text-start">
+                        <hr />
+                        <pre><%=stack%></pre>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

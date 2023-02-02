@@ -18,7 +18,6 @@ const editCampaignRouter = require('./routes/editcampaign');
 const agentDistribution = require('./routes/agentdistribution');
 const agentProvision = require('./routes/agentprovision');
 const inboundNumberProvision = require('./routes/inboundnumberprovision');
-const fault = require('./routes/fault');
 const campaignDashboardRouter = require('./routes/campaigndashboard');
 const agentDashboardRouter = require('./routes/agentdashboard');
 const agentWiseReportRouter = require('./routes/agentwisereport');
@@ -116,7 +115,6 @@ const checkAuthenticatedNonAdmin = (req, res, next) => {
 /* Common Routes for both Admin and Non Admin */
 app.use('/', homeRouter);
 app.use('/', authRouter);
-app.use('/fault', fault);
 app.use('/unauthorized', checkAuthenticated, unauthorizedRouter);
 
 /* Admin only Routes */
@@ -142,7 +140,8 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.status = err.status || 500;
+  res.locals.stack = req.app.get('env') === 'dev' ? err.stack : "";
   // render the error page
   res.status(err.status || 500);
   res.render('error');
