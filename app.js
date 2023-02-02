@@ -24,6 +24,7 @@ const agentWiseReportRouter = require('./routes/agentwisereport');
 const campaignWiseReportRouter = require('./routes/campaignwisereport');
 const authRouter = require('./routes/auth');
 const unauthorizedRouter = require('./routes/unauthorized');
+const agentAssignCampaignRouter = require('./routes/agentassigncampaign');
 
 
 /* Set app */
@@ -61,6 +62,16 @@ app.use(passport.authenticate('session'));
 app.use(flash());
 
 
+
+// TODO: REMOVE BELOW AFTER DEV
+// app.use(function (req, res, next) {
+//   req.user = {
+//     username: 'saiful',
+//     admin:0,
+//   }
+//   next()
+// });
+// TODO: REMOVE ABOVE AFTER DEV
 
 app.use(function (req, res, next) {
   console.log("AUTH_DEBUG: FROM MIDDLEWIRE FOR VIEW", req.user)
@@ -130,6 +141,7 @@ app.use('/campaign-wise-report', checkAuthenticatedAdmin, campaignWiseReportRout
 
 /* Non Admin Routes */
 app.use('/agent-dashboard', checkAuthenticatedNonAdmin, agentDashboardRouter);
+app.use('/agent-assign-campaign', checkAuthenticatedNonAdmin, agentAssignCampaignRouter);
 
 /* Catch 404 and forward to error handler */
 app.use((req, res, next) => {

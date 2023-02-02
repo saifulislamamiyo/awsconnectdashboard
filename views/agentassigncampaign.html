@@ -1,0 +1,143 @@
+<%- include('_head.html'); %>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <%= title %>
+        </h1>
+        <% if (true) { %>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <a href="/" class="btn btn-sm btn-outline-secondary spinner-trigger">Cancel</a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <%- include('_alert.html'); %>
+
+    <form class="row g-3" method="POST" action="/agent-assign-campaign" id="agentSelfAssignCampaignForm">
+        <div class="col-md-4">
+            <label for="assignedCampaign" class="mb-1">Assigned Campaigns</label>
+            <input type="text" class="form-control mb-2" placeholder="Search Campaign..." id="txtSearchAssignedCampaign">
+            <select size="10" name="assignedCampaign" id="assignedCampaign" class="form-select"></select>
+        </div>
+
+        <div class="col-md-2 text-center">
+            <label for="" class="mt-md-5"></label>
+            <div class="form-control py-4 mt-md-3 mb-sm-3" style="height: 76%;">
+                <div class="btn-group-vertical btn-group-sm">
+                    <button type="button" class="btn btn-primary" id="btnAdd">&leftarrow; Add</button>
+                    <button type="button" class="btn btn-danger" id="btnRem">&rightarrow; Rem</button>
+                    <button type="submit" class="btn btn-success" id="btnSave">&check; Save</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <label for="selAllCampaign" class="mb-1">All Campaigns</label>
+            <input type="text" class="form-control mb-2" placeholder="Search Campaign..." id="txtSearchAllCampaigns">
+            <select size=" 10" name="selAllCampaign" id="selAllCampaign" class="form-select"></select>
+        </div>
+
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            /* DOMContentLoaded Start ------------------------------------------------ */
+            let allCampaigns= <%-JSON.stringify(campaigns)%>;
+            let agentsCampaigns= <%-JSON.stringify(agentsCampaigns)%>;
+            let allCampaignNames=allCampaigns.map(item => item.campaignName);
+            let agentsCampaignNames=agentsCampaigns.map(item => item.campaignName);
+            // console.log(allCampaigns);
+            // console.log(agentsCampaigns);
+            let selAssignedCampaign=document.getElementById('assignedCampaign');
+            let selAllCampaign=document.getElementById('selAllCampaign');
+            let txtSearchAssignedCampaign=document.getElementById('txtSearchAssignedCampaign');
+            let txtSearchAllCampaigns=document.getElementById('txtSearchAllCampaigns');
+            let btnAdd=document.getElementById('btnAdd');
+            let btnRem=document.getElementById('btnRem');
+            let btnSave=document.getElementById('btnSave');
+            let frmAgentSelfAssignCampaign=document.getElementById('agentSelfAssignCampaignForm');
+
+            /*
+            Populate Assigned Campaigns: agentsCampaigns : selAssignedCampaign
+            */
+            for (n=0; n<agentsCampaigns.length; n++) {
+                selAssignedCampaign.options[selAssignedCampaign.options.length]=new Option(
+                    agentsCampaigns[n].campaignName,
+                    `${agentsCampaigns[n].campaignId}${String.fromCharCode(28)}${agentsCampaigns[n].campaignName}`
+                );
+            } // next nth agentsCampaigns
+
+            /* 
+            Populate All Campaigns: allCampaigns : selAllCampaign
+            Except Assigned Campaigns: agentsCampaigns : selAssignedCampaign
+            */
+            for (n=0; n<allCampaigns.length; n++) {
+                if (!agentsCampaignNames.includes(allCampaigns[n].campaignName)&&allCampaigns[n].campaignStatus) {
+                    selAllCampaign.options[selAllCampaign.options.length]=new Option(
+                        allCampaigns[n].campaignName,
+                        `${allCampaigns[n].campaignId}${String.fromCharCode(28)}${allCampaigns[n].campaignName}`
+                    );
+                }
+            } // next nth allCampaigns
+
+            /* Remove Campaign from Agent */
+            btnRem.addEventListener('click', (event) => {
+                if (!selAssignedCampaign.selectedOptions.length) {
+                    alert("No Campaign Selected");
+                    return;
+                }
+                let selAssignedCampaignText=selAssignedCampaign.selectedOptions[0].text;
+                let selAssignedCampaignValue=selAssignedCampaign.selectedOptions[0].value;
+                let selAssignedCampaignIndex=selAssignedCampaign.selectedOptions[0].index;
+                selAssignedCampaign.remove(selAssignedCampaignIndex);
+                selAllCampaign.options[selAllCampaign.options.length]=new Option(
+                    selAssignedCampaignText,
+                    `${selAssignedCampaignValue}${String.fromCharCode(28)}${selAssignedCampaignText}`
+                );
+            });
+
+            /* Add Campaign to Agent */
+            btnAdd.addEventListener('click', (event) => {
+                if (!selAllCampaign.selectedOptions.length) {
+                    alert("No Campaign Selected");
+                    return;
+                }
+                let selCampaignText=selAllCampaign.selectedOptions[0].text;
+                let selCampaignValue=selAllCampaign.selectedOptions[0].value;
+                let selCampaignIndex=selAllCampaign.selectedOptions[0].index;
+                selAllCampaign.remove(selCampaignIndex);
+                selAssignedCampaign.options[selAssignedCampaign.options.length]=new Option(
+                    selCampaignText,
+                    `${selCampaignValue}${String.fromCharCode(28)}${selCampaignText}`
+                );
+            });
+
+            /* Filter/Serach Assigned Campaigns */
+            txtSearchAssignedCampaign.addEventListener('keyup', (ev) => {
+                selAssignedCampaign.selectedIndex=-1;
+                filterOptions(ev.target.value, selAssignedCampaign.getElementsByTagName('option'));
+            });
+
+            /* Filter/Serach All Campaigns */
+            txtSearchAllCampaigns.addEventListener('keyup', (ev) => {
+                selAllCampaign.selectedIndex=-1;
+                filterOptions(ev.target.value, selAllCampaign.getElementsByTagName('option'));
+            });
+
+            frmAgentSelfAssignCampaign.addEventListener('submit', (e) => {
+                e.preventDefault();
+                show_loader();
+                selAssignedCampaign.setAttribute('multiple', true);
+                for (let i=0; i<selAssignedCampaign.options.length; i++) {
+                    selAssignedCampaign.options[i].selected=1;
+                }
+                frmAgentSelfAssignCampaign.submit();
+            });
+
+            /* DOMContentLoaded End -------------------------------------------------- */
+        }); //DOMContentLoaded
+
+    </script>
+    <%- include('_foot.html'); %>

@@ -29,6 +29,7 @@ router.get('/distribute-agent', async (req, res, next) => {
   let assoc = req.query.assoc;
   let agentName = req.query.agentname;
   let campaignName = req.query.campaignname;
+  console.log(">>>||>>>", req.query);
   await setRoutingProfileQueue(routingProfileId, campaignId, assoc);
   if (assoc == "true") {
     await addCampaignToAgent(agentName, campaignName, campaignId);
