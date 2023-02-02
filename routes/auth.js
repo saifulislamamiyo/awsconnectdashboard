@@ -76,7 +76,7 @@ router.post('/change-password', async function (req, res, next) {
     validated = 0;
   }
 
-  if (validated && (!newPassword || !verifyNewPassword)) {
+  if (validated && (newPassword != verifyNewPassword)) {
     req.flash('danger', "Password does not match. Please try again.");
     validated = 0;
   }

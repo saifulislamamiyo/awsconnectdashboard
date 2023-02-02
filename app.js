@@ -126,9 +126,9 @@ app.use('/edit-campaign', checkAuthenticatedAdmin, editCampaignRouter);
 app.use('/agent-provision', checkAuthenticatedAdmin, agentProvision);
 app.use('/agent-distribution', checkAuthenticatedAdmin, agentDistribution);
 app.use('/inbound-number-provision', checkAuthenticatedAdmin, inboundNumberProvision);
-app.use('/campaign-dashboard', campaignDashboardRouter);
-app.use('/agent-wise-report', agentWiseReportRouter);
-app.use('/campaign-wise-report', campaignWiseReportRouter);
+app.use('/campaign-dashboard', checkAuthenticatedAdmin, campaignDashboardRouter);
+app.use('/agent-wise-report', checkAuthenticatedAdmin, agentWiseReportRouter);
+app.use('/campaign-wise-report', checkAuthenticatedAdmin, campaignWiseReportRouter);
 
 /* Non Admin Routes */
 app.use('/agent-dashboard', checkAuthenticatedNonAdmin, agentDashboardRouter);
