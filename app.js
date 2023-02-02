@@ -76,6 +76,13 @@ app.use(function (req, res, next) {
   next();
 });
 
+const checkAuthenticated = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.redirect("/login")
+  }
+  next();
+}
+
 const checkAuthenticatedAdmin = (req, res, next) => {
   if (!req.isAuthenticated()) {
     res.redirect("/login")
@@ -110,7 +117,7 @@ const checkAuthenticatedNonAdmin = (req, res, next) => {
 app.use('/', homeRouter);
 app.use('/', authRouter);
 app.use('/fault', fault);
-app.use('/unauthorized', unauthorizedRouter);
+app.use('/unauthorized', checkAuthenticated, unauthorizedRouter);
 
 /* Admin only Routes */
 app.use('/campaigns', checkAuthenticatedAdmin, campaignsRouter);

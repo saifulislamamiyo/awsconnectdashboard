@@ -535,6 +535,17 @@ const checkUserCred = async (userName, pwdPlain) => {
     return false;
   }
 }
+
+const changeUserPassword = async (userName, hashedPass) => {
+  let user = await modelUser.scan().where('username').eq(userName).exec();
+  let changedUser = {
+    username:user[0].username,
+    admin:user[0].admin,
+    passwordHash:hashedPass,
+  };
+  modelUser.update(changedUser);
+}
+
 // -- user authentication [end]-----------------------------
 
 
@@ -569,4 +580,5 @@ module.exports = {
   saveContactCDR,
   getFullCDR,
   checkUserCred,
+  changeUserPassword,
 };
