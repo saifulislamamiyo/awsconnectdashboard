@@ -526,7 +526,7 @@ const checkUserCred = async (userName, pwdPlain) => {
     let usr = user[0];
     let pwdMatched = bcrypt.compareSync(pwdPlain, usr.passwordHash);
     if (pwdMatched) {
-      return [usr.username, usr.admin]
+      return {username: usr.username, admin: usr.admin}
     } else {
       return false
     }

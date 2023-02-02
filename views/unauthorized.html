@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="a_r_p">
+
+    <title>Connect Admin - Unauthorized</title>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/images/favicon_io/site.webmanifest">
+    <!-- Bootstrap 5 -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="/stylesheets/client.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-bg-dark px-5 py-4 mt-5 rounded text-center">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="h3 mb-4">Connect Admin - Unauthorized!</h1>
+                        <hr>
+                    </div>
+                    <% if(messages) { %>
+                    <div class="col-12">
+                    <% for (const [key, value] of Object.entries(messages)) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%=value%>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <% } %>
+                    </div>
+                    <% } %>
+                    <div class="col-12">
+                        <p class="fw-bold fs-5">You are not Authorized to view this Page.</p>
+                        <p class="fw-bold">Please go back..</p>
+                        <%if(currentUser && !currentUser.admin){%>
+                            <a class="btn btn-danger btn-lg" href="/agent-dashboard">&larr; Back </a>
+                        <%} else {%>
+                            <a class="btn btn-danger btn-lg" href="/campaigns">&larr; Back </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>    
+</body>
+
+</html>
