@@ -20,6 +20,8 @@ const inboundNumberProvision = require('./routes/inboundnumberprovision');
 const fault = require('./routes/fault');
 const campaignDashboardRouter = require('./routes/campaigndashboard');
 const agentDashboardRouter = require('./routes/agentdashboard');
+const agentWiseReportRouter = require('./routes/agentwisereport');
+const campaignWiseReportRouter = require('./routes/campaignwisereport');
 
 /* Set app */
 const app = express();
@@ -55,18 +57,20 @@ app.use(session({
 app.use(flash());
 
 /* Register routes */
+
 app.use('/', homeRouter);
 app.use('/campaigns', campaignsRouter);
 app.use('/create-campaign', createCampaignRouter);
-app.use('/edit-campaign', editCampaignRouter);
-app.use('/agent-provision', agentProvision);
+app.use('/edit-campaign',editCampaignRouter);
+app.use('/agent-provision',agentProvision);
 app.use('/agent-distribution', agentDistribution);
 app.use('/inbound-number-provision', inboundNumberProvision);
 app.use('/fault', fault);
-// TODO: reports and dashboards
-app.use('/agent-dashboard', agentDashboardRouter);
+// reports and dashboards
 app.use('/campaign-dashboard', campaignDashboardRouter);
-
+app.use('/agent-wise-report', agentWiseReportRouter);
+app.use('/campaign-wise-report', campaignWiseReportRouter);
+app.use('/agent-dashboard', agentDashboardRouter);
 
 /* Catch 404 and forward to error handler */
 app.use((req, res, next) => {

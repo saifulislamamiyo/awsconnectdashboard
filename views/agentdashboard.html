@@ -1,24 +1,111 @@
 <%- include('_head.html'); %>
-  
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">
-        <%= title %>
-      </h1>
-      <% if (true) { %>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
-          </div>
-        </div>
-        <% } %>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3">
+        <h1 class="h2">
+            <%= title %>
+        </h1>
+        <% if (true) { %>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+                </div>
+            </div>
+            <% } %>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
+        <h5>Report Date: <%= new Date().toLocaleDateString('en-us') %>
+        </h5>
     </div>
 
     <%- include('_alert.html'); %>
-    
-    <center>
-      <img src="/images/undraw_analytics_re_dkf8.svg" alt="dashboatd" class="img-fluid opacity-50" style="max-width: 70vh">
-    </center>
 
 
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary-tab-pane" type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="true">Summary</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="call-detail-tab" data-bs-toggle="tab" data-bs-target="#call-detail-tab-pane" type="button" role="tab" aria-controls="call-detail-tab-pane" aria-selected="false">Call Detail</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="summary-tab-pane" role="tabpanel" aria-labelledby="summary-tab" tabindex="0">
+                <div class="table-responsive mt-4">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <th>Talk Time</th>
+                            <th>Wait Time</th>
+                            <th>Wrap Time</th>
+                            <th>Calls</th>
+                        </thead>
+                        <tbody>
 
-  <%- include('_foot.html'); %>
+                            <td>
+                                <%=new Date((agentSummary ? agentSummary.talkTime: 0) * 1000).toISOString().slice(11, 19)%>
+                            </td>
+                            <td>
+                                <%=new Date((agentSummary ? agentSummary.waitTime: 0) * 1000).toISOString().slice(11, 19)%>
+                            </td>
+                            <td>
+                                <%=new Date((agentSummary ? agentSummary.wrapTime: 0) * 1000).toISOString().slice(11, 19)%>
+                            </td>
+                            <td>
+                                <%=agentSummary ? agentSummary.calls : "" %>
+                            </td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="call-detail-tab-pane" role="tabpanel" aria-labelledby="call-detail-tab" tabindex="0">
+                <div class="table-responsive mt-4">
+                    <div id="reporting-table-wrapper" class="dataTables_wrapper dt-bootstrap5">
+                        <table class="table table-bordered table-striped" id="reporting-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">Date Time</th>
+                                    <th scope="col">Customer Number</th>
+                                    <th scope="col">Call Direction</th>
+                                    <th scope="col">Campaign Name</th>
+                                    <th scope="col">Campaign Hotline</th>
+                                    <th scope="col">Talk Time</th>
+                                    <th scope="col">Wrap Time</th>
+                                    <th scope="col">Wait Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% allCDR.forEach(function(cdr){ %>
+                                    <tr>
+                                        <td>
+                                            <%=cdr.callStartTime%>
+                                        </td>
+                                        <td>
+                                            <%=cdr.customerNumber%>
+                                        </td>
+                                        <td>
+                                            <%=cdr.callDirection%>
+                                        </td>
+                                        <td>
+                                            <%= cdr.campaignName ? cdr.campaignName : "Not Applicable" %>
+                                        </td>
+                                        <td>
+                                            <%=cdr.callNumber ? cdr.callNumber : "Not Applicable" %>
+                                        </td>
+                                        <td>
+                                            <%=new Date(cdr.talkTime * 1000).toISOString().slice(11, 19)%>
+                                        </td>
+                                        <td>
+                                            <%=new Date(cdr.wrapTime * 1000).toISOString().slice(11, 19)%>
+                                        </td>
+                                        <td>
+                                            <%=new Date(cdr.waitTime * 1000).toISOString().slice(11, 19)%>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include('_foot.html'); %>

@@ -1,0 +1,81 @@
+<%- include('_head.html'); %>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3">
+        <h1 class="h2">
+            <%= title %>
+        </h1>
+        <% if (true) { %>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+                </div>
+            </div>
+            <% } %>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
+        <h5>Report Date: <%= new Date().toLocaleDateString('en-us') %>
+        </h5>
+    </div>
+
+    <%- include('_alert.html'); %>
+        <div class="table-responsive">
+            <div id="reporting-table-wrapper" class="dataTables_wrapper dt-bootstrap5">
+                <table class="table table-bordered table-striped" id="reporting-table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Inbound Group</th>
+                            <th scope="col">Inbound Group Name</th>
+                            <th scope="col">Calls</th>
+                            <th scope="col">Connects</th>
+                            <th scope="col">Disconnect</th>
+                            <th scope="col">Disconnect Rate</th>
+                            <th scope="col">Talk Time</th>
+                            <th scope="col">Avg Talk Time</th>
+                            <th scope="col">Wait time</th>
+                            <th scope="col">Avg Wait time</th>
+                            <th scope="col">Longest Wait time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% aggCDR.forEach(function(cdr){ %>
+                            <tr>
+                                <td>
+                                    <%=cdr.inboundGroup%>
+                                </td>
+                                <td>
+                                    <%=cdr.inboundGroupName%>
+                                </td>
+                                <td>
+                                    <%=cdr.calls%>
+                                </td>
+                                <td>
+                                    <%=cdr.connects%>
+                                </td>
+                                <td>
+                                    <%=cdr.disconnect%>
+                                </td>
+                                <td>
+                                    <%=cdr.disconnectRate%>%
+                                </td>
+                                <td>
+                                    <%= new Date(cdr.talkTime * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                                <td>
+                                    <%= new Date(cdr.avgTalkTime * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                                <td>
+                                    <%= new Date(cdr.waitTime * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                                <td>
+                                    <%= new Date(cdr.avgWaitTime * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                                <td>
+                                    <%= new Date(cdr.longestWaitTime * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <%- include('_foot.html'); %>

@@ -6,7 +6,9 @@ const {
   pauseBetweenAPICallInServer,
 } = require("./configloader");
 
-const { sleep } = require("./utils");
+const { defaultUser } = require("./auth");
+
+const { sleep, getCurrentISODateOnly, getTimeRangeInMultipleOf5 } = require("./utils");
 
 const {
   ConnectClient,
@@ -29,11 +31,213 @@ const {
   UpdateQueueOutboundCallerConfigCommand,
   AssociatePhoneNumberContactFlowCommand,
   DescribePhoneNumberCommand,
+  GetMetricDataCommand,
+  GetCurrentMetricDataCommand,
+  DescribeContactCommand,
 } = require("@aws-sdk/client-connect");
 
+const { logger } = require("./logger")
 
 
+/** 
+* Init Connect
+*/
 const connectClient = new ConnectClient(awsConfig);
+
+/**
+* Functions
+*/
+
+// ----- get agent's CDR data ------
+
+const getContactCDR = async (ContactID) => {
+  let cmd = new DescribeContactCommand({
+    "InstanceId": awsInstance,
+    "ContactId": ContactID
+  });
+  try {
+    let res = await connectClient.send(cmd);
+    console.log(">>>>>>>", res);
+    let r = res.Contact;
+    let ret = {
+      "ContactID": r.Id,
+      "describeContactCalled": 1,
+      "initiationMethod": r.InitiationMethod,
+      "channel": r.Channel,
+      "queueId": r.QueueInfo !== undefined ? r.QueueInfo.Id : '',
+      "agentId": r.AgentInfo !== undefined ? r.AgentInfo.Id : '',
+      "connectedToAgentTimestamp": r.AgentInfo !== undefined ? r.AgentInfo.ConnectedToAgentTimestamp.getTime() / 1000 : 0,
+      "enqueueTimestamp": r.QueueInfo !== undefined ? r.QueueInfo.EnqueueTimestamp.getTime() / 1000 : 0,
+      "initiationTimestamp": r.InitiationTimestamp.getTime() / 1000,
+      "disconnectTimestamp": r.DisconnectTimestamp.getTime() / 1000,
+      "lastUpdateTimestamp": r.LastUpdateTimestamp.getTime() / 1000,
+      "duration": ((r.DisconnectTimestamp.getTime() / 1000) - (r.InitiationTimestamp.getTime() / 1000))
+    }
+    return ret;
+  } catch (e) {
+    console.log(e);
+    return;
+  }
+}
+
+// ----- dashboard starts ------
+
+const getAgentMetric = async (queueIdArr) => {
+  let cmd = new GetCurrentMetricDataCommand({
+    "InstanceId": awsInstance,
+    "Filters": { 
+      "Queues": queueIdArr,
+      "Channels": ["VOICE"]
+    },
+    "Groupings": ["CHANNEL", "QUEUE"],
+    "CurrentMetrics": [
+      {
+        "Name": "AGENTS_AVAILABLE",
+        "Unit": "COUNT"
+      },
+      {
+        "Name": "AGENTS_ON_CALL",
+        "Unit": "COUNT"
+      },
+      {
+        "Name": "AGENTS_NON_PRODUCTIVE",
+        "Unit": "COUNT"
+      },
+    ],
+  });
+
+  try {
+    let r = await connectClient.send(cmd);
+    return r.MetricResults;
+  } catch (e) {
+    console.log('error');
+    console.log(e);
+    return []
+  }
+}
+
+const getCampaignMetric = async (queueIdArr) => {
+  let [startTime, endTime] = getTimeRangeInMultipleOf5();
+  if (endTime <= startTime) return [];
+
+  let cmd = new GetMetricDataCommand({
+    "InstanceId": awsInstance,
+    "StartTime": startTime,
+    "EndTime": endTime,
+    "Filters": {
+      "Queues": queueIdArr,
+    },
+    "Groupings": [
+      "QUEUE",
+    ],
+    "HistoricalMetrics": [
+      {
+        "Name": "CONTACTS_HANDLED", // total call
+        "Unit": "COUNT",
+        "Statistic": "SUM"
+      },
+      {
+        "Name": "CONTACTS_QUEUED", // call waiting
+        "Unit": "COUNT",
+        "Statistic": "SUM"
+      },
+      {
+        "Name": "HANDLE_TIME", // avg handle time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+      {
+        "Name": "INTERACTION_TIME", // avg talk time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+      {
+        "Name": "AFTER_CONTACT_WORK_TIME", // avg wrapup time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+      {
+        "Name": "INTERACTION_AND_HOLD_TIME", // avg talk time
+        "Unit": "SECONDS",
+        "Statistic": "AVG"
+      },
+
+    ]
+  });
+
+  try {
+    let res_all = await connectClient.send(cmd);
+    return res_all.MetricResults
+  } catch (e) {
+    console.log(e)
+    return [];
+  }
+};
+
+
+const randomIntBetween = (min, max) => {
+  // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+const getAgentDashboardDataFromConnect = async () => {
+  let fakeData = {
+    "recordId": "1",
+    "available": String(randomIntBetween(5, 15)),
+    "busy": String(randomIntBetween(5, 15)),
+    "inCall": String(randomIntBetween(5, 15)),
+    "unavailable": String(randomIntBetween(5, 15)),
+    "reportDate": String(getCurrentISODateOnly()),
+    "author": defaultUser.userId
+  };
+  return fakeData;
+}
+
+const getCampaignDashboardDataFromConnect = async () => {
+  let fakeCampaign = [
+    {
+      "campaignName": "Final Countdown",
+      "campaignId": "044119d2-7b7f-4f3d-9712-ad097fefee70",
+    },
+    {
+      "campaignName": "Candy sale",
+      "campaignId": "f962c2af-817a-4771-830a-4e9bebf99de1",
+    },
+    {
+      "campaignName": "Big sale",
+      "campaignId": "9df4b001-4264-4ebb-a57d-d5404deefb5b",
+    },
+    {
+      "campaignName": "Test Campaign 1",
+      "campaignId": "ddad4dcc-d697-45f4-8578-d81094f3f9a5",
+    },
+    {
+      "campaignName": "Test Campaign 2",
+      "campaignId": "3da1457a-68eb-455b-9b1d-89e4ed77e7b3",
+    },
+  ];
+
+  let fakeData = [];
+  for (let i = 0; i < 5; i++) {
+    fakeData[fakeData.length] = {
+      "campaignName": fakeCampaign[i].campaignName,
+      "campaignId": fakeCampaign[i].campaignId,
+      "totalCall": String(randomIntBetween(50, 300)),
+      "currentCall": String(randomIntBetween(0, 10)),
+      "callWaiting": String(randomIntBetween(0, 10)),
+      "agentInQueue": String(randomIntBetween(0, 10)),
+      "avgHandlingTime": String(randomIntBetween(40, 300)),
+      "avgTalkTime": String(randomIntBetween(40, 300)),
+      "avgWrapUpTime": String(randomIntBetween(40, 300)),
+      "reportDate": String(getCurrentISODateOnly()),
+      "author": defaultUser.userId
+    };
+  }
+  return fakeData;
+}
+
+
+// ----- dashboard ends ------
 
 const addPhoneNumberToContactFlow = async (phoneNumberId, contactFlowId) => {
   let cmd = new AssociatePhoneNumberContactFlowCommand({
@@ -290,4 +494,9 @@ module.exports = {
   updateOutboundCallerIdNumberId,
   addPhoneNumberToContactFlow,
   getPhoneNumbersWithDesc,
+  getCampaignDashboardDataFromConnect,
+  getAgentDashboardDataFromConnect,
+  getAgentMetric,
+  getCampaignMetric,
+  getContactCDR,
 };

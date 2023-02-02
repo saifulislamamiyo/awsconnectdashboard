@@ -1,0 +1,66 @@
+<%- include('_head.html'); %>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3">
+        <h1 class="h2">
+            <%= title %>
+        </h1>
+        <% if (true) { %>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <a href="/" type="button" class="btn btn-sm btn-outline-secondary spinner-trigger">Home</a>
+                </div>
+            </div>
+            <% } %>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
+        <h5>Report Date: <%= new Date().toLocaleDateString('en-us') %>
+        </h5>
+    </div>
+
+
+
+
+
+    <%- include('_alert.html'); %>
+        <div class="table-responsive">
+            <div id="reporting-table-wrapper" class="dataTables_wrapper dt-bootstrap5">
+                <table class="table table-bordered table-striped" id="reporting-table">
+                    <thead class="table-dark">
+                        <tr>
+
+                            <th scope="col">Agent Name</th>
+                            <th scope="col">Call Direction</th>
+                            <th scope="col">Campaign Name</th>
+                            <th scope="col">Total Calls</th>
+                            <th scope="col">Total Talk Time</th>
+                            <th scope="col">Avg Talk Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% aggCDR.forEach(function(cdr){ %>
+                            <tr>
+                                <td>
+                                    <%=cdr.agentName ? cdr.agentName : "Not Applicable" %>
+                                </td>
+                                <td>
+                                    <%=cdr.CallDirection%>
+                                </td>
+                                <td>
+                                    <%= cdr.campaignName ? cdr.campaignName : 'Not Applicable' %>
+                                </td>
+                                <td>
+                                    <%=cdr.describeContactCalled%>
+                                </td>
+                                <td>
+                                    <%= new Date(cdr.duration * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                                <td>
+                                    <%= new Date((cdr.duration /cdr.describeContactCalled) * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <%- include('_foot.html'); %>
