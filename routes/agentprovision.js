@@ -84,7 +84,6 @@ router.get("/", async (req, res, next) => {
 router.get("/provision-agent", async (req, res, next) => {
   let expectedRPName = routingProfilePrefix + req.query.agentid;
   try {
-    // todo: fix
     let dynaProfile = await createUserDynamicRouteProfile(req.query.agentid, req.query.agentname);
     await insertAgent(
       dynaProfile.userName,
