@@ -29,6 +29,16 @@
                     <div class="col-12">
                         <h1 class="h3 mb-4">Connect Admin - Login</h1>
                     </div>
+                    <% if(messages) { %>
+                        <div class="col-12">
+                        <% for (const [key, value] of Object.entries(messages)) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%=value%>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <% } %>
+                        </div>
+                    <% } %>
                     <div class="col-12">
                         <form name="authForm" id="authForm" method="post" action="/login/password">
                             <div class="mb-3">
