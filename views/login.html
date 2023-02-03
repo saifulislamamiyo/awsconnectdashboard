@@ -19,12 +19,48 @@
     <!-- Custom styles -->
     <link href="/stylesheets/client.css" rel="stylesheet">
 
+<style>
+
+
+.center--in--screen {
+        padding-top: 1.5rem!important;
+        padding-bottom: 1.5rem!important;
+        border-radius: var(--bs-border-radius)!important;
+        padding-right: 3rem!important;
+        padding-left: 3rem!important;
+        color: #fff!important;
+        background-color: RGBA(33,37,41,var(--bs-bg-opacity,1))!important;
+        width: 90%;
+        top: 50%;
+        left: 50%;
+        position: fixed;
+        transform: translate(-50%, -50%);
+    }
+@media only screen and (min-width: 400px) {
+    .center--in--screen {
+        padding-top: 1.5rem!important;
+        padding-bottom: 1.5rem!important;
+        border-radius: var(--bs-border-radius)!important;
+        padding-right: 3rem!important;
+        padding-left: 3rem!important;
+        color: #fff!important;
+        background-color: RGBA(33,37,41,var(--bs-bg-opacity,1))!important;
+        width: 50%;
+        top: 50%;
+        left: 50%;
+        position: fixed;
+        transform: translate(-50%, -50%);
+    }
+}
+</style>
+
+
 </head>
 
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 offset-md-2 col-md-8 offset-lg-3 col-lg-5 text-bg-dark px-5 py-4 mt-5 rounded">
+            <div class="center--in--screen">
                 <div class="row">
                     <div class="col-12">
                         <h1 class="h3 mb-4">Connect Admin - Login</h1>

@@ -66,7 +66,7 @@ app.use(flash());
 // TODO: REMOVE BELOW AFTER DEV
 // app.use(function (req, res, next) {
 //   req.user = {
-//     username: 'saiful',
+//     username: 'nazim',
 //     admin:0,
 //   }
 //   next()

@@ -568,6 +568,11 @@ const changeUserPassword=async (userName, hashedPass) => {
 
 
 
+const getAgentDetails=async (ofUser=null) => {
+  let agentData=await modelAgent.scan().where("agentName").eq(ofUser).exec();
+  return agentData;
+}; // end getAgentDetails()
+
 module.exports={
   modelCampaign,
   modelAgent,
@@ -600,4 +605,5 @@ module.exports={
   getFullCDR,
   checkUserCred,
   changeUserPassword,
+  getAgentDetails,
 };
