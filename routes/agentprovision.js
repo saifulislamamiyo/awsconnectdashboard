@@ -1,9 +1,13 @@
-const { pauseBetweenAPICallInClient, pauseBetweenAPICallInServer, routingProfilePrefix } = require("../libs/configloader");
-const express = require('express');
-const router = express.Router();
+const {
+  pauseBetweenAPICallInClient,
+  pauseBetweenAPICallInServer,
+  routingProfilePrefix,
+  passwordHashSaltRounds,
+} = require("../libs/configloader");
+
 const { insertAgent,
   getAgents: getAgentsFromDB,
-  modelAgent
+  createUser,
 } = require("../libs/ddbclient");
 
 const {
@@ -13,9 +17,11 @@ const {
   getAgents: getAgentsFromConnect,
   listRoutingProfiles
 } = require("../libs/connectclient");
+const bcrypt = require('bcrypt');
 const { sleep } = require("../libs/utils");
 
-
+const express = require('express');
+const router = express.Router();
 
 
 const getUnprovisionedAgents = async (allAgentsFromConnect) => {
@@ -81,6 +87,13 @@ router.get("/", async (req, res, next) => {
 }); // end router.get('/')
 
 
+
+const createUserWhileProvisioning = async (userName) => {
+  const userType = 0;
+  let userDefaultPassword = bcrypt.hashSync(userName, passwordHashSaltRounds);
+  await createUser(userName, userDefaultPassword, userType);
+}
+
 router.get("/provision-agent", async (req, res, next) => {
   let expectedRPName = routingProfilePrefix + req.query.agentid;
   try {
@@ -91,6 +104,7 @@ router.get("/provision-agent", async (req, res, next) => {
       dynaProfile.routingProfileName,
       dynaProfile.routingProfileId
     );
+    await createUserWhileProvisioning(req.query.agentname);
     res.json({ "message": "OK" });
   } catch (e) {
     console.log(e);
@@ -104,6 +118,7 @@ router.get("/provision-agent", async (req, res, next) => {
           break;
         } // end if
       } // allRoutingProfiles[r]
+      await createUserWhileProvisioning(req.query.agentname);
     }
   } // catch
 });// end router.get('/provision-agent')
