@@ -65,13 +65,13 @@ app.use(flash());
 
 // TODO: REMOVE BELOW AFTER DEV
 
-app.use(function (req, res, next) {
-  req.user = {
-    username: 'saiful',
-    admin: 0,
-  }
-  next()
-});
+// app.use(function (req, res, next) {
+//   req.user = {
+//     username: 'saiful',
+//     admin: 0,
+//   }
+//   next()
+// });
 
 let devLogin = process.env.DEV_LOGIN || "0";
 if (devLogin != "0") {
