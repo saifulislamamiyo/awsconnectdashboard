@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "test": "nyc mocha --recursive --timeout 10000",
     "dev": "NODE_ENV=dev DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
-    "create-first-user": "NODE_ENV=dev DEBUG=awsconnectdashboard:* node ./utilities/create_first_user.js",
+    "create-first-user": "DEBUG=awsconnectdashboard:* node ./utilities/create_first_user.js",
     "dev-ndf": "NODE_ENV=dev DEV_NO_DATE_FILTER=1 DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
     "dev-default-admin-login": "NODE_ENV=dev DEV_LOGIN=admin DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
     "dev-default-non-admin-login": "NODE_ENV=dev DEV_LOGIN=nonadmin DEBUG=awsconnectdashboard:* ./node_modules/nodemon/bin/nodemon.js ./bin/www -e js,mjs,json,ejs,html,js,css",
