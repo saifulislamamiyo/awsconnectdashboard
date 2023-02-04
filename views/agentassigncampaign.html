@@ -42,46 +42,21 @@
 </div>
 
 <script>
-  /**
-             * TODO: URGENT
-             * Get list of queid/campaign to remove
-             * Get list of queid/campaign to add
-             * Post one by one two remove
-             * Post one by one to add
-             *      for (let agent of agentsToAdd) {
-                        let rid=agentsRoutingProfileId
-                        let campaignid=campaignToModify.campaignId;
-                        let agentname=agent.agentName;
-                        let campaignname=campaignToModify.campaignName;
-                        let assoc="true"; // "false" //flase to remove
-                        let url=`/agent-distribution/distribute-agent?rpid=${rid}&campaignid=${campaignid}&assoc=${assoc}&agentname=${agentname}&campaignname=${campaignname}`;
-                        let response=await fetch(url);
-                        await sleep(pauseBetweenAPICallInClient);
-                    }
-             */
-
   document.addEventListener('DOMContentLoaded', () => {
     /* DOMContentLoaded Start ------------------------------------------------ */
-    const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient%>;
-    const allCampaigns = <%-JSON.stringify(campaigns)%>
-      .filter(item => item.campaignStatus == true)
-      .map(item => {
-        return {
-          campaignName: item.campaignName,
-          campaignId: item.campaignId
-        }
-      });
-    const currentCampaigns = <%-JSON.stringify(agentDetails[0].campaigns)%>;
-    const agentsRoutingProfileId = <%-JSON.stringify(agentDetails[0].routingProfileId)%>;
-    const agentName = <%-JSON.stringify(agentDetails[0].agentName)%>;
+    const pauseBetweenAPICallInClient = <%-pauseBetweenAPICallInClient %>;
+    const allCampaigns = <%-JSON.stringify(campaigns) %>.filter(item => item.campaignStatus == true).map(item => {
+      return {
+        campaignName: item.campaignName,
+        campaignId: item.campaignId
+      }
+    });
+    const currentCampaigns = <%-JSON.stringify(agentDetails[0].campaigns || {}) %>;
+    const agentsRoutingProfileId = <%-JSON.stringify(agentDetails[0].routingProfileId) %>;
+    const agentName = <%-JSON.stringify(agentDetails[0].agentName) %>;
     const allCampaignNames = allCampaigns.map(item => item.campaignName);
-    const currentCampaignNames = currentCampaigns.map(item => item.campaignName);
+    const currentCampaignNames = Object.keys(currentCampaigns).length ? currentCampaigns.map(item => item.campaignName) : [];
     let newCampaigns = [];
-
-
-    console.log("allCampaigns: ", allCampaigns);
-    // console.log("allCampaignsB: ", allCampaignsB);
-    // console.log("currentCampaigns: ", currentCampaigns);
 
     let selCurrentCampaigns = document.getElementById('assignedCampaign');
     let selAllCampaign = document.getElementById('selAllCampaign');
@@ -104,9 +79,6 @@
         campaignId: currentCampaigns[n].campaignId
       })
     } // next nth currentCampaigns
-
-
-
 
     /* 
     Populate All Campaigns: allCampaigns : selAllCampaign
@@ -178,19 +150,26 @@
 
     /* Save changes one by one in an interval */
     btnSave.addEventListener('click', async (e) => {
-        show_loader();
+      show_loader();
 
       /* Campaigns to Add */
       for (let n = 0; n < newCampaigns.length; n++) {
         let thisCampaignName = newCampaigns[n].campaignName;
         let thisCampaignId = newCampaigns[n].campaignId;
-        let notExist = currentCampaigns.filter(elem => elem['campaignName'] == thisCampaignName).length == 0;
+
+        let notExist = false;
+
+        if (Object.keys(currentCampaigns).length) {
+          notExist = currentCampaigns.filter(elem => elem['campaignName'] == thisCampaignName).length == 0;
+        } else {
+          notExist = true;
+        }
+
         if (notExist) {
           let assoc = "true";
           let url = `/agent-assign-campaign/assign-campaign?rpid=${agentsRoutingProfileId}&campaignid=${thisCampaignId}&assoc=${assoc}&agentname=${agentName}&campaignname=${thisCampaignName}`;
           let response = await fetch(url);
           await sleep(pauseBetweenAPICallInClient);
-          console.log("ADD: ", thisCampaignName, notExist, url);
         }
       }
 
@@ -204,13 +183,13 @@
           let url = `/agent-assign-campaign/assign-campaign?rpid=${agentsRoutingProfileId}&campaignid=${thisCampaignId}&assoc=${assoc}&agentname=${agentName}&campaignname=${thisCampaignName}`;
           let response = await fetch(url);
           await sleep(pauseBetweenAPICallInClient);
-          console.log("REMOVE: ", thisCampaignName, notExist);
         }
         await sleep(pauseBetweenAPICallInClient);
       }
 
-
-        hide_loader();
+      await sleep(pauseBetweenAPICallInClient);
+      hide_loader();
+      window.location.replace('/agent-assign-campaign/agent-assign-campaign-success');
     });
 
     /* DOMContentLoaded End -------------------------------------------------- */

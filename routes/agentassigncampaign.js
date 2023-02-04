@@ -12,7 +12,7 @@ router.get("/", async (req, res, next) => {
   let campaigns = await getCampaigns();
   let agentsCampaigns = await getCampaigns(agentName);
   let agentDetails = await getAgentDetails(agentName)
-  console.log(agentsCampaigns)
+  if(!agentsCampaigns) agentsCampaigns = []
   res.render("agentassigncampaign", {
     title: "Campaign Self Assignment",
     campaigns: campaigns,
@@ -29,7 +29,7 @@ router.get('/assign-campaign', async (req, res, next) => {
   let assoc = req.query.assoc;
   let agentName = req.query.agentname;
   let campaignName = req.query.campaignname;
-  console.log(">>>||>>>", req.query);
+  
   await setRoutingProfileQueue(routingProfileId, campaignId, assoc);
   if (assoc == "true") {
     await addCampaignToAgent(agentName, campaignName, campaignId);
@@ -40,5 +40,9 @@ router.get('/assign-campaign', async (req, res, next) => {
   res.json({ "message": "OK" });
 });
 
+router.get('/agent-assign-campaign-success', async (req, res, next) => {
+  req.flash("success", "Campaign Assignement succesful.");
+  res.redirect("/agent-assign-campaign");
+})
 
 module.exports = router;
