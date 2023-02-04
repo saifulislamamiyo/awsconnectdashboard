@@ -3,8 +3,10 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const { checkUserCred, changeUserPassword } = require('../libs/ddbclient');
 const LocalStrategy = require('passport-local');
+const { passwordHashSaltRounds } = require("../libs/configloader");
 
-const SALT_ROUNDS = 15;
+
+const SALT_ROUNDS = passwordHashSaltRounds;
 const router = express.Router();
 
 passport.use(new LocalStrategy(async function verify(username, password, cb) {

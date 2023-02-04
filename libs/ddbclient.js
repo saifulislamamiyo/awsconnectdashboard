@@ -1,17 +1,17 @@
-const bcrypt=require('bcrypt')
-const { awsConfig, routingProfilePrefix }=require("./configloader");
-const dynamoose=require("dynamoose");
-const { defaultUser }=require("./auth");
-const { logger }=require("./logger");
-const { sleep, getCurrentISODateOnly }=require("./utils");
-const ddb=new dynamoose.aws.ddb.DynamoDB(awsConfig);
+const bcrypt = require('bcrypt')
+const { awsConfig, routingProfilePrefix } = require("./configloader");
+const dynamoose = require("dynamoose");
+const { defaultUser } = require("./auth");
+const { logger } = require("./logger");
+const { sleep, getCurrentISODateOnly } = require("./utils");
+const ddb = new dynamoose.aws.ddb.DynamoDB(awsConfig);
 dynamoose.aws.ddb.set(ddb);
 
 /**
  * Schema
  */
 
-const schemaUser=new dynamoose.Schema({
+const schemaUser = new dynamoose.Schema({
   username: {
     type: String,
     hashKey: true,
@@ -20,7 +20,7 @@ const schemaUser=new dynamoose.Schema({
   passwordHash: String,
 });
 
-const schemaCDRSet=new dynamoose.Schema({
+const schemaCDRSet = new dynamoose.Schema({
   ContactID: {
     type: String,
     hashKey: true,
@@ -38,7 +38,7 @@ const schemaCDRSet=new dynamoose.Schema({
   duration: Number,
 });
 
-const schemaCDRGet=new dynamoose.Schema({
+const schemaCDRGet = new dynamoose.Schema({
   ContactID: {
     type: String,
     hashKey: true,
@@ -64,7 +64,7 @@ const schemaCDRGet=new dynamoose.Schema({
   WrapUpAt: String,
 });
 
-const schemaAgentDashboard=new dynamoose.Schema(
+const schemaAgentDashboard = new dynamoose.Schema(
   {
     recordId: {
       type: String,
@@ -82,7 +82,7 @@ const schemaAgentDashboard=new dynamoose.Schema(
   }
 );
 
-const schemaCampaignDashboard=new dynamoose.Schema(
+const schemaCampaignDashboard = new dynamoose.Schema(
   {
     campaignName: {
       type: String,
@@ -107,7 +107,7 @@ const schemaCampaignDashboard=new dynamoose.Schema(
   }
 );
 
-const schemaCampaign=new dynamoose.Schema(
+const schemaCampaign = new dynamoose.Schema(
   {
     campaignName: {
       type: String,
@@ -123,7 +123,7 @@ const schemaCampaign=new dynamoose.Schema(
   }
 );
 
-const schemaAgent=new dynamoose.Schema(
+const schemaAgent = new dynamoose.Schema(
   {
     agentName: {
       type: String,
@@ -151,7 +151,7 @@ const schemaAgent=new dynamoose.Schema(
   }
 );
 
-const schemaPhoneNumber=new dynamoose.Schema(
+const schemaPhoneNumber = new dynamoose.Schema(
   {
     phoneNumber: {
       type: String,
@@ -173,31 +173,31 @@ const schemaPhoneNumber=new dynamoose.Schema(
  * Models
  */
 
-const modelCampaign=dynamoose.model(
+const modelCampaign = dynamoose.model(
   "Cloudcall_Campaign_Table",
   schemaCampaign
 );
-const modelAgent=dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
-const modelPhoneNumber=dynamoose.model(
+const modelAgent = dynamoose.model("Cloudcall_Agent_Table", schemaAgent);
+const modelPhoneNumber = dynamoose.model(
   "Cloudcall_Phone_Number_Table",
   schemaPhoneNumber
 );
-const modelCampaignDashboard=dynamoose.model(
+const modelCampaignDashboard = dynamoose.model(
   "Cloudcall_Campaign_Dashboard_Table",
   schemaCampaignDashboard
 );
-const modelAgentDashboard=dynamoose.model(
+const modelAgentDashboard = dynamoose.model(
   "Cloudcall_Agent_Dashboard_Table",
   schemaAgentDashboard
 );
-const modelCDRSet=dynamoose.model("CloudCall_CDR", schemaCDRSet);
-const modelCDRGet=dynamoose.model("CloudCall_CDR", schemaCDRGet);
-const modelUser=dynamoose.model("CloudCall_User", schemaUser);
+const modelCDRSet = dynamoose.model("CloudCall_CDR", schemaCDRSet);
+const modelCDRGet = dynamoose.model("CloudCall_CDR", schemaCDRGet);
+const modelUser = dynamoose.model("CloudCall_User", schemaUser);
 /**
  * Functions
  */
 
-const getFullCDR=async () => {
+const getFullCDR = async () => {
 
   // // off for try 4
   // let currentDateTime = new Date();
@@ -288,13 +288,13 @@ const getFullCDR=async () => {
 
   // Try 9
 
-  let today=new Date();   // server datetime
-  let localoffset=-(today.getTimezoneOffset()/60); // server tz offset
-  let destoffset=11; // Sydney tz offset GMT+11
-  let offset=destoffset-localoffset;
-  let offsetDateTime=new Date(new Date().getTime()+offset*3600*1000); // Sydney datetime
-  let offsetDateTimetoUTCMidnightInMS=Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0-offset, 0, 0);
-  let offsetDateTimetoUTCMidnight=offsetDateTimetoUTCMidnightInMS/1000;
+  let today = new Date();   // server datetime
+  let localoffset = -(today.getTimezoneOffset() / 60); // server tz offset
+  let destoffset = 11; // Sydney tz offset GMT+11
+  let offset = destoffset - localoffset;
+  let offsetDateTime = new Date(new Date().getTime() + offset * 3600 * 1000); // Sydney datetime
+  let offsetDateTimetoUTCMidnightInMS = Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0 - offset, 0, 0);
+  let offsetDateTimetoUTCMidnight = offsetDateTimetoUTCMidnightInMS / 1000;
   console.log(`Server datetime: ${today}`);
   console.log(`Server TZ: ${localoffset}`);
   console.log(`Sydney TZ: ${destoffset}`);
@@ -302,22 +302,22 @@ const getFullCDR=async () => {
   console.log(`Sydney time to UTC Midnight EPOCH: ${offsetDateTimetoUTCMidnight}`);
 
   // --------------------------------------------------------
-  let startFromEpoch=offsetDateTimetoUTCMidnight;
+  let startFromEpoch = offsetDateTimetoUTCMidnight;
   // --------------------------------------------------------
 
-  let noDateFilter=process.env.DEV_NO_DATE_FILTER||"0";
+  let noDateFilter = process.env.DEV_NO_DATE_FILTER || "0";
 
   let contacts;
 
-  if (noDateFilter!="0") {
+  if (noDateFilter != "0") {
     console.log("NO Date Filter");
-    contacts=await modelCDRGet.scan()
+    contacts = await modelCDRGet.scan()
       .where("describeContactCalled")
       .eq(1)
       .exec();
   } else {
     console.log("{@_@} With Date Filter >=", startFromEpoch);
-    contacts=await modelCDRGet.scan()
+    contacts = await modelCDRGet.scan()
       .where("describeContactCalled")
       .eq(1)
       .and()
@@ -335,8 +335,8 @@ const getFullCDR=async () => {
 };
 
 
-const getLonelyContacts=async () => {
-  let contacts=await modelCDRGet
+const getLonelyContacts = async () => {
+  let contacts = await modelCDRGet
     .scan()
     .where("describeContactCalled")
     .not()
@@ -345,18 +345,18 @@ const getLonelyContacts=async () => {
   return contacts;
 };
 
-const saveContactCDR=async (cdr) => {
+const saveContactCDR = async (cdr) => {
   try {
-    let c=await modelCDRSet.update(cdr);
+    let c = await modelCDRSet.update(cdr);
     return true;
   } catch (e) {
-    logger.error(e.name??e.message??e);
+    logger.error(e.name ?? e.message ?? e);
     return false;
   }
 };
 
-const loadCampaignDashboardData=async () => {
-  let campaignDashboardData=await modelCampaignDashboard
+const loadCampaignDashboardData = async () => {
+  let campaignDashboardData = await modelCampaignDashboard
     .scan()
     .where("reportDate")
     .eq(getCurrentISODateOnly())
@@ -364,74 +364,74 @@ const loadCampaignDashboardData=async () => {
   return campaignDashboardData;
 };
 
-const loadAgentDashboardData=async () => {
-  let agentDashboardData=await modelAgentDashboard.scan().exec();
+const loadAgentDashboardData = async () => {
+  let agentDashboardData = await modelAgentDashboard.scan().exec();
   return agentDashboardData;
 };
 
-const saveAgentDashboardData=async (dashboardData) => {
+const saveAgentDashboardData = async (dashboardData) => {
   logger.info("Saving agent dashboard data.");
-  let newAgentDashboard=new modelAgentDashboard(dashboardData);
+  let newAgentDashboard = new modelAgentDashboard(dashboardData);
   await newAgentDashboard.save();
   logger.info("Saving agent dashboard data completed.");
 };
 
-const saveCampaignDashboardData=async (dashboardData) => {
+const saveCampaignDashboardData = async (dashboardData) => {
   logger.info("Saving campaign dashboard data.");
   for (data of dashboardData) {
-    let newCampaignDashboard=new modelCampaignDashboard(data);
+    let newCampaignDashboard = new modelCampaignDashboard(data);
     await newCampaignDashboard.save();
   }
   logger.info("Saving campaign dashboard data completed.");
 };
 
-const getAgents=async () => {
-  let agents=await modelAgent.scan().exec();
+const getAgents = async () => {
+  let agents = await modelAgent.scan().exec();
   return agents;
 }; // end getAgents()
 
-const getCampaigns=async (ofUser=null) => {
-  let campaigns=[];
+const getCampaigns = async (ofUser = null) => {
+  let campaigns = [];
   if (!ofUser) {
-    campaigns=await modelCampaign.scan().exec();
+    campaigns = await modelCampaign.scan().exec();
   } else {
-    let agentData=await modelAgent.scan().where("agentName").eq(ofUser).exec();
+    let agentData = await modelAgent.scan().where("agentName").eq(ofUser).exec();
     if (agentData.length) {
-      campaigns=agentData[0].campaigns;
+      campaigns = agentData[0].campaigns;
     }
   }
   return campaigns;
 }; // end getCampaigns()
 
-const getActiveCampaigns=async () => {
-  let campaigns=await modelCampaign
+const getActiveCampaigns = async () => {
+  let campaigns = await modelCampaign
     .scan()
     .where("campaignStatus")
     .eq(true)
     .exec();
-  let campObject={};
-  let campIdArr=[];
-  for (let n=0; n<campaigns.length; n++) {
-    campObject[campaigns[n].campaignId]=campaigns[n].campaignName;
-    campIdArr[campIdArr.length]=campaigns[n].campaignId;
+  let campObject = {};
+  let campIdArr = [];
+  for (let n = 0; n < campaigns.length; n++) {
+    campObject[campaigns[n].campaignId] = campaigns[n].campaignName;
+    campIdArr[campIdArr.length] = campaigns[n].campaignId;
   }
   return { details: campObject, summary: campIdArr };
 }; // end getActiveCampaigns()
 
-const setCampaignStatus=async (campaignName, campaignStatus) => {
+const setCampaignStatus = async (campaignName, campaignStatus) => {
   await modelCampaign.update({
     campaignName: campaignName,
-    campaignStatus: campaignStatus=="true"? true:false,
+    campaignStatus: campaignStatus == "true" ? true : false,
   });
 }; // end setCampaignStatus()
 
-const insertAgent=async (
+const insertAgent = async (
   agentName,
   agentId,
   routingProfileName,
   routingProfileId
 ) => {
-  let newAgent=new modelAgent({
+  let newAgent = new modelAgent({
     agentName: agentName,
     agentId: agentId,
     routingProfileName: routingProfileName,
@@ -441,17 +441,17 @@ const insertAgent=async (
   await newAgent.save();
 }; // end insertAgent()
 
-let addCampaignToAgent=async (agentName, campaignName, campaignId) => {
-  let result=await modelAgent.get(agentName);
-  let campaigns=result.campaigns??[];
+let addCampaignToAgent = async (agentName, campaignName, campaignId) => {
+  let result = await modelAgent.get(agentName);
+  let campaigns = result.campaigns ?? [];
 
-  let newCampaign={ campaignName: campaignName, campaignId: campaignId };
+  let newCampaign = { campaignName: campaignName, campaignId: campaignId };
   campaigns.push(newCampaign);
 
   await modelAgent.update({ agentName: agentName, campaigns: campaigns });
 }; // end addCampaignToAgent()
 
-let updateCampaignOfAgent=async (agentName, campaigns) => {
+let updateCampaignOfAgent = async (agentName, campaigns) => {
   try {
     await modelAgent.update({ agentName: agentName, campaigns: campaigns });
     return true;
@@ -461,13 +461,13 @@ let updateCampaignOfAgent=async (agentName, campaigns) => {
   }
 }; // end addCampaignToAgent()
 
-let removeCampaignFromAgent=async (agentName, campaignName, campaignId) => {
-  let result=await modelAgent.get(agentName);
-  let campaigns=result.campaigns??[];
-  let updatedCampaigns=[];
+let removeCampaignFromAgent = async (agentName, campaignName, campaignId) => {
+  let result = await modelAgent.get(agentName);
+  let campaigns = result.campaigns ?? [];
+  let updatedCampaigns = [];
   for (let campaign of campaigns) {
-    if (campaign.campaignName!=campaignName) {
-      updatedCampaigns[updatedCampaigns.length]=campaign;
+    if (campaign.campaignName != campaignName) {
+      updatedCampaigns[updatedCampaigns.length] = campaign;
     }
   } // next campaign
   await modelAgent.update({
@@ -476,18 +476,18 @@ let removeCampaignFromAgent=async (agentName, campaignName, campaignId) => {
   });
 }; // end removeCampaignToAgent()
 
-const campaignExists=async (campaignName) => {
-  let result=await modelCampaign.get(campaignName);
-  return result===undefined;
+const campaignExists = async (campaignName) => {
+  let result = await modelCampaign.get(campaignName);
+  return result === undefined;
 }; // end campaignExists()
 
-const insertCampaign=async (
+const insertCampaign = async (
   campaignName,
   campaignId,
   campaignDesc,
   campaignStatus
 ) => {
-  let campaignItem=new modelCampaign({
+  let campaignItem = new modelCampaign({
     campaignName: campaignName,
     campaignId: campaignId,
     campaignDescription: campaignDesc,
@@ -497,25 +497,25 @@ const insertCampaign=async (
   await campaignItem.save();
 }; // end insertCampaign()
 
-const updatedCampaign=async (campaignName, campaignDescription) => {
-  let camp=await modelCampaign.update({
+const updatedCampaign = async (campaignName, campaignDescription) => {
+  let camp = await modelCampaign.update({
     campaignName: campaignName,
     campaignDescription: campaignDescription,
   });
   return camp;
 }; // end updatedCampaign()
 
-const getCampaignDescription=async (campaignName) => {
-  let camp=await modelCampaign.get(campaignName);
-  return camp===undefined? "":camp.campaignDescription??"";
+const getCampaignDescription = async (campaignName) => {
+  let camp = await modelCampaign.get(campaignName);
+  return camp === undefined ? "" : camp.campaignDescription ?? "";
 }; // end updatedCampaign()
 
-const getPhoneNumberCampaignMap=async () => {
-  let phoneCampMap=await modelPhoneNumber.scan().exec();
+const getPhoneNumberCampaignMap = async () => {
+  let phoneCampMap = await modelPhoneNumber.scan().exec();
   return phoneCampMap;
 }; // end getPhoneNumberCampaignMap()
 
-let insertPhoneNumberCampaignMap=async (
+let insertPhoneNumberCampaignMap = async (
   campaignId,
   campaignName,
   phoneNumberId,
@@ -523,8 +523,8 @@ let insertPhoneNumberCampaignMap=async (
   phoneNumberDesc,
   tollFreeNumber
 ) => {
-  let phoneNumberCampaignMapIItem=new modelPhoneNumber({
-    phoneNumber: "+"+String(phoneNumber).trim(),
+  let phoneNumberCampaignMapIItem = new modelPhoneNumber({
+    phoneNumber: "+" + String(phoneNumber).trim(),
     phoneNumberId: phoneNumberId,
     phoneNumberDesc: phoneNumberDesc,
     tollFreeNumber: tollFreeNumber,
@@ -538,11 +538,11 @@ let insertPhoneNumberCampaignMap=async (
 
 
 // -- user authentication [start]-----------------------------
-const checkUserCred=async (userName, pwdPlain) => {
-  let user=await modelUser.scan().where('username').eq(userName).exec();
+const checkUserCred = async (userName, pwdPlain) => {
+  let user = await modelUser.scan().where('username').eq(userName).exec();
   if (user.count) {
-    let usr=user[0];
-    let pwdMatched=bcrypt.compareSync(pwdPlain, usr.passwordHash);
+    let usr = user[0];
+    let pwdMatched = bcrypt.compareSync(pwdPlain, usr.passwordHash);
     if (pwdMatched) {
       return { username: usr.username, admin: usr.admin }
     } else {
@@ -554,26 +554,36 @@ const checkUserCred=async (userName, pwdPlain) => {
   }
 }
 
-const changeUserPassword=async (userName, hashedPass) => {
-  let user=await modelUser.scan().where('username').eq(userName).exec();
-  let changedUser={
+const changeUserPassword = async (userName, hashedPass) => {
+  let user = await modelUser.scan().where('username').eq(userName).exec();
+  let changedUser = {
     username: user[0].username,
     admin: user[0].admin,
     passwordHash: hashedPass,
   };
-  modelUser.update(changedUser);
+  await modelUser.update(changedUser);
+}
+
+
+const createUser = async (userName, hashedPassword, userType) => {
+  let newUserModel = new modelUser( {
+    username: userName,
+    admin: userType,
+    passwordHash: hashedPassword,
+  });
+  await newUserModel.save();
 }
 
 // -- user authentication [end]-----------------------------
 
 
 
-const getAgentDetails=async (ofUser=null) => {
-  let agentData=await modelAgent.scan().where("agentName").eq(ofUser).exec();
+const getAgentDetails = async (ofUser = null) => {
+  let agentData = await modelAgent.scan().where("agentName").eq(ofUser).exec();
   return agentData;
 }; // end getAgentDetails()
 
-module.exports={
+module.exports = {
   modelCampaign,
   modelAgent,
   modelPhoneNumber,
@@ -606,4 +616,5 @@ module.exports={
   checkUserCred,
   changeUserPassword,
   getAgentDetails,
+  createUser,
 };

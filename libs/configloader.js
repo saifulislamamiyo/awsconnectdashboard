@@ -22,6 +22,7 @@ let enableDashboardDataAcquisition =
   process.env.ENABLE_DASHBOARD_DATA_ACQUISITION;
 var runtimeEnv = process.env.NODE_ENV || "prod";
 let cdrDataAcquisitionInterval = process.env.CDR_DATA_ACQUISITION_INTERVAL;
+let passwordHashSaltRounds = parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS || 15);
 
 if (runtimeEnv !== "prod") {
   awsConfig = {
@@ -51,4 +52,5 @@ module.exports = {
   dashboardDataAcquisitionInterval,
   enableDashboardDataAcquisition,
   cdrDataAcquisitionInterval,
+  passwordHashSaltRounds,
 };

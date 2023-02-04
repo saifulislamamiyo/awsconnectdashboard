@@ -64,13 +64,16 @@ app.use(flash());
 
 
 // TODO: REMOVE BELOW AFTER DEV
-// app.use(function (req, res, next) {
-//   req.user = {
-//     username: 'nazim',
-//     admin:0,
-//   }
-//   next()
-// });
+let devLogin = process.env.DEV_LOGIN || "0";
+if (devLogin != "0") {
+app.use(function (req, res, next) {
+  req.user = {
+    username: devLogin=="admin" ? 'dev-admin': 'dev-non-admin',
+    admin: devLogin=="admin" ? 1: 0,
+  }
+  next()
+});
+}
 // TODO: REMOVE ABOVE AFTER DEV
 
 app.use(function (req, res, next) {

@@ -85,3 +85,10 @@ pm2 set pm2-logrotate:rotateInterval '*/1 * * * *'
 
 
 ```
+
+
+
+
+## Create first user
+
+```npm run create-first-user```
