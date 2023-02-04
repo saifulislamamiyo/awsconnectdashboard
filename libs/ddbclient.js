@@ -293,7 +293,7 @@ const getFullCDR=async () => {
   let destoffset=11; // Sydney tz offset GMT+11
   let offset=destoffset-localoffset;
   let offsetDateTime=new Date(new Date().getTime()+offset*3600*1000); // Sydney datetime
-  let offsetDateTimetoUTCMidnightInMS=Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0, 0, 0);
+  let offsetDateTimetoUTCMidnightInMS=Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0-offset, 0, 0);
   let offsetDateTimetoUTCMidnight=offsetDateTimetoUTCMidnightInMS/1000;
   console.log(`Server datetime: ${today}`);
   console.log(`Server TZ: ${localoffset}`);
