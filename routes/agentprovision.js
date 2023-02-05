@@ -112,7 +112,7 @@ router.get("/provision-agent", async (req, res, next) => {
       console.log("Handling DuplicateResourceException");
       let allRoutingProfiles = await listRoutingProfiles(); // from connect
       for (let r = 0; r < allRoutingProfiles.length; r++) {
-        if (allRoutingProfiles[r].Name = expectedRPName) {
+        if (allRoutingProfiles[r].Name == expectedRPName) {
           await insertAgent(req.query.agentname, req.query.agentid, allRoutingProfiles[r].Name, allRoutingProfiles[r].Id)
           res.json({ "message": "OK" });
           break;
