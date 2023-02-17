@@ -10,12 +10,13 @@ dynamoose.aws.ddb.set(ddb);
 /**
  * Schema
  */
-
+// TODO: DONE add key usernameLowerCase: String in schemaUser
 const schemaUser = new dynamoose.Schema({
   username: {
     type: String,
     hashKey: true,
   },
+  usernameLowerCase: String,
   admin: Number,
   passwordHash: String,
 });
@@ -385,9 +386,14 @@ const saveCampaignDashboardData = async (dashboardData) => {
   logger.info("Saving campaign dashboard data completed.");
 };
 
+// TODO: DONE FIX BUG IF TABLE NOT EXIST
 const getAgents = async () => {
-  let agents = await modelAgent.scan().exec();
-  return agents;
+  try{
+    let agents = await modelAgent.scan().exec();
+    return agents;
+  } catch(e){
+    return [];
+  }
 }; // end getAgents()
 
 const getCampaigns = async (ofUser = null) => {
@@ -539,7 +545,10 @@ let insertPhoneNumberCampaignMap = async (
 
 // -- user authentication [start]-----------------------------
 const checkUserCred = async (userName, pwdPlain) => {
-  let user = await modelUser.scan().where('username').eq(userName).exec();
+  // TODO: DONE convert userName to lower case, match it with usernameLowerCase
+  let userNameL = String(userName).toLowerCase()
+  let user = await modelUser.scan().where('usernameLowerCase').eq(userNameL).exec();
+  console.log("::>>  userNameL", userNameL, "user", user, "user.count", user.count);
   if (user.count) {
     let usr = user[0];
     let pwdMatched = bcrypt.compareSync(pwdPlain, usr.passwordHash);
@@ -564,10 +573,11 @@ const changeUserPassword = async (userName, hashedPass) => {
   await modelUser.update(changedUser);
 }
 
-
+// TODO: DONE add usernameLowerCase
 const createUser = async (userName, hashedPassword, userType) => {
   let newUserModel = new modelUser( {
     username: userName,
+    usernameLowerCase: String(userName).toLowerCase(),
     admin: userType,
     passwordHash: hashedPassword,
   });
