@@ -7,6 +7,7 @@ const session = require('express-session');
 const flash = require('express-flash');
 const compression = require('express-compression');
 const minifyHTML = require('express-minify-html-2');
+var passport = require('passport');
 const { pageCompress, sessionSecret } = require('./libs/configloader');
 
 /* Import routes */
@@ -17,11 +18,14 @@ const editCampaignRouter = require('./routes/editcampaign');
 const agentDistribution = require('./routes/agentdistribution');
 const agentProvision = require('./routes/agentprovision');
 const inboundNumberProvision = require('./routes/inboundnumberprovision');
-const fault = require('./routes/fault');
 const campaignDashboardRouter = require('./routes/campaigndashboard');
 const agentDashboardRouter = require('./routes/agentdashboard');
 const agentWiseReportRouter = require('./routes/agentwisereport');
 const campaignWiseReportRouter = require('./routes/campaignwisereport');
+const authRouter = require('./routes/auth');
+const unauthorizedRouter = require('./routes/unauthorized');
+const agentAssignCampaignRouter = require('./routes/agentassigncampaign');
+
 
 /* Set app */
 const app = express();
@@ -51,26 +55,105 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({
   secret: sessionSecret,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 36000 },
 }));
+app.use(passport.authenticate('session'));
 app.use(flash());
+
+
+
+// TODO: REMOVE BELOW AFTER DEV
+
+// app.use(function (req, res, next) {
+//   req.user = {
+//     username: 'saiful',
+//     admin: 0,
+//   }
+//   next()
+// });
+
+let devLogin = process.env.DEV_LOGIN || "0";
+if (devLogin != "0") {
+  app.use(function (req, res, next) {
+    req.user = {
+      username: devLogin == "admin" ? 'dev-admin' : 'dev-non-admin',
+      admin: devLogin == "admin" ? 1 : 0,
+    }
+    next()
+  });
+}
+// TODO: REMOVE ABOVE AFTER DEV
+
+app.use(function (req, res, next) {
+  console.log("AUTH_DEBUG: FROM MIDDLEWIRE FOR VIEW", req.user)
+  if (req.user) {
+    res.locals.currentUser = req.user;
+  } else {
+    res.locals.currentUser = {
+      username: null,
+      admin: null
+    };
+  }
+  next();
+});
+
+const checkAuthenticated = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.redirect("/login")
+  }
+  next();
+}
+
+const checkAuthenticatedAdmin = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.redirect("/login")
+  } else {
+    if (req.user.admin == 1) {
+      next();
+    }
+    else {
+      res.redirect('unauthorized');
+    }
+  }
+}
+
+
+const checkAuthenticatedNonAdmin = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.redirect("/login")
+  } else {
+    if (!req.user.admin) {
+      next();
+    }
+    else {
+      res.redirect('unauthorized');
+    }
+  }
+}
+
 
 /* Register routes */
 
+/* Common Routes for both Admin and Non Admin */
 app.use('/', homeRouter);
-app.use('/campaigns', campaignsRouter);
-app.use('/create-campaign', createCampaignRouter);
-app.use('/edit-campaign',editCampaignRouter);
-app.use('/agent-provision',agentProvision);
-app.use('/agent-distribution', agentDistribution);
-app.use('/inbound-number-provision', inboundNumberProvision);
-app.use('/fault', fault);
-// reports and dashboards
-app.use('/campaign-dashboard', campaignDashboardRouter);
-app.use('/agent-wise-report', agentWiseReportRouter);
-app.use('/campaign-wise-report', campaignWiseReportRouter);
-app.use('/agent-dashboard', agentDashboardRouter);
+app.use('/', authRouter);
+app.use('/unauthorized', checkAuthenticated, unauthorizedRouter);
+
+/* Admin only Routes */
+app.use('/campaigns', checkAuthenticatedAdmin, campaignsRouter);
+app.use('/create-campaign', checkAuthenticatedAdmin, createCampaignRouter);
+app.use('/edit-campaign', checkAuthenticatedAdmin, editCampaignRouter);
+app.use('/agent-provision', checkAuthenticatedAdmin, agentProvision);
+app.use('/agent-distribution', checkAuthenticatedAdmin, agentDistribution);
+app.use('/inbound-number-provision', checkAuthenticatedAdmin, inboundNumberProvision);
+app.use('/campaign-dashboard', checkAuthenticatedAdmin, campaignDashboardRouter);
+app.use('/agent-wise-report', checkAuthenticatedAdmin, agentWiseReportRouter);
+app.use('/campaign-wise-report', checkAuthenticatedAdmin, campaignWiseReportRouter);
+
+/* Non Admin Routes */
+app.use('/agent-dashboard', checkAuthenticatedNonAdmin, agentDashboardRouter);
+app.use('/agent-assign-campaign', checkAuthenticatedNonAdmin, agentAssignCampaignRouter);
 
 /* Catch 404 and forward to error handler */
 app.use((req, res, next) => {
@@ -81,7 +164,8 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.status = err.status || 500;
+  res.locals.stack = req.app.get('env') === 'dev' ? err.stack : "";
   // render the error page
   res.status(err.status || 500);
   res.render('error');

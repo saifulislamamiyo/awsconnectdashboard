@@ -10,12 +10,13 @@ dynamoose.aws.ddb.set(ddb);
 /**
  * Schema
  */
-
+// TODO: DONE add key usernameLowerCase: String in schemaUser
 const schemaUser = new dynamoose.Schema({
   username: {
     type: String,
     hashKey: true,
   },
+  usernameLowerCase: String,
   admin: Number,
   passwordHash: String,
 });
@@ -210,7 +211,7 @@ const getFullCDR = async () => {
   // // try 2
   // let cnd = new dynamoose.Condition().where('describeContactCalled').eq(1).and().where('initiationTimestamp').ge(startFromEpoch);
   // let contacts = await modelCDRGet.scan(cnd).exec()
-  
+
   // // try 3
   // let scanned = await modelCDRGet.scan().where('describeContactCalled').eq(1);
   // let contacts = await scanned.where('initiationTimestamp').gt(startFromEpoch).exec();
@@ -293,7 +294,7 @@ const getFullCDR = async () => {
   let destoffset = 11; // Sydney tz offset GMT+11
   let offset = destoffset - localoffset;
   let offsetDateTime = new Date(new Date().getTime() + offset * 3600 * 1000); // Sydney datetime
-  let offsetDateTimetoUTCMidnightInMS = Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0, 0, 0);
+  let offsetDateTimetoUTCMidnightInMS = Date.UTC(offsetDateTime.getUTCFullYear(), offsetDateTime.getUTCMonth(), offsetDateTime.getUTCDate(), 0 - offset, 0, 0);
   let offsetDateTimetoUTCMidnight = offsetDateTimetoUTCMidnightInMS / 1000;
   console.log(`Server datetime: ${today}`);
   console.log(`Server TZ: ${localoffset}`);
@@ -385,13 +386,26 @@ const saveCampaignDashboardData = async (dashboardData) => {
   logger.info("Saving campaign dashboard data completed.");
 };
 
+// TODO: DONE FIX BUG IF TABLE NOT EXIST
 const getAgents = async () => {
-  let agents = await modelAgent.scan().exec();
-  return agents;
+  try{
+    let agents = await modelAgent.scan().exec();
+    return agents;
+  } catch(e){
+    return [];
+  }
 }; // end getAgents()
 
-const getCampaigns = async () => {
-  let campaigns = await modelCampaign.scan().exec();
+const getCampaigns = async (ofUser = null) => {
+  let campaigns = [];
+  if (!ofUser) {
+    campaigns = await modelCampaign.scan().exec();
+  } else {
+    let agentData = await modelAgent.scan().where("agentName").eq(ofUser).exec();
+    if (agentData.length) {
+      campaigns = agentData[0].campaigns;
+    }
+  }
   return campaigns;
 }; // end getCampaigns()
 
@@ -441,6 +455,16 @@ let addCampaignToAgent = async (agentName, campaignName, campaignId) => {
   campaigns.push(newCampaign);
 
   await modelAgent.update({ agentName: agentName, campaigns: campaigns });
+}; // end addCampaignToAgent()
+
+let updateCampaignOfAgent = async (agentName, campaigns) => {
+  try {
+    await modelAgent.update({ agentName: agentName, campaigns: campaigns });
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 }; // end addCampaignToAgent()
 
 let removeCampaignFromAgent = async (agentName, campaignName, campaignId) => {
@@ -521,12 +545,15 @@ let insertPhoneNumberCampaignMap = async (
 
 // -- user authentication [start]-----------------------------
 const checkUserCred = async (userName, pwdPlain) => {
-  let user = await modelUser.scan().where('username').eq(userName).exec();
+  // TODO: DONE convert userName to lower case, match it with usernameLowerCase
+  let userNameL = String(userName).toLowerCase()
+  let user = await modelUser.scan().where('usernameLowerCase').eq(userNameL).exec();
+  console.log("::>>  userNameL", userNameL, "user", user, "user.count", user.count);
   if (user.count) {
     let usr = user[0];
     let pwdMatched = bcrypt.compareSync(pwdPlain, usr.passwordHash);
     if (pwdMatched) {
-      return [usr.username, usr.admin]
+      return { username: usr.username, admin: usr.admin }
     } else {
       return false
     }
@@ -535,9 +562,36 @@ const checkUserCred = async (userName, pwdPlain) => {
     return false;
   }
 }
+
+const changeUserPassword = async (userName, hashedPass) => {
+  let user = await modelUser.scan().where('username').eq(userName).exec();
+  let changedUser = {
+    username: user[0].username,
+    admin: user[0].admin,
+    passwordHash: hashedPass,
+  };
+  await modelUser.update(changedUser);
+}
+
+// TODO: DONE add usernameLowerCase
+const createUser = async (userName, hashedPassword, userType) => {
+  let newUserModel = new modelUser( {
+    username: userName,
+    usernameLowerCase: String(userName).toLowerCase(),
+    admin: userType,
+    passwordHash: hashedPassword,
+  });
+  await newUserModel.save();
+}
+
 // -- user authentication [end]-----------------------------
 
 
+
+const getAgentDetails = async (ofUser = null) => {
+  let agentData = await modelAgent.scan().where("agentName").eq(ofUser).exec();
+  return agentData;
+}; // end getAgentDetails()
 
 module.exports = {
   modelCampaign,
@@ -553,6 +607,7 @@ module.exports = {
   setCampaignStatus,
   insertAgent,
   addCampaignToAgent,
+  updateCampaignOfAgent,
   removeCampaignFromAgent,
   campaignExists,
   insertCampaign,
@@ -569,4 +624,7 @@ module.exports = {
   saveContactCDR,
   getFullCDR,
   checkUserCred,
+  changeUserPassword,
+  getAgentDetails,
+  createUser,
 };

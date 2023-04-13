@@ -16,6 +16,9 @@ router.get('/', async (req, res, next) => {
   // Get all CDR from CloudCall_CDR
   let fullCDR = await getFullCDR();
 
+  let currentUsername = req.user.username;
+  console.log("AUTH_DEBUG from agent-dashboard. Username: ", currentUsername);
+
   // Get all campaigns from Cloudcall_Campaign_Table
   let campaigns = await getCampaigns();
   let arrCampaigns = [];
@@ -54,7 +57,7 @@ router.get('/', async (req, res, next) => {
     let currAgentName = arrAgentsSearchVal ? arrAgentsSearchVal.agentName : ""
 
     // If current CDS's agentId does not mmatch with logged in agentId, skip further processing
-    if (currAgentName != "steve.moran@right2drive.com.au" ) continue;
+    if (currAgentName != currentUsername ) continue;
 
     // make primary array of CDR (i.e primaryProcessedCDR) by processing values of CDR Array
     primaryProcessedCDR[primaryProcessedCDRCount] = {

@@ -1,24 +1,98 @@
-<%- include('_head.html'); %>
-<div class="col-md-9 col-lg-6">
-  <div class="text-bg-dark rounded-4 p-5 pt-4 m-5">
-    <div>
-      <h1 class="h2 p-3"><%=title%></h1>
-      <%- include('_alert.html'); %>
-    </div>
-    <form name="authForm" id="authForm" method="post" action="/auth/login">
-      <div class="mb-3">
-        <label for="authUserName" class="form-label">Username</label>
-        <input type="text" class="form-control " name="authUserName" id="authUserName" value="">
-      </div>
-      <div class="mb-3">
-        <label for="authUserPassword" class="form-label">Password</label>
-        <input type="password" class="form-control " name="authUserPassword" id="authUserPassword" value="" maxlength="24">
-      </div>
-      <button type="submit" class="btn btn-primary mt-3">Sign In</button>
-    </form>
-  </div>
-</div>
+<!doctype html>
+<html lang="en">
 
-<script>
-</script>
-<%- include('_foot.html'); %>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="a_r_p">
+
+    <title>Connect Admin - Login</title>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/images/favicon_io/site.webmanifest">
+    <!-- Bootstrap 5 -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="/stylesheets/client.css" rel="stylesheet">
+
+<style>
+
+
+.center--in--screen {
+        padding-top: 1.5rem!important;
+        padding-bottom: 1.5rem!important;
+        border-radius: var(--bs-border-radius)!important;
+        padding-right: 3rem!important;
+        padding-left: 3rem!important;
+        color: #fff!important;
+        background-color: RGBA(33,37,41,var(--bs-bg-opacity,1))!important;
+        width: 90%;
+        top: 50%;
+        left: 50%;
+        position: fixed;
+        transform: translate(-50%, -50%);
+    }
+@media only screen and (min-width: 400px) {
+    .center--in--screen {
+        padding-top: 1.5rem!important;
+        padding-bottom: 1.5rem!important;
+        border-radius: var(--bs-border-radius)!important;
+        padding-right: 3rem!important;
+        padding-left: 3rem!important;
+        color: #fff!important;
+        background-color: RGBA(33,37,41,var(--bs-bg-opacity,1))!important;
+        width: 50%;
+        top: 50%;
+        left: 50%;
+        position: fixed;
+        transform: translate(-50%, -50%);
+    }
+}
+</style>
+
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="center--in--screen">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="h3 mb-4">Connect Admin - Login</h1>
+                    </div>
+                    <% if(messages) { %>
+                        <div class="col-12">
+                        <% for (const [key, value] of Object.entries(messages)) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%=value%>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <% } %>
+                        </div>
+                    <% } %>
+                    <div class="col-12">
+                        <form name="authForm" id="authForm" method="post" action="/login/password">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control " name="username" id="username" value="">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control " name="password" id="password" value="">
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Log In</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/javascripts/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

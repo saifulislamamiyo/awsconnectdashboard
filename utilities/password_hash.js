@@ -1,11 +1,9 @@
 const bcrypt = require('bcrypt');
 
-let usernames = ['nazim', 'saiful', 'asif'];
-
-usernames.forEach((uname)=>{
-  let hash = bcrypt.hashSync(uname, 15);
-  console.log(uname, hash);
-});
+let uname = process.argv[2]
+let hash = bcrypt.hashSync(uname, 15);
+console.log("Username:", uname);
+console.log("Encrypted Password:", hash);
 
 
 
