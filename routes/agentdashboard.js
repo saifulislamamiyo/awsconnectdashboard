@@ -71,6 +71,7 @@ router.get('/', async (req, res, next) => {
       wrapTime: theCDR.WrapUpAt ? (theCDR.WrapUpAt - theCDR.connectedToAgentTimestamp) : 0,
       calls: theCDR.describeContactCalled,
       customerNumber: theCDR.CustomerNumber,
+      WrapUpCode: theCDR.WrapUpCode,
     }
     primaryProcessedCDRCount += 1;
   }

@@ -70,6 +70,7 @@
                                     <th scope="col">Campaign Hotline</th>
                                     <th scope="col">Talk Time</th>
                                     <th scope="col">Wrap Time</th>
+                                    <th scope="col">WrapUp Code</th>
                                     <th scope="col">Wait Time</th>
                                 </tr>
                             </thead>
@@ -96,6 +97,9 @@
                                         </td>
                                         <td>
                                             <%=new Date(cdr.wrapTime * 1000).toISOString().slice(11, 19)%>
+                                        </td>
+                                        <td>
+                                          <%=cdr.WrapUpCode ? cdr.WrapUpCode : "" %>
                                         </td>
                                         <td>
                                             <%=new Date(cdr.waitTime * 1000).toISOString().slice(11, 19)%>
