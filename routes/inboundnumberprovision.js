@@ -29,6 +29,14 @@ router.get("/", async (req, res, next) => {
   });
 }); // end router.get('/')
 
+
+router.get("/get-phone-number-campaign-map", async (req, res, next) => {
+  let phoneNumberCampaignMap = await getPhoneNumberCampaignMap();
+  res.json(phoneNumberCampaignMap)
+}); // end router.get('/')
+
+
+
 router.get("/inbound-number-provision-success", (req, res, next) => {
   req.flash("success", "Phone number provisioned succesfully.");
   res.redirect("/inbound-number-provision");
