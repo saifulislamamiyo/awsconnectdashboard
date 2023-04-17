@@ -34,6 +34,7 @@
                             <th scope="col">Total Calls</th>
                             <th scope="col">Total Talk Time</th>
                             <th scope="col">Avg Talk Time</th>
+                            <th scope="col">WrapUp Code</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,6 +57,9 @@
                                 </td>
                                 <td>
                                     <%= new Date((cdr.duration /cdr.describeContactCalled) * 1000).toISOString().slice(11, 19);  %>
+                                </td>
+                                <td>
+                                  <%= cdr.WrapUpCode %>
                                 </td>
                             </tr>
                             <% }); %>
