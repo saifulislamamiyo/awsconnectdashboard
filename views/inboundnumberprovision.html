@@ -106,13 +106,13 @@
       }; // end if !matched
     }; // next p
     // Now remove added item(s) from the source select
-    let l = fromSel.length;
-    for (let i = 0; i < l; i++) {
-      if (typeof fromSel.options[i] != 'undefined' && toRemove.includes(fromSel.options[i].value)) {
-        fromSel.remove(i);
-        i--; // after remove, the length will decrease by 1
-      }; // end if includes
-    }; // next i
+    // let l = fromSel.length;
+    // for (let i = 0; i < l; i++) {
+    //   if (typeof fromSel.options[i] != 'undefined' && toRemove.includes(fromSel.options[i].value)) {
+    //     fromSel.remove(i);
+    //     i--; // after remove, the length will decrease by 1
+    //   }; // end if includes
+    // }; // next i
   }; // end function swapSelectedOptions
 
 
