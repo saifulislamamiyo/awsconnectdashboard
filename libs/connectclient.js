@@ -278,7 +278,8 @@ const getHourOfOperations = async () => {
 const getPhoneNumbers = async () => {
   let phNums = (await connectClient.send(
     new ListPhoneNumbersCommand({
-      InstanceId: awsInstance
+      InstanceId: awsInstance,
+      MaxResults: 500,
     })
   )).PhoneNumberSummaryList;
   return phNums;
@@ -289,7 +290,8 @@ const getPhoneNumbersWithDesc = async () => {
   let phArr = [];
   let phNums = (await connectClient.send(
     new ListPhoneNumbersCommand({
-      InstanceId: awsInstance
+      InstanceId: awsInstance,
+      MaxResults: 500,
     })
   )).PhoneNumberSummaryList;
 

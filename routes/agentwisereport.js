@@ -19,7 +19,7 @@ router.get('/', async (req, res, next) => {
 
 
 
-  let aggCDR = groupByWithSum(fullCDR, 'agentId, queueId, CallDirection', 'describeContactCalled, duration');
+  let aggCDR = groupByWithSum(fullCDR, 'agentId, queueId, CallDirection, WrapUpCode', 'describeContactCalled, duration');
   
   let agents = await getAgents();
   let arrAgents = [];
@@ -63,7 +63,7 @@ router.get('/', async (req, res, next) => {
 
 
 
-
+console.log(Object.keys(aggCDR))
 
   res.render('agentwisereport', { title: 'Agent Wise Report', aggCDR: aggCDR });
 });
